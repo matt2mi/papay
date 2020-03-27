@@ -26,6 +26,36 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
 
+## Règles
+
+https://www.gigamic.com/files/catalog/products/rules/papayo0_rule-fr.pdf
+
+## Notes
+
+const util = require('util');
+
+console.log(util.inspect(myObject, {showHidden: false, depth: null}))
+
+// alternative shortcut
+
+console.log(util.inspect(myObject, false, null, true /* enable colors */))
+
 ## temps passé
-25/03 22h30 - 01h09
-26/03 9h12 - 9h28 & 10h - 12h30
+
+#### 25/03
+
+22h30 - 01h09
+
+#### 26/03
+
+9h12 - 9h28
+
+10h - 12h30
+
+13h30 - 14h10
+
+17h30 - 18h
+
+21h15 - 22h
+
+23h - 
