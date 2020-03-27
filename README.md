@@ -58,4 +58,12 @@ console.log(util.inspect(myObject, false, null, true /* enable colors */))
 
 21h15 - 22h
 
-23h - 
+23h - 1h30
+
+#### 27/03
+
+###### HC
+
+###### MD
+
+15h30 - 17h30

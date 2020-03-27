@@ -1,4 +1,5 @@
 const playersService = require('./players.service');
+const utilsService = require('./utils.service');
 const Families = require('../models/families');
 
 const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -61,16 +62,6 @@ const setDealedDecksToPlayers = () => {
   myPlayers.forEach((player, id) => player.deck = player.deck.concat(playersDecks[id]));
 };
 
-
-const isSameCards = (cardA, cardB) => cardA.family.id === cardB.family.id && cardA.number === cardB.number;
-const getIndexOfCard = (deck, cardToFind) => {
-  let cardIndex = -1;
-  deck.forEach((card, index) => {
-    if (isSameCards(card, cardToFind)) cardIndex = index;
-  });
-  return cardIndex;
-};
-
 const throwCards = (players, playerAtoPlayerB) => {
   // ajout des cartes données par le voisin précédent
   for (let i = 0; i < playerAtoPlayerB.length; i++) {
@@ -86,7 +77,7 @@ const throwCards = (players, playerAtoPlayerB) => {
   // suppression des cartes données au voisin suivant
   for (let i = 0; i < playerAtoPlayerB.length; i++) {
     for (let j = 0; j < playerAtoPlayerB[i].length; j++) {
-      const cardId = getIndexOfCard(players[i].deck, playerAtoPlayerB[i][j]);
+      const cardId = utilsService.getIndexOfCard(players[i].deck, playerAtoPlayerB[i][j]);
       players[i].deck.splice(cardId, 1);
     }
   }

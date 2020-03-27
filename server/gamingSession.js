@@ -41,15 +41,25 @@ const sample4PlayersSession = () => {
     playersService.getPlayers()[3].deck[4]
   ];
   const playersReady = cardsService.throwCards(playersService.getPlayers(), [pl1ToPl2, pl2ToPl3, pl3ToPl4, pl4ToPl1]);
-  playersReady.forEach(player => console.log(player.name, player.deck));
 
 // Quatrième phase - tours de jeu
-roundService.endRound(looserName, cards);
-roundService.endRound(looserName, cards);
-roundService.endRound(looserName, cards);
-roundService.endRound(looserName, cards);
-roundService.endRound(looserName, cards);
-// TODO...
+  let endRound;
+  for (let i = 0; i < 15; i++) {
+    const cardPlayedByPlayer = [];
+    // pour test - tout le monde joue sa première carte
+    // le fonctionnement de savoir qui joue en premier (et qui perd le tour) sera géré au retour des client websocket pour
+    // fournir ici directement le nom du perdant et la liste des cartes qu'il récupert
+    cardPlayedByPlayer.push({player: playersReady[0], card: playersReady[0].deck[0]});
+    cardPlayedByPlayer.push({player: playersReady[1], card: playersReady[1].deck[0]});
+    cardPlayedByPlayer.push({player: playersReady[2], card: playersReady[2].deck[0]});
+    cardPlayedByPlayer.push({player: playersReady[3], card: playersReady[3].deck[0]});
+
+    endRound = playersService.endRound('cle', cardPlayedByPlayer);
+  }
+
+  console.log(endRound);
 };
 
-module.exports = { sample4PlayersSession };
+module.exports = {
+  sample4PlayersSession
+};

@@ -102,9 +102,6 @@ describe('cardsService.throwCards - 3 players', function () {
     it('pl1 should get the 5 cards of pl3', function () {
       const expectedPlayer1Deck = expectedPlayers[0].deck;
 
-      console.log('expectedPlayer1Deck', expectedPlayer1Deck);
-      console.log('pl3ToPl1[0]', pl3ToPl1[0]);
-
       expect(expectedPlayer1Deck).to.deep.include(pl3ToPl1[0]);
       expect(expectedPlayer1Deck).to.deep.include(pl3ToPl1[1]);
       expect(expectedPlayer1Deck).to.deep.include(pl3ToPl1[2]);
