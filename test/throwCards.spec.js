@@ -72,25 +72,25 @@ describe('cardsService.throwCards - 3 players', function () {
       ])
   ];
   const pl1ToPl2 = [
-    {family: {id: 1, label: 'Coeur'}, number: 2},
-    {family: {id: 2, label: 'Carreau'}, number: 7},
-    {family: {id: 2, label: 'Carreau'}, number: 9},
-    {family: {id: 3, label: 'Trèfle'}, number: 5},
-    {family: {id: 3, label: 'Trèfle'}, number: 6}
+    {family: {id: 1, label: 'Coeur'}, number: 2, newOne: true},
+    {family: {id: 2, label: 'Carreau'}, number: 7, newOne: true},
+    {family: {id: 2, label: 'Carreau'}, number: 9, newOne: true},
+    {family: {id: 3, label: 'Trèfle'}, number: 5, newOne: true},
+    {family: {id: 3, label: 'Trèfle'}, number: 6, newOne: true}
   ];
   const pl2ToPl3 = [
-    {family: {id: 0, label: 'Pique'}, number: 9},
-    {family: {id: 0, label: 'Pique'}, number: 10},
-    {family: {id: 1, label: 'Coeur'}, number: 3},
-    {family: {id: 1, label: 'Coeur'}, number: 8},
-    {family: {id: 1, label: 'Coeur'}, number: 10}
+    {family: {id: 0, label: 'Pique'}, number: 9, newOne: true},
+    {family: {id: 0, label: 'Pique'}, number: 10, newOne: true},
+    {family: {id: 1, label: 'Coeur'}, number: 3, newOne: true},
+    {family: {id: 1, label: 'Coeur'}, number: 8, newOne: true},
+    {family: {id: 1, label: 'Coeur'}, number: 10, newOne: true}
   ];
   const pl3ToPl1 = [
-    {family: {id: 2, label: 'Carreau'}, number: 10},
-    {family: {id: 3, label: 'Trèfle'}, number: 10},
-    {family: {id: 4, label: 'Papayoo'}, number: 14},
-    {family: {id: 4, label: 'Papayoo'}, number: 17},
-    {family: {id: 4, label: 'Papayoo'}, number: 19}
+    {family: {id: 2, label: 'Carreau'}, number: 10, newOne: true},
+    {family: {id: 3, label: 'Trèfle'}, number: 10, newOne: true},
+    {family: {id: 4, label: 'Papayoo'}, number: 14, newOne: true},
+    {family: {id: 4, label: 'Papayoo'}, number: 17, newOne: true},
+    {family: {id: 4, label: 'Papayoo'}, number: 19, newOne: true}
   ];
   let expectedPlayers;
 
@@ -101,6 +101,9 @@ describe('cardsService.throwCards - 3 players', function () {
   describe('each players should receive five cards from his previous neighbor deck', function () {
     it('pl1 should get the 5 cards of pl3', function () {
       const expectedPlayer1Deck = expectedPlayers[0].deck;
+
+      console.log('expectedPlayer1Deck', expectedPlayer1Deck);
+      console.log('pl3ToPl1[0]', pl3ToPl1[0]);
 
       expect(expectedPlayer1Deck).to.deep.include(pl3ToPl1[0]);
       expect(expectedPlayer1Deck).to.deep.include(pl3ToPl1[1]);
