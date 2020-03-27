@@ -2,74 +2,74 @@ const cardsService = require('../server/services/cards.service');
 const Player = require('../server/models/player');
 const expect = require('chai').expect;
 
-describe('cardsService.throwCards - 3 players', function () {
+describe('cardsService', function () {
   const players = [
     new Player('player1', [
-        {family: {id: 0, label: 'Pique'}, number: 1},
-        {family: {id: 0, label: 'Pique'}, number: 3},
-        {family: {id: 0, label: 'Pique'}, number: 5},
-        {family: {id: 0, label: 'Pique'}, number: 6},
-        {family: {id: 1, label: 'Coeur'}, number: 2},
-        {family: {id: 2, label: 'Carreau'}, number: 2},
-        {family: {id: 2, label: 'Carreau'}, number: 6},
-        {family: {id: 2, label: 'Carreau'}, number: 7},
-        {family: {id: 2, label: 'Carreau'}, number: 9},
-        {family: {id: 3, label: 'Trèfle'}, number: 5},
-        {family: {id: 3, label: 'Trèfle'}, number: 6},
-        {family: {id: 4, label: 'Papayoo'}, number: 3},
-        {family: {id: 4, label: 'Papayoo'}, number: 4},
-        {family: {id: 4, label: 'Papayoo'}, number: 5},
-        {family: {id: 4, label: 'Papayoo'}, number: 6},
-        {family: {id: 4, label: 'Papayoo'}, number: 7},
-        {family: {id: 4, label: 'Papayoo'}, number: 8},
-        {family: {id: 4, label: 'Papayoo'}, number: 11},
-        {family: {id: 4, label: 'Papayoo'}, number: 15},
-        {family: {id: 4, label: 'Papayoo'}, number: 20}
-      ]),
+      {family: {id: 0, label: 'Pique'}, number: 1},
+      {family: {id: 0, label: 'Pique'}, number: 3},
+      {family: {id: 0, label: 'Pique'}, number: 5},
+      {family: {id: 0, label: 'Pique'}, number: 6},
+      {family: {id: 1, label: 'Coeur'}, number: 2},
+      {family: {id: 2, label: 'Carreau'}, number: 2},
+      {family: {id: 2, label: 'Carreau'}, number: 6},
+      {family: {id: 2, label: 'Carreau'}, number: 7},
+      {family: {id: 2, label: 'Carreau'}, number: 9},
+      {family: {id: 3, label: 'Trèfle'}, number: 5},
+      {family: {id: 3, label: 'Trèfle'}, number: 6},
+      {family: {id: 4, label: 'Papayoo'}, number: 3},
+      {family: {id: 4, label: 'Papayoo'}, number: 4},
+      {family: {id: 4, label: 'Papayoo'}, number: 5},
+      {family: {id: 4, label: 'Papayoo'}, number: 6},
+      {family: {id: 4, label: 'Papayoo'}, number: 7},
+      {family: {id: 4, label: 'Papayoo'}, number: 8},
+      {family: {id: 4, label: 'Papayoo'}, number: 11},
+      {family: {id: 4, label: 'Papayoo'}, number: 15},
+      {family: {id: 4, label: 'Papayoo'}, number: 20}
+    ]),
     new Player('player2', [
-        {family: {id: 0, label: 'Pique'}, number: 9},
-        {family: {id: 0, label: 'Pique'}, number: 10},
-        {family: {id: 1, label: 'Coeur'}, number: 3},
-        {family: {id: 1, label: 'Coeur'}, number: 8},
-        {family: {id: 1, label: 'Coeur'}, number: 10},
-        {family: {id: 2, label: 'Carreau'}, number: 3},
-        {family: {id: 2, label: 'Carreau'}, number: 4},
-        {family: {id: 2, label: 'Carreau'}, number: 8},
-        {family: {id: 3, label: 'Trèfle'}, number: 1},
-        {family: {id: 3, label: 'Trèfle'}, number: 3},
-        {family: {id: 3, label: 'Trèfle'}, number: 7},
-        {family: {id: 3, label: 'Trèfle'}, number: 8},
-        {family: {id: 3, label: 'Trèfle'}, number: 9},
-        {family: {id: 4, label: 'Papayoo'}, number: 1},
-        {family: {id: 4, label: 'Papayoo'}, number: 9},
-        {family: {id: 4, label: 'Papayoo'}, number: 10},
-        {family: {id: 4, label: 'Papayoo'}, number: 12},
-        {family: {id: 4, label: 'Papayoo'}, number: 13},
-        {family: {id: 4, label: 'Papayoo'}, number: 16},
-        {family: {id: 4, label: 'Papayoo'}, number: 18}
-      ]),
+      {family: {id: 0, label: 'Pique'}, number: 9},
+      {family: {id: 0, label: 'Pique'}, number: 10},
+      {family: {id: 1, label: 'Coeur'}, number: 3},
+      {family: {id: 1, label: 'Coeur'}, number: 8},
+      {family: {id: 1, label: 'Coeur'}, number: 10},
+      {family: {id: 2, label: 'Carreau'}, number: 3},
+      {family: {id: 2, label: 'Carreau'}, number: 4},
+      {family: {id: 2, label: 'Carreau'}, number: 8},
+      {family: {id: 3, label: 'Trèfle'}, number: 1},
+      {family: {id: 3, label: 'Trèfle'}, number: 3},
+      {family: {id: 3, label: 'Trèfle'}, number: 7},
+      {family: {id: 3, label: 'Trèfle'}, number: 8},
+      {family: {id: 3, label: 'Trèfle'}, number: 9},
+      {family: {id: 4, label: 'Papayoo'}, number: 1},
+      {family: {id: 4, label: 'Papayoo'}, number: 9},
+      {family: {id: 4, label: 'Papayoo'}, number: 10},
+      {family: {id: 4, label: 'Papayoo'}, number: 12},
+      {family: {id: 4, label: 'Papayoo'}, number: 13},
+      {family: {id: 4, label: 'Papayoo'}, number: 16},
+      {family: {id: 4, label: 'Papayoo'}, number: 18}
+    ]),
     new Player('player3', [
-        {family: {id: 0, label: 'Pique'}, number: 2},
-        {family: {id: 0, label: 'Pique'}, number: 4},
-        {family: {id: 0, label: 'Pique'}, number: 7},
-        {family: {id: 0, label: 'Pique'}, number: 8},
-        {family: {id: 1, label: 'Coeur'}, number: 1},
-        {family: {id: 1, label: 'Coeur'}, number: 4},
-        {family: {id: 1, label: 'Coeur'}, number: 5},
-        {family: {id: 1, label: 'Coeur'}, number: 6},
-        {family: {id: 1, label: 'Coeur'}, number: 7},
-        {family: {id: 1, label: 'Coeur'}, number: 9},
-        {family: {id: 2, label: 'Carreau'}, number: 1},
-        {family: {id: 2, label: 'Carreau'}, number: 5},
-        {family: {id: 2, label: 'Carreau'}, number: 10},
-        {family: {id: 3, label: 'Trèfle'}, number: 2},
-        {family: {id: 3, label: 'Trèfle'}, number: 4},
-        {family: {id: 3, label: 'Trèfle'}, number: 10},
-        {family: {id: 4, label: 'Papayoo'}, number: 2},
-        {family: {id: 4, label: 'Papayoo'}, number: 14},
-        {family: {id: 4, label: 'Papayoo'}, number: 17},
-        {family: {id: 4, label: 'Papayoo'}, number: 19}
-      ])
+      {family: {id: 0, label: 'Pique'}, number: 2},
+      {family: {id: 0, label: 'Pique'}, number: 4},
+      {family: {id: 0, label: 'Pique'}, number: 7},
+      {family: {id: 0, label: 'Pique'}, number: 8},
+      {family: {id: 1, label: 'Coeur'}, number: 1},
+      {family: {id: 1, label: 'Coeur'}, number: 4},
+      {family: {id: 1, label: 'Coeur'}, number: 5},
+      {family: {id: 1, label: 'Coeur'}, number: 6},
+      {family: {id: 1, label: 'Coeur'}, number: 7},
+      {family: {id: 1, label: 'Coeur'}, number: 9},
+      {family: {id: 2, label: 'Carreau'}, number: 1},
+      {family: {id: 2, label: 'Carreau'}, number: 5},
+      {family: {id: 2, label: 'Carreau'}, number: 10},
+      {family: {id: 3, label: 'Trèfle'}, number: 2},
+      {family: {id: 3, label: 'Trèfle'}, number: 4},
+      {family: {id: 3, label: 'Trèfle'}, number: 10},
+      {family: {id: 4, label: 'Papayoo'}, number: 2},
+      {family: {id: 4, label: 'Papayoo'}, number: 14},
+      {family: {id: 4, label: 'Papayoo'}, number: 17},
+      {family: {id: 4, label: 'Papayoo'}, number: 19}
+    ])
   ];
   const pl1ToPl2 = [
     {family: {id: 1, label: 'Coeur'}, number: 2, newOne: true},
@@ -159,6 +159,36 @@ describe('cardsService.throwCards - 3 players', function () {
       expect(pl3DeckExpected).to.not.deep.include(pl3ToPl1[2]);
       expect(pl3DeckExpected).to.not.deep.include(pl3ToPl1[3]);
       expect(pl3DeckExpected).to.not.deep.include(pl3ToPl1[4]);
+    });
+  });
+
+  describe('should count the score', function () {
+    it('should count only papayoo\'s values', function () {
+      const cardsToCount = [
+        {family: {id: 1, label: 'Coeur'}, number: 2},
+        {family: {id: 1, label: 'Coeur'}, number: 2},
+        {family: {id: 4, label: 'Papayoo'}, number: 2},
+        {family: {id: 4, label: 'Papayoo'}, number: 4}
+      ];
+      const bonusFamily = {id: 1, label: 'Coeur'};
+
+      const result = cardsService.countScore(bonusFamily, cardsToCount);
+
+      expect(result).to.equal(6);
+    });
+
+    it('should count papayoo\'s values and the 40 pts 7', function () {
+      const cardsToCount = [
+        {family: {id: 1, label: 'Coeur'}, number: 2},
+        {family: {id: 1, label: 'Coeur'}, number: 7},
+        {family: {id: 4, label: 'Papayoo'}, number: 2},
+        {family: {id: 4, label: 'Papayoo'}, number: 4}
+      ];
+      const bonusFamily = {id: 1, label: 'Coeur'};
+
+      const result = cardsService.countScore(bonusFamily, cardsToCount);
+
+      expect(result).to.equal(46);
     });
   });
 });

@@ -54,10 +54,16 @@ const sample4PlayersSession = () => {
     cardPlayedByPlayer.push({player: playersReady[2], card: playersReady[2].deck[0]});
     cardPlayedByPlayer.push({player: playersReady[3], card: playersReady[3].deck[0]});
 
-    endRound = playersService.endRound('cle', cardPlayedByPlayer);
+    const looserNme = i % 2 === 0 ? 'cle' : 'matt';
+    endRound = playersService.endRound(looserNme, cardPlayedByPlayer);
   }
 
-  console.log(endRound);
+  // Cinquième phase - décompte points
+  endRound.forEach(player =>
+    player.score = cardsService.countScore({id: 1, label: 'Coeur'}, player.collectedLoosingCards)
+  );
+
+  endRound.forEach(player => console.log(player.name + ' ' + player.score));
 };
 
 module.exports = {

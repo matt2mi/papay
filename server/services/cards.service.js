@@ -86,7 +86,17 @@ const throwCards = (players, playerAtoPlayerB) => {
   return players;
 };
 
+const countScore = (family, cards) => {
+  let score = 0;
+  cards.forEach(card => {
+    if (card.family.label === 'Papayoo') score += card.number;
+    if (card.family.label === family.label && card.number === 7) return score += 40;
+  });
+  return score;
+};
+
 module.exports = {
   setDealedDecksToPlayers,
-  throwCards
+  throwCards,
+  countScore
 };
