@@ -12,5 +12,15 @@ app.get('/', (req, res) => res.sendFile(path.join(__dirname + '/index.html')));
 app.listen(3000, () => console.log(`Example app listening on port 3000!`));
 
 // Session exemple
-require('./gamingSession').sample4PlayersSession();
+const session = require('./gamingSession');
+
+session.createPlayers();
+
+session.sample4PlayersSession();
+session.sample4PlayersSession();
+session.sample4PlayersSession();
+session.sample4PlayersSession();
+
+session.displayScores();
+
 

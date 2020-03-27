@@ -1,13 +1,14 @@
 const playersService = require('./services/players.service');
 const cardsService = require('./services/cards.service');
 
-const sample4PlayersSession = () => {
-// Première phase - ajout joueurs
+const createPlayers = () => {
   playersService.createPlayer('matt');
   playersService.createPlayer('mimi');
   playersService.createPlayer('gu');
   playersService.createPlayer('cle');
+};
 
+const sample4PlayersSession = () => {
 // Deuxième phase - distribution
   cardsService.setDealedDecksToPlayers();
 
@@ -55,17 +56,27 @@ const sample4PlayersSession = () => {
     cardPlayedByPlayer.push({player: playersReady[3], card: playersReady[3].deck[0]});
 
     const looserNme = i % 2 === 0 ? 'cle' : 'matt';
-    endRound = playersService.endRound(looserNme, cardPlayedByPlayer);
+    playersService.endRound(looserNme, cardPlayedByPlayer);
   }
 
   // Cinquième phase - décompte points
-  endRound.forEach(player =>
+  playersService.getPlayers().forEach(player =>
     player.score = cardsService.countScore({id: 1, label: 'Coeur'}, player.collectedLoosingCards)
   );
 
-  endRound.forEach(player => console.log(player.name + ' ' + player.score));
+  return playersService.getPlayers();
+};
+
+const displayScores = () => {
+  // Fin - affichage scores
+  playersService
+    .getPlayers()
+    .sort((pl1, pl2) => pl1.score - pl2.score)
+    .forEach(player => console.log(player.name + ' ' + player.score));
 };
 
 module.exports = {
-  sample4PlayersSession
+  createPlayers,
+  sample4PlayersSession,
+  displayScores
 };
