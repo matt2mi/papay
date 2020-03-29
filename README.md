@@ -44,9 +44,13 @@ console.log(util.inspect(myObject, false, null, true /* enable colors */))
 
 #### 25/03
 
+###### MD
+
 22h30 - 01h09
 
 #### 26/03
+
+###### MD
 
 9h12 - 9h28
 
@@ -62,10 +66,18 @@ console.log(util.inspect(myObject, false, null, true /* enable colors */))
 
 #### 27/03
 
-###### HC
-
 ###### MD
 
 15h30 - 17h30
 
 20h15 - 21h30
+
+#### 28/03
+
+###### MD
+
+14h20 - 15h15
+
+23h30 - 1h00
+
+###### HC

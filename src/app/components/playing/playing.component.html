@@ -1,0 +1,31 @@
+<div class="row">
+  <div class="col-2">
+    <h2>Score total</h2>
+
+    <div *ngFor="let player of connectedPlayers">
+      {{player.name + ': ' + player.score}}
+    </div>
+  </div>
+
+  <!--Le pli en cours-->
+  <div class="offset-1 col-2">
+    <h2>Pli en cours</h2>
+
+    <div *ngIf="cardFold.length > 0">
+      <div class="my-card" *ngFor="let playerAndCard of cardFold">
+        {{playerAndCard.player.name + ' a joué un : ' + playerAndCard?.card?.number + ' de ' +
+        playerAndCard?.card?.family?.label}}
+      </div>
+    </div>
+  </div>
+
+  <!--Le deck du joueur-->
+  <div class="offset-1 col-4">
+    <h2>Mes Cartes</h2>
+
+    <button type="button" *ngFor="let card of currentPlayer.deck" class="btn btn-primary"
+            (click)="currentPlayerPlaysCard(card)" [disabled]="!isCurrentPlayerTurn">
+      {{card?.number + ' de ' + card?.family.label}}
+    </button>
+  </div>
+</div>

@@ -7,6 +7,8 @@ const getPlayers = () => players;
 const getPlayerByName = name => players.find(player => player.name === name);
 const setPlayers = newPlayers => players = newPlayers;
 
+const isExistingPlayerName = name => players.some(player => player.name === name);
+
 const createPlayer = name => {
   const newPlayer = new Player(name);
   players.push(newPlayer);
@@ -32,6 +34,7 @@ const endRound = (looserName, cardPlayedByPlayer) => {
 
 module.exports = {
   getPlayers,
+  isExistingPlayerName,
   getPlayerByName,
   setPlayers,
   createPlayer,

@@ -1,1 +1,26 @@
 /* You can add global styles to this file, and also import other style files */
+
+html, body {
+  height: 100%;
+  background-color: dimgray;
+  color: #f9fbff;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+@import '~bootstrap/dist/css/bootstrap.min.css';
+
+.bg-primary {
+  background-color: #c2185b !important;
+}
+
+.txt-primary {
+  color: #c2185b !important;
+}
+
+.my-card {
+  border: 1px solid white;
+}
