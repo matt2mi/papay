@@ -24,7 +24,8 @@
     <h2>Mes Cartes</h2>
 
     <button type="button" *ngFor="let card of currentPlayer.deck" class="btn btn-primary"
-            (click)="currentPlayerPlaysCard(card)" [disabled]="!isCurrentPlayerTurn">
+            [ngClass]="{'not-clickable': !isCurrentPlayerTurn || !card.isPlayable}"
+            (click)="currentPlayerPlaysCard(card)" [disabled]="!isCurrentPlayerTurn || !card.isPlayable">
       {{card?.number + ' de ' + card?.family.label}}
     </button>
   </div>

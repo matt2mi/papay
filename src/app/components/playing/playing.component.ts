@@ -30,6 +30,7 @@ export class PlayingComponent {
         this.cardFold.push({player: this.connectedPlayers[0], card: this.connectedPlayers[0].deck[this.nbRounds]});
         setTimeout(() => {
             this.cardFold.push({player: this.connectedPlayers[1], card: this.connectedPlayers[1].deck[this.nbRounds]});
+            this.canPlayCards();
             this.isCurrentPlayerTurn = true;
           },
           1000);
@@ -83,4 +84,15 @@ export class PlayingComponent {
   }
 
   // TODO gestion des cartes que le joueur peut jouer ou pas (fonction de la couleur demandée)
+  canPlayCards() {
+    if (this.cardFold.length !== 0 && this.currentPlayer.deck.some(card => card.family.id === this.cardFold[0].card.family.id)) {
+      // cas : au moins une carte de la couleur demandée => seulement cette carte sera jouable
+      this.currentPlayer.deck
+        .forEach(card => card.isPlayable = card.family.id === this.cardFold[0].card.family.id);
+    } else {
+      // cas : le joueur est le premier à jouer OU aucune carte de la couleur demandée
+      // => toutes les cartes sont jouables
+      this.currentPlayer.deck.forEach(card => card.isPlayable = true);
+    }
+  }
 }

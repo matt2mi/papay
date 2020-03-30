@@ -38,7 +38,7 @@ export class PlayersService {
 
   setCurrentPlayerDeck(deck: Card[] = [
     new Card(5, FAMILIES[1]),
-    new Card(1, FAMILIES[4]),
+    new Card(1, FAMILIES[2]),
     new Card(9, FAMILIES[3]),
   ]) {
     this.currentPlayer.deck = deck;
