@@ -41,10 +41,14 @@ const sample4PlayersSession = () => {
     playersService.getPlayers()[3].deck[3],
     playersService.getPlayers()[3].deck[4]
   ];
-  const playersReady = cardsService.throwCards(playersService.getPlayers(), [pl1ToPl2, pl2ToPl3, pl3ToPl4, pl4ToPl1]);
+  const playersReady = playersService.handleGivenCards([
+    {cards: pl1ToPl2, player: playersService.getPlayers()[0]},
+    {cards: pl2ToPl3, player: playersService.getPlayers()[1]},
+    {cards: pl3ToPl4, player: playersService.getPlayers()[2]},
+    {cards: pl4ToPl1, player: playersService.getPlayers()[3]}
+  ]);
 
 // Quatrième phase - tours de jeu
-  let endRound;
   for (let i = 0; i < 15; i++) {
     const cardPlayedByPlayer = [];
     // pour test - tout le monde joue sa première carte
@@ -59,10 +63,8 @@ const sample4PlayersSession = () => {
     playersService.endRound(looserNme, cardPlayedByPlayer);
   }
 
-  // Cinquième phase - décompte points
-  playersService.getPlayers().forEach(player =>
-    player.score = cardsService.countScore({id: 1, label: 'Coeur'}, player.collectedLoosingCards)
-  );
+// Cinquième phase - décompte points
+  cardsService.countScore({id: 1, label: 'Coeur'});
 
   return playersService.getPlayers();
 };
@@ -71,8 +73,8 @@ const displayScores = () => {
   // Fin - affichage scores
   playersService
     .getPlayers()
-    .sort((pl1, pl2) => pl1.score - pl2.score)
-    .forEach(player => console.log(player.name + ' ' + player.score));
+    .sort((pl1, pl2) => pl1.globalScore - pl2.globalScore)
+    .forEach(player => console.log(player.name + ' ' + player.globalScore));
 };
 
 module.exports = {

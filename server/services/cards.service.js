@@ -5,13 +5,15 @@ const Families = require('../models/families');
 const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const papayooNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 
-const createPlayersDecks = (nbPlayers) => {
+const createPlayersDecks = () => {
+  const nbPlayers = playersService.getNbPlayers();
   const cards = createGlobalDeck(nbPlayers);
   shuffleCards(cards);
   const playersDecks = dealCards(cards, nbPlayers);
-  playersDecks.forEach(deck => sortCards(deck));
+  playersDecks.forEach(deck => utilsService.sortCards(deck));
   return playersDecks;
 };
+
 const createGlobalDeck = () => {
   const cards = [];
   for (let family of Object.keys(Families)) {
@@ -27,6 +29,7 @@ const createGlobalDeck = () => {
   }
   return cards;
 };
+
 const shuffleCards = cards => {
   for (let i = cards.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -35,8 +38,8 @@ const shuffleCards = cards => {
     cards[j] = temp;
   }
 };
+
 const dealCards = (cards, nbPlayers) => {
-  // 3 players - toutes les cartes - 6x3 + 1x2
   const decks = [];
 
   for (let i = 0; i < nbPlayers; i++) {
@@ -51,52 +54,25 @@ const dealCards = (cards, nbPlayers) => {
 
   return decks;
 };
-const sortCards = deck => {
-  deck.sort((c1, c2) => c1.number - c2.number);
-  deck.sort((c1, c2) => c1.family.id - c2.family.id);
-};
 
 const setDealedDecksToPlayers = () => {
-  const myPlayers = playersService.getPlayers();
-  const playersDecks = createPlayersDecks(myPlayers.length);
-  myPlayers.forEach((player, id) => player.deck = player.deck.concat(playersDecks[id]));
+  const playersDecks = createPlayersDecks();
+  playersService.setPlayersDecks(playersDecks);
 };
 
-const throwCards = (players, playerAtoPlayerB) => {
-  // ajout des cartes données par le voisin précédent
-  for (let i = 0; i < playerAtoPlayerB.length; i++) {
-    if (players[i + 1]) {
-      players[i + 1].deck =
-        players[i + 1].deck.concat(playerAtoPlayerB[i].map(card => ({...card, newOne: true})));
-    } else {
-      // cas du dernier donneur qui donne au premier de la liste
-      players[0].deck = players[0].deck.concat(playerAtoPlayerB[i].map(card => ({...card, newOne: true})));
-    }
-  }
-
-  // suppression des cartes données au voisin suivant
-  for (let i = 0; i < playerAtoPlayerB.length; i++) {
-    for (let j = 0; j < playerAtoPlayerB[i].length; j++) {
-      const cardId = utilsService.getIndexOfCard(players[i].deck, playerAtoPlayerB[i][j]);
-      players[i].deck.splice(cardId, 1);
-    }
-  }
-
-  players.forEach(player => sortCards(player.deck));
-  return players;
-};
-
-const countScore = (family, cards) => {
-  let score = 0;
-  cards.forEach(card => {
-    if (card.family.label === 'Papayoo') score += card.number;
-    if (card.family.label === family.label && card.number === 7) return score += 40;
+const countScore = family => {
+  playersService.getPlayers().forEach(player => {
+    let score = 0;
+    player.collectedLoosingCards.forEach(card => {
+      if (card.family.label === 'Papayoo') score += card.number;
+      if (card.family.label === family.label && card.number === 7) return score += 40;
+    });
+    player.roundScore = score;
+    player.globalScore += score;
   });
-  return score;
 };
 
 module.exports = {
   setDealedDecksToPlayers,
-  throwCards,
   countScore
 };

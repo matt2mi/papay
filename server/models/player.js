@@ -2,7 +2,8 @@ class Player {
   name = '';
   deck = [];
   collectedLoosingCards = [];
-  score = 0;
+  roundScore = 0;
+  globalScore = 0;
 
   constructor(name, deck) {
     this.name = name;
