@@ -4,6 +4,7 @@ const Families = require('../models/families');
 
 const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const papayooNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+let family40;
 
 const createPlayersDecks = () => {
   const nbPlayers = playersService.getNbPlayers();
@@ -72,7 +73,13 @@ const countScore = family => {
   });
 };
 
+const get40Family = () => family40;
+
+const set40Family = () => family40 = Families[Math.floor(Math.random() * 4)];
+
 module.exports = {
   setDealedDecksToPlayers,
-  countScore
+  countScore,
+  get40Family,
+  set40Family
 };

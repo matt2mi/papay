@@ -61,11 +61,10 @@ Suite des actions Websocket
   => cardsService.setDealedDecksToPlayers()
 
 7 - attente de toutes les cartes passées au suivant (notifier tous qui n'a pas encore choisi ses cartes à donner)
-  => cardsService.handleGivenCards()
+  => playersService.handleGivenCards() & cardsService.set40Family()
 
-8 - notifier chaque joueur des cartes qu'il a reçu de son voisin (renvoi le nouveau deck entier avec card {... newOne: true}
-
-// TODO Dé du 7
+8 - notifier chaque joueur des cartes qu'il a reçu de son voisin et de la famille dont le 7 vaudra 40 (renvoi le nouveau deck entier avec card {... newOne: true}
+  => cardsService.get40Family()
 
 9 - notifier les joueurs un par un (en suivant l'ordre et commençant par dernier perdant) pour qu'ils jouent chacun leur tour
   // TODO back.gérerOrdre()
