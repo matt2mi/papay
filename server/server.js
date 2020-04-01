@@ -36,11 +36,9 @@ session.sample4PlayersSession();
 
 session.displayScores();
 
-// TODO gestion du dé du choix du 7 à '0 points
-// TODO Gestion d'un ordre définitif des joueurs (ordre d'arrivée ?) (cas ou le premier à jouer une carte est le 3e dans le tableau)
+// TODO Gestion d'un ordre définitif des joueurs (random au début de partie) (cas ou le premier à jouer une carte est le 3e dans le tableau)
 // TODO fin du pli: trouver le perdant, lui ajouter les cartes du pli, changer l'ordre des joueurs pour qu'il joue en premier
-// TODO enlever les 1 pour 7 et 8 joueurs
-// TODO avoir un petit chat (comme skribble.io)
+// TODO avoir un petit chat (comme skribble.io) (durant l'attente joueur et à la fin pour le restart aussi)
 // TODO pouvoir dernier pli
 
 /*

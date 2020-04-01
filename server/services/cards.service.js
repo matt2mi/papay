@@ -2,20 +2,21 @@ const playersService = require('./players.service');
 const utilsService = require('./utils.service');
 const Families = require('../models/families');
 
-const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const numbersForLessThan7Players = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const numbersFor7or8Players = [2, 3, 4, 5, 6, 7, 8, 9, 10];
 const papayooNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 let family40;
 
 const createPlayersDecks = () => {
   const nbPlayers = playersService.getNbPlayers();
-  const cards = createGlobalDeck(nbPlayers);
+  const cards = createGlobalDeck(nbPlayers < 7 ? numbersForLessThan7Players : numbersFor7or8Players);
   shuffleCards(cards);
   const playersDecks = dealCards(cards, nbPlayers);
   playersDecks.forEach(deck => utilsService.sortCards(deck));
   return playersDecks;
 };
 
-const createGlobalDeck = () => {
+const createGlobalDeck = numbers => {
   const cards = [];
   for (let family of Object.keys(Families)) {
     if (family === 'PAPAYOO') {
@@ -70,6 +71,7 @@ const countScore = family => {
     });
     player.roundScore = score;
     player.globalScore += score;
+    player.collectedLoosingCards = [];
   });
 };
 

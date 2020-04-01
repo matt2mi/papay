@@ -1,6 +1,8 @@
 const playersService = require('./services/players.service');
 const cardsService = require('./services/cards.service');
 
+let nbTour = 1;
+
 const createPlayers = () => {
   playersService.createPlayer('matt');
   playersService.createPlayer('mimi');
@@ -66,10 +68,16 @@ const sample4PlayersSession = () => {
 // Cinquième phase - décompte points
   cardsService.countScore({id: 1, label: 'Coeur'});
 
-  return playersService.getPlayers();
+  console.log('------- tour ', nbTour);
+  nbTour++;
+  playersService
+    .getPlayers()
+    .sort((pl1, pl2) => pl1.roundScore - pl2.roundScore)
+    .forEach(player => console.log(player.name + ' ' + player.roundScore));
 };
 
 const displayScores = () => {
+  console.log('-------- Game Over ----------');
   // Fin - affichage scores
   playersService
     .getPlayers()

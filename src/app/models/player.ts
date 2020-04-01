@@ -4,12 +4,14 @@ export default class Player {
   name: string;
   deck: Card[];
   collectedLoosingCards: Card[];
-  score: number;
+  roundScore: number;
+  globalScore: number;
 
   constructor(name = '', deck = []) {
     this.name = name;
     this.deck = deck;
     this.collectedLoosingCards = [];
-    this.score = 0;
+    this.roundScore = 0;
+    this.globalScore = 0;
   }
 }

@@ -1,0 +1,7 @@
+<div class="chat" #chat>
+  <div class="w-100" *ngFor="let msg of messages">{{msg}}</div>
+</div>
+<div class="w-100">
+  <input type="text" class="input-chat w-75" [(ngModel)]="message" #ctrl="ngModel">
+  <button (click)="sendMessage()">Envoyer</button>
+</div>

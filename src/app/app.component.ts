@@ -1,21 +1,5 @@
 import {Component} from '@angular/core';
 
-/*
- Workflow global
-1 - envoi du nom
-2 - passage écran attente des joueurs
-3 - clic sur démarrer partie
-4 - arrivée écran de jeu : voit colonne score total / cartes du pli alimentée par websocket / cartes du deck du joueur
-5.1 - figé jusqu'à son tour de jeu
-5.2 - notif à lui de jouer, clic sur une carte de son deck
-5.3 - figé jusqu'à ce que tout le monde ait joué
-6 - répéter étapes 5.* jusqu'à fin du tour (plus personne n'a de cartes - informé via websocket)
-7 - arrivée page score du tour
-8 - répéter étapes 5.*, 6 et 7 autant de fois qu'il y a de joueurs
-9 - arrivée page score final
-10 - clic sur relancer partie => étape 2
- */
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -24,3 +8,46 @@ import {Component} from '@angular/core';
 export class AppComponent {
   title = 'Papay\'';
 }
+
+/*
+Êchanges websocket
+
+- connexion
+
+- envoi pseudo / attente validation d'unicité
+  => navigate to waiting
+
+- envoi/attente messages du chat
+
+- soit attente début partie soit envoi démarrer puis attente début partie
+  => navigate to playing
+
+- a) attente du deck initial + liste joueurs avec ordre (précédent et suivant pr savoir à qui on donne)
+
+- b) attente pseudos des joueurs qui ont donné (pour afficher qui on attend)
+
+- c) envoi cartes données au suivant
+
+- d) attente cartes à recevoir (nouveau deck entier reçu avec attribut newOne pr nouvelles cartes + famille à 40 pts)
+
+- e) attente pseudo du joueur qui joue (pour afficher qui on attend)
+
+- f) attente du tour de jeu du joueur
+
+- g) envoi de la carte que le joueur joue
+
+- h) attente fin du pli (pseudo qui ramasse le pli)
+
+- i) répéter e, f, g, h jusqu'à attente les scores de fin du tour
+  => navigate to scores/en-cours
+
+- répéter a => i jusqu'à attente des scores finaux
+  => navigate to scores/game-over
+
+- envoi/attente messages du chat
+
+- attente pseudos qui veulent restart
+
+- envoi restart
+  => navigate to playing
+ */

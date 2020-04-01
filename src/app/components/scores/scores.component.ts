@@ -11,9 +11,11 @@ import {ActivatedRoute, Router} from '@angular/router';
 export class ScoresComponent {
 
   mode = '';
+  currentPlayer: Player;
   connectedPlayers: Player[];
 
   constructor(public playersService: PlayersService, public router: Router, public activatedRoute: ActivatedRoute) {
+    this.currentPlayer = this.playersService.getCurrentPlayer();
     this.connectedPlayers = this.playersService.getConnectedPlayers();
     this.activatedRoute.params.subscribe(params => this.mode = params.mode);
   }
