@@ -12,6 +12,9 @@ import {LoginComponent} from './components/login/login.component';
 import {WaitingPlayersComponent} from './components/waiting-players/waiting-players.component';
 import {PlayingComponent} from './components/playing/playing.component';
 import {ScoresComponent} from './components/scores/scores.component';
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+
+const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
 
 @NgModule({
   declarations: [
@@ -28,7 +31,8 @@ import {ScoresComponent} from './components/scores/scores.component';
     ReactiveFormsModule,
     BrowserAnimationsModule,
     MatToolbarModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    SocketIoModule.forRoot(config),
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -3,7 +3,7 @@ const utilsService = require('./utils.service');
 
 let players = [];
 
-const createPlayer = name => {
+const createPlayer = (name) => {
   const newPlayer = new Player(name);
   players.push(newPlayer);
   return newPlayer;

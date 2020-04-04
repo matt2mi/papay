@@ -2,6 +2,8 @@ import {Component} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Router} from '@angular/router';
 import {PlayersService} from '../../services/players.service';
+import { WebSocketService } from 'src/app/services/websocket.service';
+import Player from 'src/app/models/player';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +17,9 @@ export class LoginComponent {
     name: new FormControl('')
   });
 
-  constructor(public router: Router, public playersService: PlayersService) {
+  constructor(public router: Router,
+    public playersService: PlayersService,
+    private websocketService: WebSocketService,) {
   }
 
   onSubmitName() {
@@ -27,6 +31,10 @@ export class LoginComponent {
       this.errorMessage = 'nom déjà pris, déso.';
     } else {
       this.playersService.setCurrentPlayerName(name);
+      let playerToCreate = new Player(name);
+      this.playersService.createPlayer(playerToCreate).subscribe((player) => {
+        console.log('Player created', player);
+      });
       this.router.navigate(['waiting']);
     }
   }

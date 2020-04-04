@@ -2,6 +2,8 @@ import {Injectable} from '@angular/core';
 import Player from '../models/player';
 import {FAMILIES} from '../models/family';
 import Card from '../models/card';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +13,7 @@ export class PlayersService {
   private currentPlayer: Player;
   private connectedPlayers: Player[] = [];
 
-  constructor() {
+  constructor(private httpClient: HttpClient) {
     this.currentPlayer = new Player();
     this.connectedPlayers = [
       new Player('mimi', [
@@ -57,5 +59,10 @@ export class PlayersService {
     const theLooser = this.connectedPlayers.find(player => player.name === looser.name);
     theLooser.collectedLoosingCards = theLooser.collectedLoosingCards.concat(cards);
     console.log('this.connectedPlayers', this.connectedPlayers);
+  }
+
+  createPlayer(player: Player) : Observable<Player> {
+   console.log("createPlayer front");
+    return this.httpClient.post<Player>('http://localhost:3001/api/createPlayer', player);
   }
 }
