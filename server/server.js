@@ -1,5 +1,6 @@
 const playersService = require('./services/players.service');
 const cardsService = require('./services/cards.service');
+const chatService = require('./services/chat.service');
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -21,6 +22,12 @@ app.post('/create', (req, res) => {
   }
 });
 app.get('/getDeck', (req, res) => res.send(cardsService.setDealedDecksToPlayers()));
+
+app.get('/chat-messages', (req, res) => res.send({messages: chatService.getMessages()}));
+app.post('/new-message', (req, res) => {
+  chatService.addMessage(req.body.message, io);
+  res.send({ok: true});
+});
 
 app.listen(3000, () => console.log(`Example app listening on port 3000!`));
 

@@ -1,5 +1,6 @@
 import {AfterViewInit, Component, ElementRef, Input, ViewChild} from '@angular/core';
-import {ChatService} from '../../services/chat.service';
+import { Socket } from 'ngx-socket-io';
+import {HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'app-chat',
@@ -13,17 +14,23 @@ export class ChatComponent implements AfterViewInit {
   message = '';
   @ViewChild('chat') private myScrollContainer: ElementRef;
 
-  constructor(public chatService: ChatService) {
+  constructor(public http: HttpClient, public socket: Socket) {
+    this.socket.on('new-messages', (messages: string[]) => {
+      console.log('socket new-messages', messages);
+      this.messages = messages;
+    });
   }
 
   ngAfterViewInit() {
-    this.chatService.setMessages(['TODO via websocket']); // TODO via Websocket
-    this.messages = this.chatService.getMessages();
     this.scrollChatToBottom();
   }
 
   sendMessage() {
-    this.messages = this.chatService.addMessage(this.currentPlayerName + ': ' + this.message);
+    const message = this.currentPlayerName + ': ' + this.message;
+    console.log('http sendMessage', message);
+    this.messages = this.http
+      .post('', { message })
+      .subscribe(result => console.log(result));
     this.message = '';
     setTimeout(() => this.scrollChatToBottom(), 200);
   }
