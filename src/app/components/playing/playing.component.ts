@@ -20,7 +20,7 @@ export class PlayingComponent {
   constructor(public router: Router, public playersService: PlayersService) {
     this.playersService.setCurrentPlayerDeck();
     this.currentPlayer = this.playersService.getCurrentPlayer();
-    this.connectedPlayers = this.playersService.getConnectedPlayers();
+    // this.connectedPlayers = this.playersService.getConnectedPlayers();
     this.startRound();
   }
 

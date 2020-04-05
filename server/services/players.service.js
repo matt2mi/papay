@@ -1,14 +1,26 @@
 const Player = require('../models/player');
 const utilsService = require('./utils.service');
 
+// TODO: seulement playersMap ?
 let players = [];
+let playersMap = new Map();
 
-const createPlayer = (name) => {
+const createPlayer = (socket, name, io) => {
   if (isExistingPlayerName(name)) {
     throw new Error('Pseudo dejà utilisé.');
   } else {
-    players.push(new Player(name));
+    const newPlayer = new Player(name);
+    players.push(newPlayer);
+    playersMap.set(socket, newPlayer);
+    io.emit('newPlayer', players);
   }
+};
+
+const removePlayer = socket => {
+  const nameDisconnected = playersMap.get(socket).name;
+  const idToDelete = players.findIndex(player => player.name === nameDisconnected);
+  players.splice(idToDelete, 1);
+  playersMap.delete(socket);
 };
 
 const getPlayers = () => players;
@@ -72,6 +84,7 @@ const endRound = (looserName, cardPlayedByPlayer) => {
 
 module.exports = {
   createPlayer,
+  removePlayer,
   getPlayers,
   getNbPlayers,
   setPlayers,

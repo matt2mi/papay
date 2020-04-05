@@ -3,7 +3,8 @@ import Player from '../models/player';
 import {FAMILIES} from '../models/family';
 import Card from '../models/card';
 import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {Socket} from 'ngx-socket-io';
 
 @Injectable({
   providedIn: 'root'
@@ -11,27 +12,28 @@ import {Observable} from 'rxjs';
 export class PlayersService {
 
   private currentPlayer: Player;
-  private connectedPlayers: Player[] = [];
 
-  constructor(public http: HttpClient) {
+  private createPlayerSource = new BehaviorSubject(null);
+  createPlayer$ = this.createPlayerSource.asObservable();
+
+  private playersSource = new BehaviorSubject([]);
+  getNewPlayers$ = this.playersSource.asObservable();
+
+  constructor(public http: HttpClient, public socket: Socket) {
     this.currentPlayer = new Player();
-    this.connectedPlayers = [
-      new Player('mimi', [
-        new Card(3, FAMILIES[1]),
-        new Card(8, FAMILIES[4]),
-        new Card(10, FAMILIES[3]),
-      ]),
-      new Player('cle', [
-        new Card(7, FAMILIES[1]),
-        new Card(9, FAMILIES[4]),
-        new Card(5, FAMILIES[3]),
-      ]),
-      this.currentPlayer
-    ];
   }
 
-  createPlayer(name: string): Observable<{name: string}> {
-    return this.http.post<{name: string}>('createPlayer', {name});
+  createPlayer(name: string) {
+    this.socket.emit('createPlayer', name);
+  }
+
+  initSocket() {
+    this.socket.on('newPlayer', players => {
+      this.playersSource.next(players);
+    });
+    this.socket.on('creatingPlayer', result => {
+      this.createPlayerSource.next(result);
+    });
   }
 
   getCurrentPlayer(): Player {
@@ -50,18 +52,14 @@ export class PlayersService {
     this.currentPlayer.deck = deck;
   }
 
-  getConnectedPlayers(): Player[] {
-    return this.connectedPlayers;
-  }
-
-  setConnectedPlayers(players: Player[]) {
-    this.connectedPlayers = players;
+  getConnectedPlayers(): Observable<{ players: Player[] }> {
+    return this.http.get<{ players: Player[] }>('players');
   }
 
   addLoosingCards(looser: Player, cards: Card[]) {
     // TODO géré et mis à jour via websocket (où ??)
-    const theLooser = this.connectedPlayers.find(player => player.name === looser.name);
-    theLooser.collectedLoosingCards = theLooser.collectedLoosingCards.concat(cards);
-    console.log('this.connectedPlayers', this.connectedPlayers);
+    // const theLooser = this.connectedPlayers.find(player => player.name === looser.name);
+    // theLooser.collectedLoosingCards = theLooser.collectedLoosingCards.concat(cards);
+    // console.log('this.connectedPlayers', this.connectedPlayers);
   }
 }
