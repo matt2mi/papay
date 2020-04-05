@@ -5,36 +5,61 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 
+
+// API
+// =============================================================================
 const app = express();
 app.use(express.static('dist/papay'));
 app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname + '/index.html')));
 
-app.post('/create', (req, res) => {
-  if (playersService.isExistingPlayerName(req.body.name)) {
-    res.status(400);
-    res.send({message: 'Nom déjà pris, déso !'});
-  } else {
-    res.send(playersService.createPlayer(req.body.name));
+app.post('/createPlayer', (req, res, ) => {
+  const name = req.body.name;
+  try {
+    playersService.createPlayer(name);
+    res.status(200).send({name});
+  } catch(error) {
+    res.status(409).send({message: error.message});
   }
 });
 app.get('/getDeck', (req, res) => res.send(cardsService.setDealedDecksToPlayers()));
 
-app.listen(3000, () => console.log(`Example app listening on port 3000!`));
+app.post('/double', (req, res) => res.send({result: req.body.num * 2}));
 
-// Session exemple
-const session = require('./gamingSession');
+const server = app.listen(3000, () => {
+  console.log(`Api on port 3000`);
+});
 
-session.createPlayers();
+// WEBSOCKETS
+// =============================================================================
 
-session.sample4PlayersSession();
-session.sample4PlayersSession();
-session.sample4PlayersSession();
-session.sample4PlayersSession();
+const io = require("socket.io")(server);
 
-session.displayScores();
+io.on('connection', (socket) => {
+  console.log('New user connected');
+  socket.on('new-player', () => {
+    console.log('refresh player client lists', this.playersService.getPlayers());
+  });
+});
+
+io.on('disconnection', () => {
+  console.log('User disconnected');
+});
+
+
+// // Session exemple
+// const session = require('./gamingSession');
+
+// session.createPlayers();
+
+// session.sample4PlayersSession();
+// session.sample4PlayersSession();
+// session.sample4PlayersSession();
+// session.sample4PlayersSession();
+
+// session.displayScores();
 
 // TODO Gestion d'un ordre définitif des joueurs (random au début de partie) (cas ou le premier à jouer une carte est le 3e dans le tableau)
 // TODO fin du pli: trouver le perdant, lui ajouter les cartes du pli, changer l'ordre des joueurs pour qu'il joue en premier

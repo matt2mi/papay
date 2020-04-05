@@ -2,6 +2,8 @@ import {Injectable} from '@angular/core';
 import Player from '../models/player';
 import {FAMILIES} from '../models/family';
 import Card from '../models/card';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +13,7 @@ export class PlayersService {
   private currentPlayer: Player;
   private connectedPlayers: Player[] = [];
 
-  constructor() {
+  constructor(public http: HttpClient) {
     this.currentPlayer = new Player();
     this.connectedPlayers = [
       new Player('mimi', [
@@ -26,6 +28,10 @@ export class PlayersService {
       ]),
       this.currentPlayer
     ];
+  }
+
+  createPlayer(name: string): Observable<{name: string}> {
+    return this.http.post<{name: string}>('createPlayer', {name});
   }
 
   getCurrentPlayer(): Player {
