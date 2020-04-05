@@ -2,8 +2,6 @@ import {Component} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Router} from '@angular/router';
 import {PlayersService} from '../../services/players.service';
-import Player from 'src/app/models/player';
-import {HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -17,21 +15,19 @@ export class LoginComponent {
     name: new FormControl('')
   });
 
-  constructor(public router: Router,
-    public playersService: PlayersService,
-    public http: HttpClient) {
+  constructor(public router: Router, public playersService: PlayersService) {
   }
 
   onSubmitName() {
     this.errorMessage = '';
     const playerName = this.createPlayerForm.get('name').value;
-    console.log(playerName);
-    this.http.post<Player>('createPlayer', {name: playerName})
-      .subscribe(player => {
-        this.router.navigate(['waiting']);
-      },
-      error => {
-        alert(error.error.message);
-      });
+    this.playersService.createPlayer(playerName)
+      .subscribe(data => {
+          this.playersService.setCurrentPlayerName(data.name);
+          this.router.navigate(['waiting']);
+        },
+        error => {
+          this.errorMessage = error.error.message;
+        });
   }
 }

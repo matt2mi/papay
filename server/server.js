@@ -5,7 +5,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 
- 
+
 // API
 // =============================================================================
 const app = express();
@@ -16,10 +16,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.get('/', (req, res) => res.sendFile(path.join(__dirname + '/index.html')));
 
 app.post('/createPlayer', (req, res, ) => {
-  var name = req.body.name;
+  const name = req.body.name;
   try {
     playersService.createPlayer(name);
-    res.status(200).send();
+    res.status(200).send({name});
   } catch(error) {
     res.status(409).send({message: error.message});
   }
