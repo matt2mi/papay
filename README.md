@@ -40,7 +40,16 @@ console.log(util.inspect(myObject, {showHidden: false, depth: null}))
 
 console.log(util.inspect(myObject, false, null, true /* enable colors */))
 
-## temps passé
+## "Doc"
+
+#### premières étapes (login / waiting)
+
+1) au clic sur rejoindre => appel http avec le pseudo
+2) sur le retour si ok => go waiting
+3) arrivée waiting => getPlayers http classique
+4) ensuite abonneent socket sur newplayer qui envoit la liste entière à chaque fois
+
+## Temps passé
 
 #### 25/03
 
