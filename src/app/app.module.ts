@@ -13,6 +13,9 @@ import {WaitingPlayersComponent} from './components/waiting-players/waiting-play
 import {PlayingComponent} from './components/playing/playing.component';
 import {ScoresComponent} from './components/scores/scores.component';
 import {ChatComponent} from './shared/components/chat/chat.component';
+import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
+
+const socketIOConfig: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
 
 @NgModule({
   declarations: [
@@ -25,6 +28,7 @@ import {ChatComponent} from './shared/components/chat/chat.component';
   ],
   imports: [
     BrowserModule,
+    SocketIoModule.forRoot(socketIOConfig),
     AppRoutingModule,
     HttpClientModule,
     FormsModule,

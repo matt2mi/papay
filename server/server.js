@@ -1,5 +1,6 @@
 const playersService = require('./services/players.service');
 const cardsService = require('./services/cards.service');
+const chatService = require('./services/chat.service');
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -11,22 +12,27 @@ const path = require('path');
 const app = express();
 app.use(express.static('dist/papay'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname + '/index.html')));
 
-app.post('/createPlayer', (req, res, ) => {
+app.post('/createPlayer', (req, res) => {
   const name = req.body.name;
   try {
     playersService.createPlayer(name);
     res.status(200).send({name});
-  } catch(error) {
+  } catch (error) {
     res.status(409).send({message: error.message});
   }
 });
-app.get('/getDeck', (req, res) => res.send(cardsService.setDealedDecksToPlayers()));
 
-app.post('/double', (req, res) => res.send({result: req.body.num * 2}));
+app.get('/chatMessages', (req, res) => res.send({messages: chatService.getMessages()}));
+app.post('/newChatMessage', (req, res) => {
+  chatService.addMessage(req.body.message, io);
+  res.send({ok: true});
+});
+
+app.get('/getDeck', (req, res) => res.send(cardsService.setDealedDecksToPlayers()));
 
 const server = app.listen(3000, () => {
   console.log(`Api on port 3000`);
@@ -43,11 +49,6 @@ io.on('connection', (socket) => {
     console.log('refresh player client lists', this.playersService.getPlayers());
   });
 });
-
-io.on('disconnection', () => {
-  console.log('User disconnected');
-});
-
 
 // // Session exemple
 // const session = require('./gamingSession');

@@ -1,12 +1,23 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {ChatService} from './shared/services/chat.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'Papay\'';
+
+  constructor(public chatService: ChatService) {}
+
+  ngOnInit() {
+    this.chatService.init()
+      .subscribe(({messages}) => {
+        this.chatService.setMessages(messages);
+        this.chatService.initSocket();
+      });
+  }
 }
 
 /*

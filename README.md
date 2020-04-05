@@ -49,17 +49,19 @@ console.log(util.inspect(myObject, false, null, true /* enable colors */))
 3) arrivée waiting => getPlayers http classique
 4) ensuite abonneent socket sur newplayer qui envoit la liste entière à chaque fois
 
+#### article notif entre composant (exemple du chat)
+
+https://fireship.io/lessons/sharing-data-between-angular-components-four-methods/
+
 ## Temps passé
 
-#### 25/03
+#### MD
 
-###### MD
+###### 25/03
 
 22h30 - 01h09
 
-#### 26/03
-
-###### MD
+###### 26/03
 
 9h12 - 9h28
 
@@ -73,38 +75,32 @@ console.log(util.inspect(myObject, false, null, true /* enable colors */))
 
 23h - 1h30
 
-#### 27/03
-
-###### MD
+###### 27/03
 
 15h30 - 17h30
 
 20h15 - 21h30
 
-#### 28/03
-
-###### MD
+###### 28/03
 
 14h20 - 15h15
 
-#### 29/03
-
-###### MD
+###### 29/03
 
 23h30 - 1h00
 
-#### 30/03
-
-###### MD
+###### 30/03
 
 9h30 - 10h45
 
 22h - 1h20
 
-#### 31/03
-
-###### MD
+###### 31/03
 
 23h30 - 2h
 
-###### HC
+###### 05/04
+
+14h - 19h
+
+#### HC
