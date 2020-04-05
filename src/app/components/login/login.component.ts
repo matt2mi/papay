@@ -2,6 +2,8 @@ import {Component} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Router} from '@angular/router';
 import {PlayersService} from '../../services/players.service';
+import Player from 'src/app/models/player';
+import {HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -15,19 +17,21 @@ export class LoginComponent {
     name: new FormControl('')
   });
 
-  constructor(public router: Router, public playersService: PlayersService) {
+  constructor(public router: Router,
+    public playersService: PlayersService,
+    public http: HttpClient) {
   }
 
   onSubmitName() {
     this.errorMessage = '';
-    const name = this.createPlayerForm.get('name').value;
-
-    // TODO envoi nom via websocket et gérer le retour (set errorMessage sinon => waitingPlayersState)
-    if (name === 'mimi' || name === 'cle') {
-      this.errorMessage = 'nom déjà pris, déso.';
-    } else {
-      this.playersService.setCurrentPlayerName(name);
-      this.router.navigate(['waiting']);
-    }
+    const playerName = this.createPlayerForm.get('name').value;
+    console.log(playerName);
+    this.http.post<Player>('createPlayer', {name: playerName})
+      .subscribe(player => {
+        this.router.navigate(['waiting']);
+      },
+      error => {
+        alert(error.error.message);
+      });
   }
 }

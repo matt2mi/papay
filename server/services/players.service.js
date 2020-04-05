@@ -3,10 +3,12 @@ const utilsService = require('./utils.service');
 
 let players = [];
 
-const createPlayer = name => {
-  const newPlayer = new Player(name);
-  players.push(newPlayer);
-  return newPlayer;
+const createPlayer = (name) => {
+  if (isExistingPlayerName(name)) {
+    throw new Error('Pseudo dejà utilisé.');
+  } else {
+    players.push(new Player(name));
+  }
 };
 
 const getPlayers = () => players;
