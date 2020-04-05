@@ -17,13 +17,12 @@ export class ChatComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.chatService.setMessages(['TODO via websocket']); // TODO via Websocket
-    this.messages = this.chatService.getMessages();
+    this.chatService.getNewMessages$.subscribe(messages => this.messages = messages);
     this.scrollChatToBottom();
   }
 
   sendMessage() {
-    this.messages = this.chatService.addMessage(this.currentPlayerName + ': ' + this.message);
+    this.chatService.addNewMessage(this.currentPlayerName + ': ' + this.message);
     this.message = '';
     setTimeout(() => this.scrollChatToBottom(), 200);
   }
