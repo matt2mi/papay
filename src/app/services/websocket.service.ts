@@ -10,7 +10,7 @@ export class WebSocketService {
 
   public createPlayer(name) {
     console.log('new-player', name);
-    this.socket.emit('new-player');
+    this.socket.emit('new-player', {name});
   }
 
   public getPlayers = () => {
