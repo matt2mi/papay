@@ -4,6 +4,7 @@ class Player {
   collectedLoosingCards = [];
   roundScore = 0;
   globalScore = 0;
+  hasGivenCards = false;
 
   constructor(name, deck) {
     this.name = name;

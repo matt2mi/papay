@@ -134,11 +134,10 @@ describe('playersService', function () {
 
     before(() => {
       playersService.setPlayers(players);
-      expectedPlayers = playersService.handleGivenCards([
-        {cards: pl2ToPl3, player: players[1]},
-        {cards: pl3ToPl1, player: players[2]},
-        {cards: pl1ToPl2, player: players[0]}
-      ]);
+      playersService.handleGivenCardsOneByOne({cards: pl2ToPl3, player: players[1]});
+      playersService.handleGivenCardsOneByOne({cards: pl3ToPl1, player: players[2]});
+      playersService.handleGivenCardsOneByOne({cards: pl1ToPl2, player: players[0]});
+      expectedPlayers = playersService.getPlayers();
     });
 
     after(() => playersService.setPlayers([]));
