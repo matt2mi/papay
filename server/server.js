@@ -26,7 +26,14 @@ const startParty = () => {
 app.get('/startParty', (req, res) => {
   startParty();
 });
-app.get('/getDeck/:name', (req, res) => res.send(cardsService.setDealedDecksToPlayers()));
+app.get('/getDeck/:name', (req, res) => {
+  const player = playersService.getPlayerByName(req.params.name);
+  if(player) {
+    res.send({deck: player.deck});
+  } else {
+    res.status(403).send({message: 'pseudo de joueur introuvable.'});
+  }
+});
 
 app.get('/players', (req, res) => res.send({players: playersService.getPlayers()}));
 

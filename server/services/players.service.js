@@ -87,6 +87,7 @@ module.exports = {
   removePlayer,
   getPlayers,
   getNbPlayers,
+  getPlayerByName,
   setPlayers,
   isExistingPlayerName,
   setPlayersDecks,
