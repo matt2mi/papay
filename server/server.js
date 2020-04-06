@@ -16,15 +16,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname + '/index.html')));
 
-app.post('/createPlayer', (req, res) => {
-  const name = req.body.name;
-  try {
-    playersService.createPlayer(name);
-    res.status(200).send({name});
-  } catch (error) {
-    res.status(409).send({message: error.message});
-  }
-});
+app.get('/players', (req, res) => res.send({players: playersService.getPlayers()}));
 
 app.get('/chatMessages', (req, res) => res.send({messages: chatService.getMessages()}));
 app.post('/newChatMessage', (req, res) => {
@@ -45,8 +37,20 @@ const io = require("socket.io")(server);
 
 io.on('connection', (socket) => {
   console.log('New user connected');
-  socket.on('new-player', () => {
-    console.log('refresh player client lists', this.playersService.getPlayers());
+
+  socket.on('createPlayer', name => {
+    // TODO: cleaner ?
+    try {
+      playersService.createPlayer(socket, name, io);
+      socket.emit('creatingPlayer', {error: false, name});
+    } catch (error) {
+      socket.emit('creatingPlayer', {error: true, message: error.message});
+    }
+  });
+
+  socket.on('disconnect', function () {
+    playersService.removePlayer(socket);
+    io.emit('newPlayer', playersService.getPlayers());
   });
 });
 

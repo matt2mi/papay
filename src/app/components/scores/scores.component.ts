@@ -16,7 +16,7 @@ export class ScoresComponent {
 
   constructor(public playersService: PlayersService, public router: Router, public activatedRoute: ActivatedRoute) {
     this.currentPlayer = this.playersService.getCurrentPlayer();
-    this.connectedPlayers = this.playersService.getConnectedPlayers();
+    // this.connectedPlayers = this.playersService.getConnectedPlayers();
     this.activatedRoute.params.subscribe(params => this.mode = params.mode);
   }
 
