@@ -8,7 +8,11 @@
   </div>
 
   <div class="col-12 offset-md-2 col-md-8 mb-3">
-    <button type="button" class="btn btn-primary" (click)="startParty()">Démarrer la partie</button>
+    <button type="button" class="btn btn-primary" (click)="startParty()"
+            [disabled]="this.connectedPlayers.length < 3 || this.connectedPlayers.length > 8">
+      {{connectedPlayers.length < 3 ? '3 joueurs mini' : connectedPlayers.length > 8 ? '8 joueurs maxi' : 'Démarrer la partie'}}
+    </button>
+    <div *ngIf="errorMessage" class="error-message">{{errorMessage}}</div>
   </div>
 
   <div class="col-12 offset-md-2 col-md-8 mb-3">

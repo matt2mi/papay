@@ -19,6 +19,9 @@ export class PlayersService {
   private playersSource = new BehaviorSubject([]);
   getNewPlayers$ = this.playersSource.asObservable();
 
+  private partyStartedSource = new BehaviorSubject(null);
+  partyStarted$ = this.partyStartedSource.asObservable();
+
   constructor(public http: HttpClient, public socket: Socket) {
     this.currentPlayer = new Player();
   }
@@ -33,6 +36,9 @@ export class PlayersService {
     });
     this.socket.on('creatingPlayer', result => {
       this.createPlayerSource.next(result);
+    });
+    this.socket.on('partyStarted', start => {
+      this.partyStartedSource.next(start);
     });
   }
 
@@ -61,5 +67,9 @@ export class PlayersService {
     // const theLooser = this.connectedPlayers.find(player => player.name === looser.name);
     // theLooser.collectedLoosingCards = theLooser.collectedLoosingCards.concat(cards);
     // console.log('this.connectedPlayers', this.connectedPlayers);
+  }
+
+  startParty() {
+    return this.http.get('startParty');
   }
 }

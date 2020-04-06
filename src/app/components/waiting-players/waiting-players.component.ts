@@ -10,6 +10,7 @@ import {PlayersService} from '../../services/players.service';
 })
 export class WaitingPlayersComponent implements OnInit {
 
+  errorMessage = '';
   currentPlayer: Player;
   connectedPlayers: Player[] = [];
 
@@ -22,9 +23,21 @@ export class WaitingPlayersComponent implements OnInit {
       .subscribe(connectedPlayers => this.connectedPlayers = connectedPlayers);
     this.playersService.getConnectedPlayers()
       .subscribe(({players}) => this.connectedPlayers = players);
+    this.playersService.partyStarted$
+      .subscribe(start => {
+        if (start) {
+          this.router.navigate(['playing']);
+        }
+      });
   }
 
   startParty() {
-    this.router.navigate(['playing']);
+    console.log('startParty');
+    if (this.connectedPlayers.length > 2 && this.connectedPlayers.length < 9) {
+      this.playersService.startParty()
+        .subscribe(
+          () => this.router.navigate(['playing']),
+          () => this.errorMessage = 'Erreur, partie non démarrée.');
+    }
   }
 }

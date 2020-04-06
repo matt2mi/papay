@@ -6,6 +6,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 
+let partyStarted = false;
 
 // API
 // =============================================================================
@@ -16,6 +17,17 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname + '/index.html')));
 
+const startParty = () => {
+  partyStarted = true;
+  cardsService.setDealedDecksToPlayers();
+  io.emit('partyStarted', true);
+};
+
+app.get('/startParty', (req, res) => {
+  startParty();
+});
+app.get('/getDeck/:name', (req, res) => res.send(cardsService.setDealedDecksToPlayers()));
+
 app.get('/players', (req, res) => res.send({players: playersService.getPlayers()}));
 
 app.get('/chatMessages', (req, res) => res.send({messages: chatService.getMessages()}));
@@ -23,8 +35,6 @@ app.post('/newChatMessage', (req, res) => {
   chatService.addMessage(req.body.message, io);
   res.send({ok: true});
 });
-
-app.get('/getDeck', (req, res) => res.send(cardsService.setDealedDecksToPlayers()));
 
 const server = app.listen(3000, () => {
   console.log(`Api on port 3000`);
@@ -40,11 +50,18 @@ io.on('connection', (socket) => {
 
   socket.on('createPlayer', name => {
     // TODO: cleaner ?
-    try {
-      playersService.createPlayer(socket, name, io);
-      socket.emit('creatingPlayer', {error: false, name});
-    } catch (error) {
-      socket.emit('creatingPlayer', {error: true, message: error.message});
+    if(partyStarted) {
+      socket.emit('creatingPlayer', {error: true, message: 'partie déjà démarrée'});
+    } else {
+      try {
+        playersService.createPlayer(socket, name, io);
+        socket.emit('creatingPlayer', {error: false, name});
+        if(playersService.getNbPlayers() === 8) {
+          startParty();
+        }
+      } catch (error) {
+        socket.emit('creatingPlayer', {error: true, message: error.message});
+      }
     }
   });
 
@@ -68,7 +85,6 @@ io.on('connection', (socket) => {
 
 // TODO Gestion d'un ordre définitif des joueurs (random au début de partie) (cas ou le premier à jouer une carte est le 3e dans le tableau)
 // TODO fin du pli: trouver le perdant, lui ajouter les cartes du pli, changer l'ordre des joueurs pour qu'il joue en premier
-// TODO avoir un petit chat (comme skribble.io) (durant l'attente joueur et à la fin pour le restart aussi)
 // TODO pouvoir dernier pli
 
 /*
