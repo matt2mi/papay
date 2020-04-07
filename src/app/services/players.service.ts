@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import Player from '../models/player';
-import {FAMILIES} from '../models/family';
+import {FAMILIES, Family, FamilyEnum} from '../models/family';
 import Card from '../models/card';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {Socket} from 'ngx-socket-io';
 
@@ -50,12 +50,8 @@ export class PlayersService {
     this.currentPlayer.name = name;
   }
 
-  setCurrentPlayerDeck(deck: Card[] = [
-    new Card(5, FAMILIES[1]),
-    new Card(1, FAMILIES[2]),
-    new Card(9, FAMILIES[3]),
-  ]) {
-    this.currentPlayer.deck = deck;
+  getCurrentPlayerDeck(): Observable<{deck : Card[]}> {
+    return this.http.get<{deck : Card[]}>(`getDeck/${this.currentPlayer.name}`);
   }
 
   getConnectedPlayers(): Observable<{ players: Player[] }> {
