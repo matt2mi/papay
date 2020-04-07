@@ -34,6 +34,22 @@ app.get('/getDeck/:name', (req, res) => {
     res.status(403).send({message: 'pseudo de joueur introuvable.'});
   }
 });
+app.post('/giveCards', (req, res) => {
+  const player = playersService.getPlayerByName(req.body.name);
+  if (player) {
+    playersService.handleGivenCardsOneByOne({cards: req.body.cards, player: player});
+    if (playersService.hasEveryPlayerGivenCards()) {
+      try {
+        playersService.sendDecks();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    res.status(200).send();
+  } else {
+    res.status(403).send({message: 'pseudo de joueur introuvable.'});
+  }
+});
 
 app.get('/players', (req, res) => res.send({players: playersService.getPlayers()}));
 

@@ -16,6 +16,13 @@ const createPlayer = (socket, name, io) => {
   }
 };
 
+const getPlayerSocketByName = name => {
+  const socket = [...playersMap.entries()]
+    .filter(({1: playerName}) => playerName === name)
+    .map(([socket]) => socket);
+  return socket ? socket : null;
+};
+
 const removePlayer = socket => {
   const nameDisconnected = playersMap.get(socket).name;
   const idToDelete = players.findIndex(player => player.name === nameDisconnected);
@@ -35,6 +42,35 @@ const isExistingPlayerName = name => players.some(player => player.name === name
 
 const setPlayersDecks = decks => {
   players.forEach((player, id) => player.deck = player.deck.concat(decks[id]));
+};
+
+// cardAndPlayer: {cards: Card[], player: Player}
+const handleGivenCardsOneByOne = cardAndPlayer => {
+  const currentPplayer = cardAndPlayer.player;
+  const currPlaId = players.findIndex(player => player.name === currentPplayer.name);
+  // ajout cartes au deck du joueur suivant
+  if (players[currPlaId + 1]) {
+    players[currPlaId + 1].deck = players[currPlaId + 1].deck.concat(cardAndPlayer.cards.map(card => ({
+      ...card,
+      newOne: true
+    })));
+  } else {
+    // le joueur suivant est le premier de la liste
+    players[0].deck = players[0].deck.concat(cardAndPlayer.cards.map(card => ({...card, newOne: true})));
+  }
+
+  // retrait cartes du deck du joueur
+  cardAndPlayer.cards.forEach(cardToRemove => {
+    const cardId = players[currPlaId].deck.findIndex(card =>
+      card.family.id === cardToRemove.family.id && card.number === cardToRemove.number);
+    players[currPlaId].deck.splice(cardId, 1);
+  });
+
+  players[currPlaId].hasGivenCards = true;
+};
+
+const hasEveryPlayerGivenCards = () => {
+  return !players.some(player => !player.hasGivenCards);
 };
 
 // cardsGiven: tableau d'objets contenant une liste de cartes données par un joueur et une référence vers ce joueur
@@ -65,6 +101,14 @@ const handleGivenCards = cardsGivenByPlayer => {
   return players;
 };
 
+const sendDecks = () => {
+  players.forEach(player => {
+    const socket = getPlayerSocketByName;
+    if (socket) socket.emit('newDeck', player.deck);
+    else throw Error('no socket found');
+  });
+};
+
 const endRound = (looserName, cardPlayedByPlayer) => {
   const looser = getPlayerByName(looserName);
 
@@ -89,8 +133,10 @@ module.exports = {
   getNbPlayers,
   getPlayerByName,
   setPlayers,
-  isExistingPlayerName,
   setPlayersDecks,
+  handleGivenCardsOneByOne,
+  hasEveryPlayerGivenCards,
   handleGivenCards,
+  sendDecks,
   endRound
 };

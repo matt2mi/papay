@@ -47,7 +47,7 @@ console.log(util.inspect(myObject, false, null, true /* enable colors */))
 1) au clic sur rejoindre => appel http avec le pseudo
 2) sur le retour si ok => go waiting
 3) arrivée waiting => getPlayers http classique
-4) ensuite abonneent socket sur newplayer qui envoit la liste entière à chaque fois
+4) ensuite abonnement socket sur newplayer qui envoit la liste entière à chaque fois
 
 #### article notif entre composant (exemple du chat)
 
@@ -103,4 +103,18 @@ https://fireship.io/lessons/sharing-data-between-angular-components-four-methods
 
 14h - 19h
 
+###### 06/04
+
+21h30 - 23h59
+
 #### HC
+
+###### 27/03
+
+14h - 16h
+
+###### 02/04
+
+9h - 10h
+
+14h - 16h
