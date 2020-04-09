@@ -52,8 +52,8 @@ describe('playersService', function () {
         {family: {id: 2, label: 'Carreau'}, number: 6},
         {family: {id: 2, label: 'Carreau'}, number: 7},
         {family: {id: 2, label: 'Carreau'}, number: 9},
-        {family: {id: 3, label: 'Trèfle'}, number: 5},
-        {family: {id: 3, label: 'Trèfle'}, number: 6},
+        {family: {id: 3, label: 'Trefle'}, number: 5},
+        {family: {id: 3, label: 'Trefle'}, number: 6},
         {family: {id: 4, label: 'Papayoo'}, number: 3},
         {family: {id: 4, label: 'Papayoo'}, number: 4},
         {family: {id: 4, label: 'Papayoo'}, number: 5},
@@ -73,11 +73,11 @@ describe('playersService', function () {
         {family: {id: 2, label: 'Carreau'}, number: 3},
         {family: {id: 2, label: 'Carreau'}, number: 4},
         {family: {id: 2, label: 'Carreau'}, number: 8},
-        {family: {id: 3, label: 'Trèfle'}, number: 1},
-        {family: {id: 3, label: 'Trèfle'}, number: 3},
-        {family: {id: 3, label: 'Trèfle'}, number: 7},
-        {family: {id: 3, label: 'Trèfle'}, number: 8},
-        {family: {id: 3, label: 'Trèfle'}, number: 9},
+        {family: {id: 3, label: 'Trefle'}, number: 1},
+        {family: {id: 3, label: 'Trefle'}, number: 3},
+        {family: {id: 3, label: 'Trefle'}, number: 7},
+        {family: {id: 3, label: 'Trefle'}, number: 8},
+        {family: {id: 3, label: 'Trefle'}, number: 9},
         {family: {id: 4, label: 'Papayoo'}, number: 1},
         {family: {id: 4, label: 'Papayoo'}, number: 9},
         {family: {id: 4, label: 'Papayoo'}, number: 10},
@@ -100,9 +100,9 @@ describe('playersService', function () {
         {family: {id: 2, label: 'Carreau'}, number: 1},
         {family: {id: 2, label: 'Carreau'}, number: 5},
         {family: {id: 2, label: 'Carreau'}, number: 10},
-        {family: {id: 3, label: 'Trèfle'}, number: 2},
-        {family: {id: 3, label: 'Trèfle'}, number: 4},
-        {family: {id: 3, label: 'Trèfle'}, number: 10},
+        {family: {id: 3, label: 'Trefle'}, number: 2},
+        {family: {id: 3, label: 'Trefle'}, number: 4},
+        {family: {id: 3, label: 'Trefle'}, number: 10},
         {family: {id: 4, label: 'Papayoo'}, number: 2},
         {family: {id: 4, label: 'Papayoo'}, number: 14},
         {family: {id: 4, label: 'Papayoo'}, number: 17},
@@ -113,8 +113,8 @@ describe('playersService', function () {
       {family: {id: 1, label: 'Coeur'}, number: 2, newOne: false},
       {family: {id: 2, label: 'Carreau'}, number: 7, newOne: false},
       {family: {id: 2, label: 'Carreau'}, number: 9, newOne: false},
-      {family: {id: 3, label: 'Trèfle'}, number: 5, newOne: false},
-      {family: {id: 3, label: 'Trèfle'}, number: 6, newOne: false}
+      {family: {id: 3, label: 'Trefle'}, number: 5, newOne: false},
+      {family: {id: 3, label: 'Trefle'}, number: 6, newOne: false}
     ];
     const pl2ToPl3 = [
       {family: {id: 0, label: 'Pique'}, number: 9, newOne: false},
@@ -125,7 +125,7 @@ describe('playersService', function () {
     ];
     const pl3ToPl1 = [
       {family: {id: 2, label: 'Carreau'}, number: 10, newOne: false},
-      {family: {id: 3, label: 'Trèfle'}, number: 10, newOne: false},
+      {family: {id: 3, label: 'Trefle'}, number: 10, newOne: false},
       {family: {id: 4, label: 'Papayoo'}, number: 14, newOne: false},
       {family: {id: 4, label: 'Papayoo'}, number: 17, newOne: false},
       {family: {id: 4, label: 'Papayoo'}, number: 19, newOne: false}

@@ -24,9 +24,12 @@ const getPlayerSocketByName = name => {
 };
 
 const removePlayer = socket => {
-  const nameDisconnected = playersMap.get(socket).name;
-  const idToDelete = players.findIndex(player => player.name === nameDisconnected);
-  players.splice(idToDelete, 1);
+  const socketPlayer = playersMap.get(socket);
+  if(socketPlayer) {
+    const nameDisconnected = playersMap.get(socket).name;
+    const idToDelete = players.findIndex(player => player.name === nameDisconnected);
+    players.splice(idToDelete, 1);
+  }
   playersMap.delete(socket);
 };
 
