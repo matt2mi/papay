@@ -18,16 +18,20 @@
       </div>
     </div>
   </div>
+</div>
 
   <!--Le deck du joueur-->
-  <div class="offset-1 col-4">
+<div class="row">
+  <div class="col-12">
     <h2>Mes Cartes</h2>
-
-    <button type="button" *ngFor="let card of currentPlayer.deck" class="btn btn-primary"
-            [ngClass]="{'not-clickable': !isCurrentPlayerTurn || !card.isPlayable}"
-            (click)="currentPlayerPlaysCard(card)" [disabled]="!isCurrentPlayerTurn || !card.isPlayable">
-      {{card?.number + ' de ' + card?.family.label}}
-    </button>
+    <div class="deck">
+      <button type="button" *ngFor="let card of currentPlayer.deck"
+              [ngClass]="{'not-clickable': (!isCurrentPlayerTurn || !card.isPlayable) || IsGiveCardTime}"
+              [ngStyle]="{ 'background-image': 'url(assets/img/' + card.number + card.family.label + '.png)'}"
+              (click)="currentPlayerPlaysCard(card)"
+              [disabled]="!isCurrentPlayerTurn || !card.isPlayable">
+      </button>
+    </div>
   </div>
 </div>
 

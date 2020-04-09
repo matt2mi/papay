@@ -1,6 +1,7 @@
 const Player = require('../models/player');
 const utilsService = require('./utils.service');
 
+// TODO: seulement playersMap ?
 let players = [];
 const playersSockets = [];
 
