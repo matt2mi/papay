@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Router} from '@angular/router';
 import {PlayersService} from '../../services/players.service';
+import { CardsService } from 'src/app/services/cards.service';
 
 @Component({
   selector: 'app-login',
@@ -15,11 +16,14 @@ export class LoginComponent implements OnInit {
     name: new FormControl('')
   });
 
-  constructor(public router: Router, public playersService: PlayersService) {
+  constructor(public router: Router,
+    public playersService: PlayersService,
+    public cardsService: CardsService) {
   }
 
   ngOnInit() {
     this.playersService.initSocket();
+    this.cardsService.initSocket();
     this.playersService.createPlayer$.subscribe(result => {
       this.errorMessage = '';
       if (result) {

@@ -3,6 +3,7 @@ import Player from '../../models/player';
 import Card from '../../models/card';
 import {PlayersService} from '../../services/players.service';
 import {Router} from '@angular/router';
+import { CardsService } from 'src/app/services/cards.service';
 
 @Component({
   selector: 'app-playing',
@@ -16,59 +17,45 @@ export class PlayingComponent implements OnInit {
   currentPlayer: Player;
   connectedPlayers: Player[];
   cardFold: { player: Player, card: Card }[] = [];
-  IsGiveCardTime = false;
+  isTimeToGiveCard = false;
+  cardToGiveErrorMessage;
 
-  constructor(public router: Router, public playersService: PlayersService) {
+  constructor(public router: Router, 
+    public playersService: PlayersService,
+    public cardsService: CardsService,) {
   }
   
   ngOnInit() {
     this.currentPlayer = this.playersService.getCurrentPlayer();
-    // this.playersService.getCurrentPlayerDeck().subscribe(({deck}) => {
-    //   this.currentPlayer.deck = deck;
-    // }, error => {console.error(error)});
+    this.playersService.getCurrentPlayerDeck().subscribe(({deck}) => {
+      this.currentPlayer.deck = deck;
+      this.isTimeToGiveCard = true;
+    }, error => {console.error(error)});
 
-    // this.playersService.getConnectedPlayers()
-    // .subscribe(({players}) => {
-    //   this.connectedPlayers = players;
-    // });
+    this.playersService.getConnectedPlayers()
+    .subscribe(({players}) => {
+      this.connectedPlayers = players;
+    });
 
-    // FOR FRONTEND TEST
-    this.currentPlayer.deck = 
-    [
-      {family: {id: 0, label: 'Coeur'}, number: 1, isPlayable: true},
-      {family: {id: 1, label: 'Coeur'}, number: 2, isPlayable: true},
-      {family: {id: 2, label: 'Coeur'}, number: 3, isPlayable: true},
-      {family: {id: 3, label: 'Coeur'}, number: 4, isPlayable: true},
-      {family: {id: 4, label: 'Coeur'}, number: 5, isPlayable: true},
-      {family: {id: 5, label: 'Pique'}, number: 6, isPlayable: false},
-      {family: {id: 6, label: 'Pique'}, number: 7, isPlayable: false},
-      {family: {id: 7, label: 'Pique'}, number: 8, isPlayable: false},
-      {family: {id: 8, label: 'Pique'}, number: 9, isPlayable: false},
-      {family: {id: 9, label: 'Pique'}, number: 10, isPlayable: false},
-      {family: {id: 10, label: 'Trefle'}, number: 1, isPlayable: false},
-      {family: {id: 11, label: 'Trefle'}, number: 2, isPlayable: false},
-      {family: {id: 12, label: 'Trefle'}, number: 3, isPlayable: false},
-      {family: {id: 13, label: 'Trefle'}, number: 4, isPlayable: false},
-      {family: {id: 14, label: 'Trefle'}, number: 5, isPlayable: false},
-      {family: {id: 15, label: 'Papayoo'}, number: 6, isPlayable: false},
-      {family: {id: 16, label: 'Papayoo'}, number: 7, isPlayable: false},
-      {family: {id: 17, label: 'Papayoo'}, number: 8, isPlayable: false},
-      {family: {id: 18, label: 'Papayoo'}, number: 9, isPlayable: false},
-      {family: {id: 19, label: 'Papayoo'}, number: 10, isPlayable: false},
-    ];    
-    var j1 = new Player('Jean');
-    j1.deck =this.currentPlayer.deck;
-    var j2 = new Player('Luc');
-    j2.deck =this.currentPlayer.deck;
-    var j3 = new Player('Matt');
-    j3.deck =this.currentPlayer.deck;
-    this.connectedPlayers = [j1,j2,j3];
-
-    this.IsGiveCardTime = true;
-    
-    this.startRound();
+    this.cardsService.getDeckWithGivenCards$
+      .subscribe((result) => {
+        if(result) {
+          this.isTimeToGiveCard = false;          
+          this.currentPlayer.deck = result.deck;
+          this.getBackCards();
+        }
+      });
   }
-  
+
+  getBackCards() {
+    this.currentPlayer.deck.sort((c1, c2) => c1.number - c2.number);
+    this.currentPlayer.deck.sort((c1, c2) => c1.family.id - c2.family.id);
+    setTimeout(() => {    
+      this.currentPlayer.deck.forEach(c => c.newOne=false);      
+      this.startRound();
+    },
+    8000);
+  }
 
   startRound() {
     // TODO pour tests
@@ -94,22 +81,45 @@ export class PlayingComponent implements OnInit {
     return cardIndex;
   }
 
-  currentPlayerPlaysCard(card: Card) {
-    // TODO pour tests => géré via websocket
-    this.isCurrentPlayerTurn = false;
-    this.cardFold.push({player: this.currentPlayer, card});
-    this.handleLooser();
-    this.currentPlayer.deck.splice(this.getIndexOfCard(this.currentPlayer.deck, card), 1);
-    setTimeout(() => {
-        this.cardFold = [];
-        if (this.currentPlayer.deck.length > 0) {
-          this.nbRounds++;
-          this.startRound();
-        } else {
-          this.endRound();
-        }
-      },
-      1000);
+  getCardToGive() {
+    return this.currentPlayer.deck.filter(c => c.toGive);
+  }
+
+  clickCard(card: Card) {
+    if (this.isTimeToGiveCard) {
+      if (!card.toGive && this.getCardToGive().length < 3) {
+        this.currentPlayer.deck.find(c => c == card).toGive= true;
+      } else {
+        this.currentPlayer.deck.find(c => c == card).toGive = false;
+      }
+    } else {
+      // We are playing
+      // TODO pour tests => géré via websocket
+      this.isCurrentPlayerTurn = false;
+      this.cardFold.push({player: this.currentPlayer, card});
+      this.handleLooser();
+      this.currentPlayer.deck.splice(this.getIndexOfCard(this.currentPlayer.deck, card), 1);
+      setTimeout(() => {
+          this.cardFold = [];
+          if (this.currentPlayer.deck.length > 0) {
+            this.nbRounds++;
+            this.startRound();
+          } else {
+            this.endRound();
+          }
+        },
+        1000);
+    }
+  }
+
+  giveCards() {
+    if (this.getCardToGive().length != 3) {
+      this.cardToGiveErrorMessage = 'Tu dois donner 3 cartes';
+    } else {
+      this.cardsService.giveCard(this.getCardToGive(), this.playersService.getCurrentPlayer().name).subscribe(() => {
+        this.isTimeToGiveCard = false;
+      });
+    }
   }
 
   handleLooser() {
