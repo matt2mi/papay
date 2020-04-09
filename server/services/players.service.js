@@ -24,7 +24,6 @@ const getPlayerSocketByName = name => {
 const removePlayer = socket => {
   const playerToRemoveId = players.findIndex(player => player.socketId === socket.id);
   if(playerToRemoveId >= 0) {
-    console.log(players[playerToRemoveId].name + ' removed');
     players.splice(playerToRemoveId, 1);
   }
 
@@ -46,30 +45,35 @@ const setPlayersDecks = decks => {
   players.forEach((player, id) => player.deck = player.deck.concat(decks[id]));
 };
 
-// cardAndPlayer: {cards: Card[], player: Player}
 const handleGivenCardsOneByOne = cardAndPlayer => {
-  const currentPplayer = cardAndPlayer.player;
-  const currPlaId = players.findIndex(player => player.name === currentPplayer.name);
+  const currentPlayer = cardAndPlayer.player;
+  const givenCards = cardAndPlayer.cards;
+  const currentPlayerId = players.findIndex(player => player.name === currentPlayer.name);
   // ajout cartes au deck du joueur suivant
-  if (players[currPlaId + 1]) {
-    players[currPlaId + 1].deck = players[currPlaId + 1].deck.concat(cardAndPlayer.cards.map(card => ({
-      ...card,
-      newOne: true
-    })));
+  if (players[currentPlayerId + 1]) {
+    addCardToNextPlayer(currentPlayerId + 1, givenCards);
   } else {
     // le joueur suivant est le premier de la liste
-    players[0].deck = players[0].deck.concat(cardAndPlayer.cards.map(card => ({...card, newOne: true})));
+    addCardToNextPlayer(0, givenCards);
   }
 
   // retrait cartes du deck du joueur
   cardAndPlayer.cards.forEach(cardToRemove => {
-    const cardId = players[currPlaId].deck.findIndex(card =>
+    const cardId = players[currentPlayerId].deck.findIndex(card =>
       card.family.id === cardToRemove.family.id && card.number === cardToRemove.number);
-    players[currPlaId].deck.splice(cardId, 1);
+    players[currentPlayerId].deck.splice(cardId, 1);
   });
 
-  players[currPlaId].hasGivenCards = true;
+  players[currentPlayerId].hasGivenCards = true;
 };
+
+const addCardToNextPlayer = (playerIdToGiveCards, givenCards) => {
+  players[playerIdToGiveCards].deck = players[playerIdToGiveCards].deck.concat(givenCards.map(card => ({
+    ...card,
+    newOne: true,
+    toGive: false,
+  })));
+}
 
 const hasEveryPlayerGivenCards = () => {
   return !players.some(player => !player.hasGivenCards);
