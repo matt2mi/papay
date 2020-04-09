@@ -114,25 +114,26 @@ const sendDecks = family40 => {
   });
 };
 
-const endRound = (looserName, cardPlayedByPlayer) => {
-  const looser = getPlayerByName(looserName);
+const addLoosingCards = (loosingCards, looserNameOfRound) => {
+  const player = getPlayerByName(looserNameOfRound);
+  player.collectedLoosingCards = player.collectedLoosingCards.concat(loosingCards);
+};
 
-  // ajout des cartes du pli au perdant
-  const cardsPlayed = cardPlayedByPlayer.map(cardAndPlayer => cardAndPlayer.card);
-  looser.collectedLoosingCards = looser.collectedLoosingCards.concat(cardsPlayed);
-
-  // retrait des cartes jouées des decks des joueurs
-  cardPlayedByPlayer.forEach(cardAndPlayer => {
-    const player = getPlayerByName(cardAndPlayer.player.name);
-    const cardId = utilsService.getIndexOfCard(player.deck, cardAndPlayer.card);
-    player.deck.splice(cardId, 1);
-  });
-
-  return looser;
+const getNextPlayer = previousPlayerName => {
+  const currentPlayerId = players.findIndex(player => player.name === previousPlayerName);
+  if (currentPlayerId < 0) {
+    throw new Error('nextPlayer introuvable');
+  } else if (currentPlayerId === players.length - 1) {
+    // cas du dernier de la liste
+    return players[0];
+  } else {
+    return players[currentPlayerId + 1];
+  }
 };
 
 module.exports = {
   createPlayer,
+  getPlayerSocketByName,
   removePlayer,
   getPlayers,
   getNbPlayers,
@@ -143,5 +144,6 @@ module.exports = {
   hasEveryPlayerGivenCards,
   handleGivenCards,
   sendDecks,
-  endRound
+  addLoosingCards,
+  getNextPlayer
 };

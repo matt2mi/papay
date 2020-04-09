@@ -62,7 +62,7 @@ const sample4PlayersSession = () => {
     cardPlayedByPlayer.push({player: playersReady[3], card: playersReady[3].deck[0]});
 
     const looserNme = i % 2 === 0 ? 'cle' : 'matt';
-    playersService.endRound(looserNme, cardPlayedByPlayer);
+    playersService.addLoosingCards(looserNme, cardPlayedByPlayer);
   }
 
 // Cinquième phase - décompte points
