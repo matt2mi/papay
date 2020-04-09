@@ -40,7 +40,8 @@ app.post('/giveCards', (req, res) => {
     playersService.handleGivenCardsOneByOne({cards: req.body.cards, player: player});
     if (playersService.hasEveryPlayerGivenCards()) {
       try {
-        playersService.sendDecks();
+        cardsService.set40Family();
+        playersService.sendDecks(cardsService.get40Family());
       } catch (e) {
         console.error(e);
       }
