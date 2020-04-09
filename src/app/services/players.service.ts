@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import Player from '../models/player';
-import {FAMILIES, Family, FamilyEnum} from '../models/family';
 import Card from '../models/card';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {BehaviorSubject, Observable} from 'rxjs';
@@ -10,7 +9,6 @@ import {Socket} from 'ngx-socket-io';
   providedIn: 'root'
 })
 export class PlayersService {
-
   private currentPlayer: Player;
 
   private createPlayerSource = new BehaviorSubject(null);
@@ -21,9 +19,6 @@ export class PlayersService {
 
   private partyStartedSource = new BehaviorSubject(null);
   partyStarted$ = this.partyStartedSource.asObservable();
-
-  private getDeckWithGivenSource = new BehaviorSubject(null);
-  getDeckWithGivenCards$ = this.getDeckWithGivenSource.asObservable();
 
   constructor(public http: HttpClient, public socket: Socket) {
     this.currentPlayer = new Player();
@@ -42,9 +37,6 @@ export class PlayersService {
     });
     this.socket.on('partyStarted', start => {
       this.partyStartedSource.next(start);
-    });
-    this.socket.on('newDeck', start => {
-      this.getDeckWithGivenSource.next(start);
     });
   }
 
@@ -73,13 +65,5 @@ export class PlayersService {
 
   startParty() {
     return this.http.get('startParty');
-  }
-
-  getFirstDeck(): Observable<{deck: Card[]}> {
-    return this.http.get<{deck: Card[]}>('getDeck/' + this.currentPlayer.name);
-  }
-
-  giveCards(cards: Card[]): Observable<boolean> {
-    return this.http.post<boolean>('giveCards', {name: this.currentPlayer.name, cards});
   }
 }

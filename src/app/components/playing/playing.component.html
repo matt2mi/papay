@@ -25,14 +25,22 @@
   <div class="col-12">
     <h2>Mes Cartes</h2>
     <div class="deck">
-      <button type="button" *ngFor="let card of currentPlayer.deck"
-              [ngClass]="{'not-clickable': (!isCurrentPlayerTurn || !card.isPlayable) || IsGiveCardTime}"
-              [ngStyle]="{ 'background-image': 'url(assets/img/' + card.number + card.family.label + '.png)'}"
-              (click)="currentPlayerPlaysCard(card)"
-              [disabled]="!isCurrentPlayerTurn || !card.isPlayable">
-      </button>
+      <div *ngFor="let card of currentPlayer.deck" class="card-place">
+        <button type="button" class="card-button"
+        [ngClass]="{'not-clickable': (!isCurrentPlayerTurn || !card.isPlayable) && !isTimeToGiveCard, 'selected': card.toGive, 'newOne': card.newOne}"
+        [ngStyle]="{ 'background-image': 'url(assets/img/' + card.number + card.family.label + '.png)'}"
+        (click)="clickCard(card)">
+        </button>
+      </div>
     </div>
   </div>
+</div>
+<div class="row" *ngIf="isTimeToGiveCard">
+  <button type="button" class="btn btn-primary" 
+    [disabled]="getCardToGive().length < 3" 
+    (click)="giveCards()">
+    Donner ces cartes
+  </button>
 </div>
 
 <div class="row">

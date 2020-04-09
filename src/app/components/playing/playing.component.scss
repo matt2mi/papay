@@ -3,13 +3,28 @@
   opacity: 60%;
 }
 
-button{
-    width: 50px;
-    height: 100%;
-    display: inline;
+.card-place {
+  width: 50px;
+  height: 10rem;
+  display: inline-flex;
+  position: relative;
 }
 
-.deck{
-  height: 6rem;
-  margin-bottom: 2rem;
+.card-button {
+  width: 100%;
+  height: 8rem;
+  position: absolute;
+  bottom: 0;
+  border: 0;
+  padding: 0;
+  background-color: dimgray;
+}
+
+.selected {
+  height: 10rem;
+}
+
+.newOne {
+  height: 10rem;
+  opacity: 100%;
 }
