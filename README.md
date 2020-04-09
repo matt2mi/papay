@@ -107,6 +107,18 @@ https://fireship.io/lessons/sharing-data-between-angular-components-four-methods
 
 21h30 - 23h59
 
+###### 07/04
+
+22h30 - 23h40
+
+###### 08/04
+
+18h - 20h30
+
+###### 09/04
+
+10h30 - 11h
+
 #### HC
 
 ###### 27/03

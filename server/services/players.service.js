@@ -1,33 +1,34 @@
 const Player = require('../models/player');
 const utilsService = require('./utils.service');
 
-// TODO: seulement playersMap ?
 let players = [];
-let playersMap = new Map();
+const playersSockets = [];
 
 const createPlayer = (socket, name, io) => {
   if (isExistingPlayerName(name)) {
     throw new Error('Pseudo dejà utilisé.');
   } else {
-    const newPlayer = new Player(name);
+    const newPlayer = new Player(name, null, socket.id);
     players.push(newPlayer);
-    playersMap.set(socket, newPlayer);
+    playersSockets.push(socket);
     io.emit('newPlayer', players);
   }
 };
 
 const getPlayerSocketByName = name => {
-  const socket = [...playersMap.entries()]
-    .filter(({1: playerName}) => playerName === name)
-    .map(([socket]) => socket);
-  return socket ? socket : null;
+  const player = getPlayerByName(name);
+  return player ? playersSockets.find(socket => socket.id === player.socketId) : null;
 };
 
 const removePlayer = socket => {
-  const nameDisconnected = playersMap.get(socket).name;
-  const idToDelete = players.findIndex(player => player.name === nameDisconnected);
-  players.splice(idToDelete, 1);
-  playersMap.delete(socket);
+  const playerToRemoveId = players.findIndex(player => player.socketId === socket.id);
+  if(playerToRemoveId >= 0) {
+    console.log(players[playerToRemoveId].name + ' removed');
+    players.splice(playerToRemoveId, 1);
+  }
+
+  const socketToRemoveId = playersSockets.findIndex(soc => soc.id === socket.id);
+  if(socketToRemoveId >= 0) playersSockets.splice(socketToRemoveId, 1);
 };
 
 const getPlayers = () => players;
@@ -101,11 +102,14 @@ const handleGivenCards = cardsGivenByPlayer => {
   return players;
 };
 
-const sendDecks = () => {
+const sendDecks = family40 => {
   players.forEach(player => {
-    const socket = getPlayerSocketByName;
-    if (socket) socket.emit('newDeck', player.deck);
-    else throw Error('no socket found');
+    const socket = getPlayerSocketByName(player.name);
+    if (socket) {
+      socket.emit('newDeck', {deck: player.deck, family40});
+    } else {
+      throw new Error('no socket found');
+    }
   });
 };
 
