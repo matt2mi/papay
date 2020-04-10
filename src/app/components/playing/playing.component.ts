@@ -106,11 +106,7 @@ export class PlayingComponent implements OnInit {
 
   clickCard(card: Card) {
     if (this.isTimeToGiveCard) {
-      if (!card.toGive && this.getCardToGive().length < 3) {
-        this.currentPlayer.deck.find(c => c === card).toGive = true;
-      } else {
-        this.currentPlayer.deck.find(c => c === card).toGive = false;
-      }
+      this.currentPlayer.deck.find(c => c === card).toGive = !card.toGive && this.getCardToGive().length < 3;
     } else {
       // We are playing
       this.cardsService.playCard(card, this.currentPlayer.name)

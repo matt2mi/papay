@@ -86,9 +86,3 @@ const displayScores = () => {
     .sort((pl1, pl2) => pl1.globalScore - pl2.globalScore)
     .forEach(player => console.log(player.name + ' ' + player.globalScore));
 };
-
-module.exports = {
-  createPlayers,
-  sample4PlayersSession,
-  displayScores
-};
