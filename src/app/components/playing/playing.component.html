@@ -1,44 +1,41 @@
 <div class="row">
-  <div class="col-2">
-    <h2>Score total</h2>
-
-    <div *ngFor="let player of connectedPlayers">
-      {{player.name + ': ' + player.score}}
-    </div>
-  </div>
-
   <!--Le pli en cours-->
-  <div class="offset-1 col-2">
-    <h2>Pli en cours</h2>
+  <div class="col-12">
+    <h2>Pli n°{{nbRound}} - {{'à ' + nextPlayerName + ' de jouer'}}</h2>
 
-    <div *ngIf="cardFold.length > 0">
+    <div *ngIf="cardFold.length > 0 && !showRoundLooserName">
       <div class="my-card" *ngFor="let playerAndCard of cardFold">
         {{playerAndCard.player.name + ' a joué un : ' + playerAndCard?.card?.number + ' de ' +
         playerAndCard?.card?.family?.label}}
       </div>
     </div>
+
+    <div *ngIf="showRoundLooserName">
+      <h3>Ce pli est pour : {{roundLooserName}}</h3>
+    </div>
   </div>
 </div>
 
-  <!--Le deck du joueur-->
+<!--Le deck du joueur-->
 <div class="row">
   <div class="col-12">
     <h2>Mes Cartes</h2>
     <div class="deck">
-      <div *ngFor="let card of currentPlayer.deck" class="card-place">
+      <div *ngFor="let card of currentPlayer.deck" class="card-place" [hidden]="card.played">
         <button type="button" class="card-button"
-        [ngClass]="{'not-clickable': (!isCurrentPlayerTurn || !card.isPlayable) && !isTimeToGiveCard, 'selected': card.toGive, 'newOne': card.newOne}"
-        [ngStyle]="{ 'background-image': 'url(assets/img/' + card.number + card.family.label + '.png)'}"
-        (click)="clickCard(card)">
+                [ngClass]="{'not-clickable': !card.isPlayable, 'selected': card.toGive, 'newOne': card.newOne}"
+                [ngStyle]="{'background-image': 'url(assets/img/' + card.number + card.family.label + '.png)'}"
+                (click)="clickCard(card)">
         </button>
       </div>
     </div>
   </div>
 </div>
+
 <div class="row" *ngIf="isTimeToGiveCard">
-  <button type="button" class="btn btn-primary" 
-    [disabled]="getCardToGive().length < 3" 
-    (click)="giveCards()">
+  <button type="button" class="btn btn-primary"
+          [disabled]="getCardToGive().length < 3"
+          (click)="giveCards()">
     Donner ces cartes
   </button>
 </div>

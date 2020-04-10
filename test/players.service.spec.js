@@ -1,12 +1,20 @@
 const playersService = require('../server/services/players.service');
 const Player = require('../server/models/player');
+const Card = require('../server/models/card');
+const Families = require('../server/models/families');
 const expect = require('chai').expect;
 
 describe('playersService', function () {
   it('should create players', function () {
     playersService.setPlayers([]);
-    playersService.createPlayer('player1');
-    playersService.createPlayer('player2');
+    playersService.createPlayer({id: 'socket1'}, 'player1', {
+      emit: () => {
+      }
+    });
+    playersService.createPlayer({id: 'socket2'}, 'player2', {
+      emit: () => {
+      }
+    });
 
     expect(playersService.getPlayers().length).to.equal(2);
     expect(playersService.getPlayers()[0].name).to.equal('player1');
@@ -14,30 +22,35 @@ describe('playersService', function () {
   });
 
   it('should end a play round', function () {
-    playersService.setPlayers([
-      new Player('player1', [{family: {id: 1, label: 'Coeur'}, number: 2, newOne: true}]),
-      new Player('player2', [{family: {id: 1, label: 'Coeur'}, number: 4, newOne: true}])
-    ]);
-    const roundCards = [
-      {player: playersService.getPlayers()[0], card: {family: {id: 1, label: 'Coeur'}, number: 2, newOne: true}},
-      {player: playersService.getPlayers()[1], card: {family: {id: 1, label: 'Coeur'}, number: 4, newOne: true}}
-    ];
+    const card1 = new Card(Families[0], 2, true);
+    const player1 = new Player('player1', [card1]);
 
-    playersService.endRound('player1', roundCards);
+    const card2 = new Card(Families[0], 4, false);
+    const player2 = new Player('player2', [card2]);
+
+    playersService.setPlayers([player1, player2]);
+    const roundCards = [card1, card2];
+
+    playersService.addLoosingCards(roundCards, 'player1');
 
     expect(playersService.getPlayers().length).to.equal(2);
     expect(playersService.getPlayers()[0].collectedLoosingCards.length).to.equal(2);
+    expect(playersService.getPlayers()[0].collectedLoosingCards[0]).to.equal(card1);
+    expect(playersService.getPlayers()[0].collectedLoosingCards[1]).to.equal(card2);
+  });
 
-    expect(playersService.getPlayers()[0].collectedLoosingCards[0].family.label).to.equal('Coeur');
-    expect(playersService.getPlayers()[0].collectedLoosingCards[0].number).to.equal(2);
-    expect(playersService.getPlayers()[0].collectedLoosingCards[0].newOne).to.be.true;
+  it('should get next player to play', function () {
+    const player1 = new Player('player1');
+    const player2 = new Player('player2');
+    const player3 = new Player('player3');
 
-    expect(playersService.getPlayers()[0].collectedLoosingCards[1].family.label).to.equal('Coeur');
-    expect(playersService.getPlayers()[0].collectedLoosingCards[1].number).to.equal(4);
-    expect(playersService.getPlayers()[0].collectedLoosingCards[1].newOne).to.be.true;
+    playersService.setPlayers([player1, player2, player3]);
 
-    expect(playersService.getPlayers()[0].deck.length).to.equal(0);
-    expect(playersService.getPlayers()[1].deck.length).to.equal(0);
+    let nextOne = playersService.getNextPlayer(player1.name);
+    expect(nextOne.name).to.equal(player2.name);
+
+    nextOne = playersService.getNextPlayer(player3.name);
+    expect(nextOne.name).to.equal(player1.name);
   });
 
   describe('handleGivenCards', function () {
@@ -145,32 +158,32 @@ describe('playersService', function () {
     describe('each players should receive five cards from his previous neighbor deck', function () {
       it('pl1 should get the 5 cards of pl3', function () {
         const expectedPlayer1Deck = expectedPlayers[0].deck;
-
-        expect(expectedPlayer1Deck).to.deep.include({...pl3ToPl1[0], newOne: true});
-        expect(expectedPlayer1Deck).to.deep.include({...pl3ToPl1[1], newOne: true});
-        expect(expectedPlayer1Deck).to.deep.include({...pl3ToPl1[2], newOne: true});
-        expect(expectedPlayer1Deck).to.deep.include({...pl3ToPl1[3], newOne: true});
-        expect(expectedPlayer1Deck).to.deep.include({...pl3ToPl1[4], newOne: true});
+        console.log('expectedPlayer1Deck', expectedPlayer1Deck);
+        expect(expectedPlayer1Deck).to.deep.include({...pl3ToPl1[0], newOne: true, toGive: false});
+        expect(expectedPlayer1Deck).to.deep.include({...pl3ToPl1[1], newOne: true, toGive: false});
+        expect(expectedPlayer1Deck).to.deep.include({...pl3ToPl1[2], newOne: true, toGive: false});
+        expect(expectedPlayer1Deck).to.deep.include({...pl3ToPl1[3], newOne: true, toGive: false});
+        expect(expectedPlayer1Deck).to.deep.include({...pl3ToPl1[4], newOne: true, toGive: false});
       });
 
       it('pl2 should get the 5 cards of pl1', function () {
         const expectedPlayer2Deck = expectedPlayers[1].deck;
 
-        expect(expectedPlayer2Deck).to.deep.include({...pl1ToPl2[0], newOne: true});
-        expect(expectedPlayer2Deck).to.deep.include({...pl1ToPl2[1], newOne: true});
-        expect(expectedPlayer2Deck).to.deep.include({...pl1ToPl2[2], newOne: true});
-        expect(expectedPlayer2Deck).to.deep.include({...pl1ToPl2[3], newOne: true});
-        expect(expectedPlayer2Deck).to.deep.include({...pl1ToPl2[4], newOne: true});
+        expect(expectedPlayer2Deck).to.deep.include({...pl1ToPl2[0], newOne: true, toGive: false});
+        expect(expectedPlayer2Deck).to.deep.include({...pl1ToPl2[1], newOne: true, toGive: false});
+        expect(expectedPlayer2Deck).to.deep.include({...pl1ToPl2[2], newOne: true, toGive: false});
+        expect(expectedPlayer2Deck).to.deep.include({...pl1ToPl2[3], newOne: true, toGive: false});
+        expect(expectedPlayer2Deck).to.deep.include({...pl1ToPl2[4], newOne: true, toGive: false});
       });
 
       it('pl3 should get the 5 cards of pl2', function () {
         const expectedPlayer3Deck = expectedPlayers[2].deck;
 
-        expect(expectedPlayer3Deck).to.deep.include({...pl2ToPl3[0], newOne: true});
-        expect(expectedPlayer3Deck).to.deep.include({...pl2ToPl3[1], newOne: true});
-        expect(expectedPlayer3Deck).to.deep.include({...pl2ToPl3[2], newOne: true});
-        expect(expectedPlayer3Deck).to.deep.include({...pl2ToPl3[3], newOne: true});
-        expect(expectedPlayer3Deck).to.deep.include({...pl2ToPl3[4], newOne: true});
+        expect(expectedPlayer3Deck).to.deep.include({...pl2ToPl3[0], newOne: true, toGive: false});
+        expect(expectedPlayer3Deck).to.deep.include({...pl2ToPl3[1], newOne: true, toGive: false});
+        expect(expectedPlayer3Deck).to.deep.include({...pl2ToPl3[2], newOne: true, toGive: false});
+        expect(expectedPlayer3Deck).to.deep.include({...pl2ToPl3[3], newOne: true, toGive: false});
+        expect(expectedPlayer3Deck).to.deep.include({...pl2ToPl3[4], newOne: true, toGive: false});
       });
     });
 

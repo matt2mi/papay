@@ -1,6 +1,7 @@
 const playersService = require('./services/players.service');
 const cardsService = require('./services/cards.service');
 const chatService = require('./services/chat.service');
+const playingService = require('./services/playing.service');
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -35,13 +36,22 @@ app.get('/getDeck/:name', (req, res) => {
   }
 });
 app.post('/giveCards', (req, res) => {
+  // endpoint pour donner ses cartes à son voisin avant le tour
   const player = playersService.getPlayerByName(req.body.name);
   if (player) {
     playersService.handleGivenCardsOneByOne({cards: req.body.cards, player: player});
     if (playersService.hasEveryPlayerGivenCards()) {
+      // si tout le monde a donné ses cartes
       try {
         cardsService.set40Family();
+        // on renvoit les nouveaux decks à chacun des joueurs
         playersService.sendDecks(cardsService.get40Family());
+
+        // on démarre la partie en avertissant le premier joueur que c'est son tour
+        const nextPlayer = playersService.getPlayers()[0];
+        playingService.setFirstPlayerToPlay(nextPlayer);
+        io.emit('nextPlayerTurn', {nextPlayerName: nextPlayer.name, cardsPlayedWithPlayer: []});
+        playingService.emitPlayerTurn(nextPlayer.name);
       } catch (e) {
         console.error(e);
       }
@@ -50,6 +60,10 @@ app.post('/giveCards', (req, res) => {
   } else {
     res.status(403).send({message: 'pseudo de joueur introuvable.'});
   }
+});
+app.post('/playCard', (req, res) => {
+  playingService.receivePlayerCard(req.body.playerName, req.body.card, io);
+  res.send({ok: true}); // ballec :p
 });
 
 app.get('/players', (req, res) => res.send({players: playersService.getPlayers()}));

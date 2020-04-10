@@ -21,8 +21,6 @@ export class ScoresComponent {
   }
 
   getLoosingCards(player) {
-    // console.log('player', player);
-    // TODO : pr les tests, devra être récupérer du back via websocket
     let resultStr = '';
     let result = 0;
     player.collectedLoosingCards.forEach(card => {

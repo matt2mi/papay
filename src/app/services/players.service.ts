@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import Player from '../models/player';
 import Card from '../models/card';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {Socket} from 'ngx-socket-io';
 
@@ -19,6 +19,15 @@ export class PlayersService {
 
   private partyStartedSource = new BehaviorSubject(null);
   partyStarted$ = this.partyStartedSource.asObservable();
+
+  private nextPlayerTurnSource = new BehaviorSubject({nextPlayerName: '', cardsPlayedWithPlayer: []});
+  nextPlayerTurn$ = this.nextPlayerTurnSource.asObservable();
+
+  private yourTurnSource = new BehaviorSubject(null);
+  yourTurn$ = this.yourTurnSource.asObservable();
+
+  private roundLooserSource = new BehaviorSubject('');
+  roundLooser$ = this.roundLooserSource.asObservable();
 
   constructor(public http: HttpClient, public socket: Socket) {
     this.currentPlayer = new Player();
@@ -38,6 +47,15 @@ export class PlayersService {
     this.socket.on('partyStarted', start => {
       this.partyStartedSource.next(start);
     });
+    this.socket.on('nextPlayerTurn', (result: { nextPlayerName: string, cardsPlayedWithPlayer: { card: Card, player: Player }[] }) => {
+      this.nextPlayerTurnSource.next(result);
+    });
+    this.socket.on('yourTurn', (start) => {
+      this.yourTurnSource.next(start);
+    });
+    this.socket.on('roundLooser', (roundLooserName) => {
+      this.roundLooserSource.next(roundLooserName);
+    });
   }
 
   getCurrentPlayer(): Player {
@@ -48,8 +66,8 @@ export class PlayersService {
     this.currentPlayer.name = name;
   }
 
-  getCurrentPlayerDeck(): Observable<{deck : Card[]}> {
-    return this.http.get<{deck : Card[]}>(`getDeck/${this.currentPlayer.name}`);
+  getCurrentPlayerDeck(): Observable<{ deck: Card[] }> {
+    return this.http.get<{ deck: Card[] }>(`getDeck/${this.currentPlayer.name}`);
   }
 
   getConnectedPlayers(): Observable<{ players: Player[] }> {
@@ -57,10 +75,6 @@ export class PlayersService {
   }
 
   addLoosingCards(looser: Player, cards: Card[]) {
-    // TODO géré et mis à jour via websocket (où ??)
-    // const theLooser = this.connectedPlayers.find(player => player.name === looser.name);
-    // theLooser.collectedLoosingCards = theLooser.collectedLoosingCards.concat(cards);
-    // console.log('this.connectedPlayers', this.connectedPlayers);
   }
 
   startParty() {
