@@ -50,8 +50,8 @@ app.post('/giveCards', (req, res) => {
         // on démarre la partie en avertissant le premier joueur que c'est son tour
         const nextPlayer = playersService.getPlayers()[0];
         playingService.setFirstPlayerToPlay(nextPlayer);
+        io.emit('nextPlayerTurn', {nextPlayerName: nextPlayer.name, cardsPlayedWithPlayer: []});
         playingService.emitPlayerTurn(nextPlayer.name);
-        io.emit('nextPlayerTurn', nextPlayer.name);
       } catch (e) {
         console.error(e);
       }
@@ -62,7 +62,7 @@ app.post('/giveCards', (req, res) => {
   }
 });
 app.post('/playCard', (req, res) => {
-  playingService.receivePlayerCard(req.body.playerName, req.body.card);
+  playingService.receivePlayerCard(req.body.playerName, req.body.card, io);
   res.send({ok: true}); // ballec :p
 });
 

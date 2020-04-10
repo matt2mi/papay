@@ -4,12 +4,17 @@ const playersService = require('./players.service');
 // un pli = round = une carte jouée par joueur
 
 let firstPlayerToPlay; // le joueur qui entame le tour
-const playedCardsOfRound = []; // cartes d'un pli [{card: Card, player: Player}, ... ]
+let playedCardsOfRound = []; // cartes d'un pli [{card: Card, player: Player}, ... ]
 let startingPlayerOfRound; // le joueur qui joue une carte en premier sur ce pli (perdant du pli précédent)
 
 const emitPlayerTurn = firstPlayerName => {
   const currentPlayerSocket = playersService.getPlayerSocketByName(firstPlayerName);
-  currentPlayerSocket.emit('yourTurn');
+  currentPlayerSocket.emit('yourTurn', true);
+};
+
+const emitNextPlayerTurn = (io, nextPlayerName) => {
+  io.emit('nextPlayerTurn', {nextPlayerName, cardsPlayedWithPlayer: playedCardsOfRound});
+  emitPlayerTurn(nextPlayerName);
 };
 
 const receivePlayerCard = (playerName, card, io) => {
@@ -21,14 +26,15 @@ const receivePlayerCard = (playerName, card, io) => {
     // trouver le perdant
     const looser = findLooser(playedCardsOfRound);
 
+    io.emit('roundLooser', looser.name);
+
     // lui donner les cartes du pli
-    giveCardOfRoundToLooser(looser);
+    giveCardOfRoundToLooser(looser, io);
   } else {
+    const nextPlayer = playersService.getNextPlayer(playerName);
+    setStartingPlayerOfRound(nextPlayer);
     try {
-      const nextPlayer = playersService.getNextPlayer(playerName);
-      setStartingPlayerOfRound(nextPlayer);
-      emitPlayerTurn(nextPlayer.name);
-      io.emit('nextPlayerTurn', nextPlayer.name);
+      emitNextPlayerTurn(io, nextPlayer.name);
     } catch (e) {
       throw new Error(e);
     }
@@ -48,11 +54,17 @@ const findLooser = playedCardsOfRound => {
   return null; // TODO throw new error('erreur findLooser') ?
 };
 
-const giveCardOfRoundToLooser = looserOfRound => {
+const giveCardOfRoundToLooser = (looserOfRound, io) => {
   // les cartes du pli
   const loosingCards = playedCardsOfRound.map(cardAndPlayer => cardAndPlayer.card);
   playersService.addLoosingCards(loosingCards, looserOfRound.name);
   setStartingPlayerOfRound(looserOfRound);
+
+  playedCardsOfRound = [];
+
+  // si pas le dernier pli du tour
+  emitNextPlayerTurn(io, looserOfRound.name);
+  // TODO sinon dernier pli: fin du tour / décompte point / redistribution
 };
 
 const setStartingPlayerOfRound = player => {

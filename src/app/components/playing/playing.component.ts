@@ -3,7 +3,7 @@ import Player from '../../models/player';
 import Card from '../../models/card';
 import {PlayersService} from '../../services/players.service';
 import {Router} from '@angular/router';
-import { CardsService } from 'src/app/services/cards.service';
+import {CardsService} from 'src/app/services/cards.service';
 
 @Component({
   selector: 'app-playing',
@@ -13,72 +13,72 @@ import { CardsService } from 'src/app/services/cards.service';
 export class PlayingComponent implements OnInit {
 
   isCurrentPlayerTurn = false;
-  nbRounds = 0;
+  nextPlayerName = '';
   currentPlayer: Player;
   connectedPlayers: Player[];
   cardFold: { player: Player, card: Card }[] = [];
   isTimeToGiveCard = false;
   cardToGiveErrorMessage;
+  showRoundLooserName = false;
+  roundLooserName = '';
+  nbRound = 1;
 
-  constructor(public router: Router, 
-    public playersService: PlayersService,
-    public cardsService: CardsService,) {
+  constructor(public router: Router,
+              public playersService: PlayersService,
+              public cardsService: CardsService) {
   }
-  
+
   ngOnInit() {
     this.currentPlayer = this.playersService.getCurrentPlayer();
     this.playersService.getCurrentPlayerDeck().subscribe(({deck}) => {
       this.currentPlayer.deck = deck;
       this.isTimeToGiveCard = true;
-    }, error => {console.error(error)});
-
-    this.playersService.getConnectedPlayers()
-    .subscribe(({players}) => {
-      this.connectedPlayers = players;
+      this.setAllCardsClickablesOrNot(true);
+    }, error => {
+      console.error(error);
     });
 
-    this.cardsService.getDeckWithGivenCards$
-      .subscribe((result) => {
-        if(result) {
-          this.isTimeToGiveCard = false;          
-          this.currentPlayer.deck = result.deck;
-          this.getBackCards();
+    this.playersService.getConnectedPlayers().subscribe(({players}) => this.connectedPlayers = players);
+
+    this.cardsService.getDeckWithGivenCards$.subscribe((result) => {
+      if (result) {
+        this.isTimeToGiveCard = false;
+        this.currentPlayer.deck = result.deck;
+        this.getBackCards();
+        this.setAllCardsClickablesOrNot(false);
+      }
+    });
+
+    this.playersService.nextPlayerTurn$.subscribe(result => {
+      if (result.nextPlayerName) {
+        console.log('nextPlayerTurn', result);
+        this.nextPlayerName = result.nextPlayerName;
+        this.cardFold = result.cardsPlayedWithPlayer;
+        if (result.nextPlayerName === this.currentPlayer.name) {
+          // c'est au tour du joueur de jouer
+          this.isCurrentPlayerTurn = true;
+          this.canPlayCards();
+        } else {
+          this.isCurrentPlayerTurn = false;
+          this.setAllCardsClickablesOrNot(false);
         }
-      });
+      }
+    });
+
+    this.playersService.roundLooser$.subscribe(roundLooserName => {
+      this.setAllCardsClickablesOrNot(false);
+      this.handleRoundLooser(roundLooserName);
+    });
+  }
+
+  setAllCardsClickablesOrNot(clickability: boolean) {
+    this.currentPlayer.deck.forEach(card => card.isPlayable = clickability);
   }
 
   getBackCards() {
     this.currentPlayer.deck.sort((c1, c2) => c1.number - c2.number);
     this.currentPlayer.deck.sort((c1, c2) => c1.family.id - c2.family.id);
-    setTimeout(() => {    
-      this.currentPlayer.deck.forEach(c => c.newOne=false);      
-      this.startRound();
-    },
-    8000);
-  }
-
-  startRound() {
-    // TODO pour tests
-    setTimeout(() => {
-        this.cardFold.push({player: this.connectedPlayers[0], card: this.connectedPlayers[0].deck[this.nbRounds]});
-        setTimeout(() => {
-            this.cardFold.push({player: this.connectedPlayers[1], card: this.connectedPlayers[1].deck[this.nbRounds]});
-            this.canPlayCards();
-            this.isCurrentPlayerTurn = true;
-          },
-          1000);
-      },
-      1000);
-  }
-
-  getIndexOfCard(deck, cardToFind) {
-    let cardIndex = -1;
-    deck.forEach((card, index) => {
-      if (card.family.id === cardToFind.family.id && card.number === cardToFind.number) {
-        cardIndex = index;
-      }
-    });
-    return cardIndex;
+    setTimeout(() => this.currentPlayer.deck.forEach(c => c.newOne = false), 3000);
   }
 
   getCardToGive() {
@@ -88,67 +88,68 @@ export class PlayingComponent implements OnInit {
   clickCard(card: Card) {
     if (this.isTimeToGiveCard) {
       if (!card.toGive && this.getCardToGive().length < 3) {
-        this.currentPlayer.deck.find(c => c == card).toGive= true;
+        this.currentPlayer.deck.find(c => c === card).toGive = true;
       } else {
-        this.currentPlayer.deck.find(c => c == card).toGive = false;
+        this.currentPlayer.deck.find(c => c === card).toGive = false;
       }
     } else {
       // We are playing
-      // TODO pour tests => géré via websocket
-      this.isCurrentPlayerTurn = false;
-      this.cardFold.push({player: this.currentPlayer, card});
-      this.handleLooser();
-      this.currentPlayer.deck.splice(this.getIndexOfCard(this.currentPlayer.deck, card), 1);
-      setTimeout(() => {
-          this.cardFold = [];
-          if (this.currentPlayer.deck.length > 0) {
-            this.nbRounds++;
-            this.startRound();
-          } else {
-            this.endRound();
-          }
-        },
-        1000);
+      this.cardsService.playCard(card, this.currentPlayer.name)
+        .subscribe(
+          () => {
+            this.isCurrentPlayerTurn = false;
+            const currentCard = this.currentPlayer.deck.find(c => c.family.id === card.family.id && c.number === card.number);
+            currentCard.played = true;
+          },
+          error => console.error('pas joué', error)
+        );
     }
   }
 
   giveCards() {
-    if (this.getCardToGive().length != 3) {
+    if (this.getCardToGive().length !== 3) {
       this.cardToGiveErrorMessage = 'Tu dois donner 3 cartes';
     } else {
-      this.cardsService.giveCard(this.getCardToGive(), this.playersService.getCurrentPlayer().name).subscribe(() => {
+      this.cardsService.giveCard(this.getCardToGive(), this.playersService.getCurrentPlayer().name)
+        .subscribe(() => {
         this.isTimeToGiveCard = false;
+          this.setAllCardsClickablesOrNot(false);
       });
     }
   }
 
-  handleLooser() {
-    let looser = this.cardFold[0];
-    this.cardFold.forEach(playerAndCards => {
-      looser = looser.card.number > playerAndCards.card.number ? looser : playerAndCards;
-    });
-    this.playersService.addLoosingCards(looser.player, this.cardFold.map(plAndCa => plAndCa.card));
+  handleRoundLooser(roundLooserName: string) {
+    this.showRoundLooserName = true;
+    this.roundLooserName = roundLooserName;
+    setTimeout(
+      () => {
+        this.showRoundLooserName = false;
+        this.nbRound++;
+      },
+      4000
+    );
   }
 
-  updateCardFold(cards: Card[]) {
-    // TODO appelé via websocket pour mettre à jour les cartes jouées dans le pli
-  }
-
+  // TODO de OUFFFFFFFFFF
   endRound(url = 'scores/en-cours') {
-    // TODO appelé via websocket - renvoie soit vers scores/en-cours soit vers scores/game-over
-    this.router.navigate([url]);
+    // renvoie soit vers scores/en-cours soit vers scores/game-over
   }
 
-  // TODO gestion des cartes que le joueur peut jouer ou pas (fonction de la couleur demandée)
+  isCardsInDeckOfFamilyASked() {
+    // renvoit true si, dans le deck du joueur, il y a une carte (non jouée) qui est de la famille demandée par la première carte du pli
+    return this.currentPlayer.deck
+      .filter(card => !card.played)
+      .some(card => card.family.id === this.cardFold[0].card.family.id);
+  }
+
   canPlayCards() {
-    if (this.cardFold.length !== 0 && this.currentPlayer.deck.some(card => card.family.id === this.cardFold[0].card.family.id)) {
+    if (this.cardFold.length !== 0 && this.isCardsInDeckOfFamilyASked()) {
       // cas : au moins une carte de la couleur demandée => seulement cette carte sera jouable
-      this.currentPlayer.deck
-        .forEach(card => card.isPlayable = card.family.id === this.cardFold[0].card.family.id);
+      this.currentPlayer.deck.forEach(card => card.isPlayable = card.family.id === this.cardFold[0].card.family.id);
     } else {
       // cas : le joueur est le premier à jouer OU aucune carte de la couleur demandée
       // => toutes les cartes sont jouables
-      this.currentPlayer.deck.forEach(card => card.isPlayable = true);
+      this.setAllCardsClickablesOrNot(true);
     }
   }
 }
