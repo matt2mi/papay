@@ -23,11 +23,14 @@ export class PlayersService {
   private nextPlayerTurnSource = new BehaviorSubject({nextPlayerName: '', cardsPlayedWithPlayer: []});
   nextPlayerTurn$ = this.nextPlayerTurnSource.asObservable();
 
-  private yourTurnSource = new BehaviorSubject(null);
-  yourTurn$ = this.yourTurnSource.asObservable();
-
   private roundLooserSource = new BehaviorSubject('');
   roundLooser$ = this.roundLooserSource.asObservable();
+
+  private endOfTourSource = new BehaviorSubject([]);
+  endOfTour$ = this.endOfTourSource.asObservable();
+
+  private waitedPlayersForNextRoundSource = new BehaviorSubject([]);
+  waitedPlayersForNextRound$ = this.waitedPlayersForNextRoundSource.asObservable();
 
   constructor(public http: HttpClient, public socket: Socket) {
     this.currentPlayer = new Player();
@@ -50,11 +53,14 @@ export class PlayersService {
     this.socket.on('nextPlayerTurn', (result: { nextPlayerName: string, cardsPlayedWithPlayer: { card: Card, player: Player }[] }) => {
       this.nextPlayerTurnSource.next(result);
     });
-    this.socket.on('yourTurn', (start) => {
-      this.yourTurnSource.next(start);
-    });
     this.socket.on('roundLooser', (roundLooserName) => {
       this.roundLooserSource.next(roundLooserName);
+    });
+    this.socket.on('endOfTour', (players) => {
+      this.endOfTourSource.next(players);
+    });
+    this.socket.on('waitedPlayersForNextRound', (players) => {
+      this.waitedPlayersForNextRoundSource.next(players);
     });
   }
 
@@ -74,10 +80,11 @@ export class PlayersService {
     return this.http.get<{ players: Player[] }>('players');
   }
 
-  addLoosingCards(looser: Player, cards: Card[]) {
-  }
-
   startParty() {
     return this.http.get('startParty');
+  }
+
+  readyForNextTour(): Observable<boolean> {
+    return this.http.get<boolean>('goNextTour/' + this.currentPlayer.name);
   }
 }

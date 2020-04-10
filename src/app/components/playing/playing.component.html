@@ -1,25 +1,39 @@
 <div class="row">
   <!--Le pli en cours-->
-  <div class="col-12">
-    <h2>Pli n°{{nbRound}} - {{'à ' + nextPlayerName + ' de jouer'}}</h2>
+  <div class="col-12" *ngIf="!showRoundLooserName && !scoresState">
+    <h2>Pli n°{{nbRound}} - à {{nextPlayerName === currentPlayer?.name ? 'toi' : nextPlayerName}} de jouer</h2>
 
-    <div *ngIf="cardFold.length > 0 && !showRoundLooserName">
+    <div *ngIf="cardFold?.length > 0">
       <div class="my-card" *ngFor="let playerAndCard of cardFold">
         {{playerAndCard.player.name + ' a joué un : ' + playerAndCard?.card?.number + ' de ' +
         playerAndCard?.card?.family?.label}}
       </div>
     </div>
+  </div>
 
-    <div *ngIf="showRoundLooserName">
-      <h3>Ce pli est pour : {{roundLooserName}}</h3>
+  <div class="col-12" *ngIf="showRoundLooserName && !scoresState">
+    <h2>Ce pli est pour : {{roundLooserName}}</h2>
+  </div>
+
+  <div class="col-12" *ngIf="scoresState">
+    <h2>Points de ce tour :</h2>
+
+    <div *ngFor="let player of connectedPlayers">
+      {{player.name + ' : ' + player.roundScore}}
     </div>
+
+    <button type="button" class="btn btn-primary" (click)="readyForNextTour()">
+      Passer au tour suivant
+    </button>
+
+    <div>On attend encore : <span *ngFor="let player of waitedPlayersForNextRound">{{player.name + ', '}}</span></div>
   </div>
 </div>
 
 <!--Le deck du joueur-->
-<div class="row">
+<div class="row" *ngIf="!scoresState">
   <div class="col-12">
-    <h2>Mes Cartes</h2>
+    <h2>Mes Cartes <span *ngIf="family40">- le 7 qui vaut 40 points: le 7 de {{family40?.label}}</span></h2>
     <div class="deck">
       <div *ngFor="let card of currentPlayer.deck" class="card-place" [hidden]="card.played">
         <button type="button" class="card-button"
@@ -32,7 +46,7 @@
   </div>
 </div>
 
-<div class="row" *ngIf="isTimeToGiveCard">
+<div class="row" *ngIf="isTimeToGiveCard && !scoresState">
   <button type="button" class="btn btn-primary"
           [disabled]="getCardToGive().length < 3"
           (click)="giveCards()">

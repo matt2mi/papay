@@ -50,6 +50,8 @@ const sample4PlayersSession = () => {
     {cards: pl4ToPl1, player: playersService.getPlayers()[3]}
   ]);
 
+  cardsService.set40Family();
+
 // Quatrième phase - tours de jeu
   for (let i = 0; i < 15; i++) {
     const cardPlayedByPlayer = [];
@@ -66,7 +68,7 @@ const sample4PlayersSession = () => {
   }
 
 // Cinquième phase - décompte points
-  cardsService.countScore({id: 1, label: 'Coeur'});
+  cardsService.countScore();
 
   console.log('------- tour ', nbTour);
   nbTour++;

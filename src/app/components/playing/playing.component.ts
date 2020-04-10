@@ -4,6 +4,7 @@ import Card from '../../models/card';
 import {PlayersService} from '../../services/players.service';
 import {Router} from '@angular/router';
 import {CardsService} from 'src/app/services/cards.service';
+import {Family} from '../../models/family';
 
 @Component({
   selector: 'app-playing',
@@ -16,12 +17,15 @@ export class PlayingComponent implements OnInit {
   nextPlayerName = '';
   currentPlayer: Player;
   connectedPlayers: Player[];
+  family40: Family;
   cardFold: { player: Player, card: Card }[] = [];
   isTimeToGiveCard = false;
   cardToGiveErrorMessage;
   showRoundLooserName = false;
   roundLooserName = '';
   nbRound = 1;
+  scoresState = false;
+  waitedPlayersForNextRound: Player[] = [];
 
   constructor(public router: Router,
               public playersService: PlayersService,
@@ -41,9 +45,10 @@ export class PlayingComponent implements OnInit {
     this.playersService.getConnectedPlayers().subscribe(({players}) => this.connectedPlayers = players);
 
     this.cardsService.getDeckWithGivenCards$.subscribe((result) => {
-      if (result) {
+      if (result.deck) {
         this.isTimeToGiveCard = false;
         this.currentPlayer.deck = result.deck;
+        this.family40 = result.family40;
         this.getBackCards();
         this.setAllCardsClickablesOrNot(false);
       }
@@ -51,7 +56,6 @@ export class PlayingComponent implements OnInit {
 
     this.playersService.nextPlayerTurn$.subscribe(result => {
       if (result.nextPlayerName) {
-        console.log('nextPlayerTurn', result);
         this.nextPlayerName = result.nextPlayerName;
         this.cardFold = result.cardsPlayedWithPlayer;
         if (result.nextPlayerName === this.currentPlayer.name) {
@@ -66,8 +70,23 @@ export class PlayingComponent implements OnInit {
     });
 
     this.playersService.roundLooser$.subscribe(roundLooserName => {
-      this.setAllCardsClickablesOrNot(false);
-      this.handleRoundLooser(roundLooserName);
+      if (roundLooserName) {
+        this.setAllCardsClickablesOrNot(false);
+        this.handleRoundLooser(roundLooserName);
+      }
+    });
+
+    this.playersService.endOfTour$.subscribe(players => {
+      if (players.length > 0) {
+        this.setAllCardsClickablesOrNot(false);
+        this.endTour(players);
+      }
+    });
+
+    this.playersService.waitedPlayersForNextRound$.subscribe(players => {
+      if (players.length > 0) {
+        this.waitedPlayersForNextRound = players;
+      }
     });
   }
 
@@ -112,9 +131,9 @@ export class PlayingComponent implements OnInit {
     } else {
       this.cardsService.giveCard(this.getCardToGive(), this.playersService.getCurrentPlayer().name)
         .subscribe(() => {
-        this.isTimeToGiveCard = false;
+          this.isTimeToGiveCard = false;
           this.setAllCardsClickablesOrNot(false);
-      });
+        });
     }
   }
 
@@ -130,9 +149,11 @@ export class PlayingComponent implements OnInit {
     );
   }
 
-  // TODO de OUFFFFFFFFFF
-  endRound(url = 'scores/en-cours') {
-    // renvoie soit vers scores/en-cours soit vers scores/game-over
+  endTour(players: Player[]) {
+    // TODO : renvoyer soit vers '/scores/en-cours' soit vers '/scores/game-over' => pr un meilleur affichage ?
+    this.connectedPlayers = players;
+    this.waitedPlayersForNextRound = players;
+    this.scoresState = true;
   }
 
   isCardsInDeckOfFamilyASked() {
@@ -151,5 +172,18 @@ export class PlayingComponent implements OnInit {
       // => toutes les cartes sont jouables
       this.setAllCardsClickablesOrNot(true);
     }
+  }
+
+  readyForNextTour() {
+    this.playersService.readyForNextTour().subscribe(() => {
+      this.isCurrentPlayerTurn = false;
+      this.nextPlayerName = '';
+      this.cardFold = [];
+      this.isTimeToGiveCard = false;
+      this.showRoundLooserName = false;
+      this.roundLooserName = '';
+      this.nbRound = 1;
+      this.family40 = null;
+    });
   }
 }

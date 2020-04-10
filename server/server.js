@@ -66,6 +66,11 @@ app.post('/playCard', (req, res) => {
   res.send({ok: true}); // ballec :p
 });
 
+app.get('/goNextTour/:name', (req, res) => {
+  playingService.unWaitPlayer(req.params.name, io);
+  res.send(true);
+});
+
 app.get('/players', (req, res) => res.send({players: playersService.getPlayers()}));
 
 app.get('/chatMessages', (req, res) => res.send({messages: chatService.getMessages()}));
@@ -121,10 +126,6 @@ io.on('connection', (socket) => {
 
 // session.displayScores();
 
-// TODO Gestion d'un ordre définitif des joueurs (random au début de partie) (cas ou le premier à jouer une carte est le 3e dans le tableau)
-// TODO fin du pli: trouver le perdant, lui ajouter les cartes du pli, changer l'ordre des joueurs pour qu'il joue en premier
-// TODO pouvoir dernier pli
-
 /*
 Suite des actions Websocket
 1 - arrivée sur page login: connexion websocket
@@ -149,7 +150,6 @@ Suite des actions Websocket
   => cardsService.get40Family()
 
 9 - notifier les joueurs un par un (en suivant l'ordre et commençant par dernier perdant) pour qu'ils jouent chacun leur tour
-  // TODO back.gérerOrdre()
 
 10 - attendre leur réponse (leur carte)
 
@@ -160,12 +160,10 @@ Suite des actions Websocket
 
 12 - envoi à tous du score de la manche (doit être égal 250)
   => cardsService.countScore()
-  // TODO gérer roundScore ds front
 
 (Répéter 6, 7, 8, 9 et 10 jusqu'à nb tours === nb joueurs)
 
 12 - Game over, notif tous des scores, podium
-  => // TODO gérer globalScore dans front
 
 13 - attente restart (tous les joueurs doivent cliquer sur restart et notifier tous de qui a fait restart)
  */

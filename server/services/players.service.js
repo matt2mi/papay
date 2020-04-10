@@ -1,7 +1,6 @@
 const Player = require('../models/player');
 const utilsService = require('./utils.service');
 
-// TODO: seulement playersMap ?
 let players = [];
 const playersSockets = [];
 
@@ -73,7 +72,7 @@ const addCardToNextPlayer = (playerIdToGiveCards, givenCards) => {
     newOne: true,
     toGive: false,
   })));
-}
+};
 
 const hasEveryPlayerGivenCards = () => {
   return !players.some(player => !player.hasGivenCards);

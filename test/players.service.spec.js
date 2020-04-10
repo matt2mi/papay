@@ -1,7 +1,7 @@
 const playersService = require('../server/services/players.service');
 const Player = require('../server/models/player');
 const Card = require('../server/models/card');
-const Families = require('../server/models/families');
+const family = require('../server/models/families');
 const expect = require('chai').expect;
 
 describe('playersService', function () {
@@ -22,10 +22,10 @@ describe('playersService', function () {
   });
 
   it('should end a play round', function () {
-    const card1 = new Card(Families[0], 2, true);
+    const card1 = new Card(family.getFamilyById(0), 2, true);
     const player1 = new Player('player1', [card1]);
 
-    const card2 = new Card(Families[0], 4, false);
+    const card2 = new Card(family.getFamilyById(0), 4, false);
     const player2 = new Player('player2', [card2]);
 
     playersService.setPlayers([player1, player2]);

@@ -9,19 +9,19 @@ import {HttpClient} from '@angular/common/http';
 })
 export class CardsService {
 
-  private getDeckWithGivenSource = new BehaviorSubject(null);
+  private getDeckWithGivenSource = new BehaviorSubject({deck: null, family40: null});
   getDeckWithGivenCards$ = this.getDeckWithGivenSource.asObservable();
 
   constructor(public http: HttpClient, public socket: Socket) {
   }
 
   initSocket() {
-    this.socket.on('newDeck', deck => {
-      this.getDeckWithGivenSource.next(deck);
+    this.socket.on('newDeck', deckAndFamily40 => {
+      this.getDeckWithGivenSource.next(deckAndFamily40);
     });
   }
 
-  giveCard(cards: Card[], name: string): Observable<{cards: Card[], name: string}> {
+  giveCard(cards: Card[], name: string): Observable<{ cards: Card[], name: string }> {
     return this.http.post<{ cards: Card[], name: string }>('giveCards', {cards, name});
   }
 
