@@ -1,6 +1,6 @@
 const playersService = require('./players.service');
 const utilsService = require('./utils.service');
-const Families = require('../models/families');
+const families = require('../models/families');
 
 const numbersForLessThan7Players = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const numbersFor7or8Players = [2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -18,14 +18,14 @@ const createPlayersDecks = () => {
 
 const createGlobalDeck = numbers => {
   const cards = [];
-  for (let family of Object.keys(Families)) {
+  for (let family of Object.keys(families.Families)) {
     if (family === 'PAPAYOO') {
       for (let papayooNumber of papayooNumbers) {
-        cards.push({family: Families[family], number: papayooNumber, newOne: false});
+        cards.push({family: families.Families[family], number: papayooNumber, newOne: false});
       }
     } else {
       for (let number of numbers) {
-        cards.push({family: Families[family], number, newOne: false});
+        cards.push({family: families.Families[family], number, newOne: false});
       }
     }
   }
@@ -62,12 +62,12 @@ const setDealedDecksToPlayers = () => {
   playersService.setPlayersDecks(playersDecks);
 };
 
-const countScore = family => {
+const countScore = () => {
   playersService.getPlayers().forEach(player => {
     let score = 0;
     player.collectedLoosingCards.forEach(card => {
       if (card.family.label === 'Papayoo') score += card.number;
-      if (card.family.label === family.label && card.number === 7) return score += 40;
+      if (card.family.label === family40.label && card.number === 7) return score += 40;
     });
     player.roundScore = score;
     player.globalScore += score;
@@ -77,7 +77,7 @@ const countScore = family => {
 
 const get40Family = () => family40;
 
-const set40Family = () => family40 = Families[Math.floor(Math.random() * 4)];
+const set40Family = () => family40 = families.getFamilyById(Math.floor(Math.random() * 4));
 
 module.exports = {
   setDealedDecksToPlayers,

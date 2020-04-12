@@ -50,6 +50,8 @@ const sample4PlayersSession = () => {
     {cards: pl4ToPl1, player: playersService.getPlayers()[3]}
   ]);
 
+  cardsService.set40Family();
+
 // Quatrième phase - tours de jeu
   for (let i = 0; i < 15; i++) {
     const cardPlayedByPlayer = [];
@@ -66,7 +68,7 @@ const sample4PlayersSession = () => {
   }
 
 // Cinquième phase - décompte points
-  cardsService.countScore({id: 1, label: 'Coeur'});
+  cardsService.countScore();
 
   console.log('------- tour ', nbTour);
   nbTour++;
@@ -83,10 +85,4 @@ const displayScores = () => {
     .getPlayers()
     .sort((pl1, pl2) => pl1.globalScore - pl2.globalScore)
     .forEach(player => console.log(player.name + ' ' + player.globalScore));
-};
-
-module.exports = {
-  createPlayers,
-  sample4PlayersSession,
-  displayScores
 };

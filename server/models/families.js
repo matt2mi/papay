@@ -6,4 +6,21 @@ const Families = Object.freeze({
   PAPAYOO: {id: 4, label: 'Papayoo'}
 });
 
-module.exports = Families;
+const getFamilyById = family40Id => {
+  switch (family40Id) {
+    case 0:
+      return Families.SPADES;
+    case 1:
+      return Families.HEART;
+    case 2:
+      return Families.DIAMONDS;
+    case 3:
+      return Families.CHAMROCK;
+    case 4:
+      return Families.PAPAYOO;
+    default:
+      return null;
+  }
+};
+
+module.exports = {Families, getFamilyById};
