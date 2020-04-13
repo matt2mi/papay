@@ -22,7 +22,7 @@
       {{player.name + ' : ' + player.roundScore}}
     </div>
 
-    <button type="button" class="btn btn-primary" (click)="readyForNextTour()">
+    <button type="button" class="btn btn-primary" (click)="readyForNextTour()" *ngIf="!isReady">
       Passer au tour suivant
     </button>
 

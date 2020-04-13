@@ -18,14 +18,14 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname + '/index.html')));
 
-const startParty = () => {
-  partyStarted = true;
-  cardsService.setDealedDecksToPlayers();
-  io.emit('partyStarted', true);
-};
-
 app.get('/startParty', (req, res) => {
-  startParty();
+  if (!partyStarted) {
+    partyStarted = true;
+    playingService.startParty(io);
+    res.status(200).send({error: false, message: 'ok'});
+  } else {
+    res.status(403).send({error: true, message: 'bug: partie déjà started'});
+  }
 });
 app.get('/getDeck/:name', (req, res) => {
   const player = playersService.getPlayerByName(req.params.name);
@@ -48,8 +48,7 @@ app.post('/giveCards', (req, res) => {
         playersService.sendDecks(cardsService.get40Family());
 
         // on démarre la partie en avertissant le premier joueur que c'est son tour
-        const nextPlayer = playersService.getPlayers()[0];
-        playingService.setFirstPlayerToPlay(nextPlayer);
+        const nextPlayer = playingService.setFirstPlayerToPlay();
         io.emit('nextPlayerTurn', {nextPlayerName: nextPlayer.name, cardsPlayedWithPlayer: []});
         playingService.emitPlayerTurn(nextPlayer.name);
       } catch (e) {
@@ -71,7 +70,7 @@ app.get('/goNextTour/:name', (req, res) => {
   res.send(true);
 });
 
-app.get('/players', (req, res) => res.send({players: playersService.getPlayers()}));
+app.get('/players', (req, res) => res.send(playersService.getPlayers()));
 
 app.get('/chatMessages', (req, res) => res.send({messages: chatService.getMessages()}));
 app.post('/newChatMessage', (req, res) => {
@@ -85,25 +84,23 @@ const server = app.listen(3000, () => {
 
 // WEBSOCKETS
 // =============================================================================
-
 const io = require("socket.io")(server);
 
 io.on('connection', (socket) => {
-  console.log('New user connected');
-
   socket.on('createPlayer', name => {
     // TODO: cleaner ?
     if(partyStarted) {
-      socket.emit('creatingPlayer', {error: true, message: 'partie déjà démarrée'});
+      socket.emit('creatingPlayer', {name: '', error: {value: true, message: 'partie déjà démarrée'}});
     } else {
       try {
         playersService.createPlayer(socket, name, io);
-        socket.emit('creatingPlayer', {error: false, name});
+        console.log('New user connected', name);
+        socket.emit('creatingPlayer', {name, error: {value: false, message: ''}});
         if(playersService.getNbPlayers() === 8) {
           startParty();
         }
       } catch (error) {
-        socket.emit('creatingPlayer', {error: true, message: error.message});
+        socket.emit('creatingPlayer', {name, error: {value: true, message: error.message}});
       }
     }
   });

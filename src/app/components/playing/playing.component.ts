@@ -26,6 +26,7 @@ export class PlayingComponent implements OnInit {
   nbRound = 1;
   scoresState = false;
   waitedPlayersForNextRound: Player[] = [];
+  isReady = false;
 
   constructor(public router: Router,
               public playersService: PlayersService,
@@ -34,59 +35,50 @@ export class PlayingComponent implements OnInit {
 
   ngOnInit() {
     this.currentPlayer = this.playersService.getCurrentPlayer();
+    this.initDeck();
+    this.playersService.getConnectedPlayers().subscribe((players: Player[]) => this.connectedPlayers = players);
+
+    this.cardsService.getDeckWithGivenCards$.subscribe((result: { deck: Card[], family40: Family }) => {
+      this.isTimeToGiveCard = false;
+      this.currentPlayer.deck = result.deck;
+      this.family40 = result.family40;
+      this.getBackCards();
+      this.setAllCardsClickablesOrNot(false);
+    });
+    this.playersService.nextPlayerTurn$.subscribe(result => {
+      this.nextPlayerName = result.nextPlayerName;
+      this.cardFold = result.cardsPlayedWithPlayer;
+      if (result.nextPlayerName === this.currentPlayer.name) {
+        // c'est au tour du joueur de jouer
+        this.isCurrentPlayerTurn = true;
+        this.canPlayCards();
+      } else {
+        this.isCurrentPlayerTurn = false;
+        this.setAllCardsClickablesOrNot(false);
+      }
+    });
+    this.playersService.roundLooser$.subscribe(roundLooserName => {
+      this.setAllCardsClickablesOrNot(false);
+      this.handleRoundLooser(roundLooserName);
+    });
+    this.playersService.endOfTour$.subscribe(players => {
+      this.setAllCardsClickablesOrNot(false);
+      this.isReady = false;
+      this.endTour(players);
+    });
+    this.playersService.waitedPlayersForNextRound$.subscribe(players => this.waitedPlayersForNextRound = players);
+    this.playersService.newTour$.subscribe(() => this.initDeck());
+    this.playersService.gameOver$.subscribe(() => this.gameOver());
+  }
+
+  initDeck() {
     this.playersService.getCurrentPlayerDeck().subscribe(({deck}) => {
+      this.scoresState = false;
       this.currentPlayer.deck = deck;
       this.isTimeToGiveCard = true;
       this.setAllCardsClickablesOrNot(true);
     }, error => {
       console.error(error);
-    });
-
-    this.playersService.getConnectedPlayers().subscribe(({players}) => this.connectedPlayers = players);
-
-    this.cardsService.getDeckWithGivenCards$.subscribe((result) => {
-      if (result.deck) {
-        this.isTimeToGiveCard = false;
-        this.currentPlayer.deck = result.deck;
-        this.family40 = result.family40;
-        this.getBackCards();
-        this.setAllCardsClickablesOrNot(false);
-      }
-    });
-
-    this.playersService.nextPlayerTurn$.subscribe(result => {
-      if (result.nextPlayerName) {
-        this.nextPlayerName = result.nextPlayerName;
-        this.cardFold = result.cardsPlayedWithPlayer;
-        if (result.nextPlayerName === this.currentPlayer.name) {
-          // c'est au tour du joueur de jouer
-          this.isCurrentPlayerTurn = true;
-          this.canPlayCards();
-        } else {
-          this.isCurrentPlayerTurn = false;
-          this.setAllCardsClickablesOrNot(false);
-        }
-      }
-    });
-
-    this.playersService.roundLooser$.subscribe(roundLooserName => {
-      if (roundLooserName) {
-        this.setAllCardsClickablesOrNot(false);
-        this.handleRoundLooser(roundLooserName);
-      }
-    });
-
-    this.playersService.endOfTour$.subscribe(players => {
-      if (players.length > 0) {
-        this.setAllCardsClickablesOrNot(false);
-        this.endTour(players);
-      }
-    });
-
-    this.playersService.waitedPlayersForNextRound$.subscribe(players => {
-      if (players.length > 0) {
-        this.waitedPlayersForNextRound = players;
-      }
     });
   }
 
@@ -146,7 +138,6 @@ export class PlayingComponent implements OnInit {
   }
 
   endTour(players: Player[]) {
-    // TODO : renvoyer soit vers '/scores/en-cours' soit vers '/scores/game-over' => pr un meilleur affichage ?
     this.connectedPlayers = players;
     this.waitedPlayersForNextRound = players;
     this.scoresState = true;
@@ -172,6 +163,7 @@ export class PlayingComponent implements OnInit {
 
   readyForNextTour() {
     this.playersService.readyForNextTour().subscribe(() => {
+      this.isReady = true;
       this.isCurrentPlayerTurn = false;
       this.nextPlayerName = '';
       this.cardFold = [];
@@ -181,5 +173,9 @@ export class PlayingComponent implements OnInit {
       this.nbRound = 1;
       this.family40 = null;
     });
+  }
+
+  gameOver() {
+    this.router.navigate(['scores']);
   }
 }
