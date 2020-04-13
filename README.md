@@ -57,8 +57,6 @@ https://fireship.io/lessons/sharing-data-between-angular-components-four-methods
 
 Google app engine : https://medium.com/google-cloud/a-node-js-websocket-server-on-google-app-engine-c6c32a486e9a
 
-Azure DevOps : https://docs.microsoft.com/en-us/azure/app-service/app-service-web-get-started-nodejs
-
 Heroku : https://devcenter.heroku.com/articles/node-websockets
 
 ## Temps passé
@@ -140,6 +138,10 @@ Heroku : https://devcenter.heroku.com/articles/node-websockets
 ###### 13/04
 
 15h - 19h30
+
+###### 13/04
+
+00h - 
 
 #### HC
 
