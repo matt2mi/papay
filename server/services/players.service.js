@@ -1,7 +1,7 @@
 const Player = require('../models/player');
 
 let players = [];
-const playersSockets = [];
+let playersSockets = [];
 let waitedPlayers = []; // les joueurs attendus pour passer au tour suivant
 
 const createPlayer = (socket, name, io) => {
@@ -18,6 +18,10 @@ const createPlayer = (socket, name, io) => {
 const getPlayerSocketByName = name => {
   const player = getPlayerByName(name);
   return player ? playersSockets.find(socket => socket.id === player.socketId) : null;
+};
+
+const getPlayerBySocketId = socketId => {
+  return players.find(player => player.socketId === socketId);
 };
 
 const removePlayer = socket => {
@@ -124,9 +128,16 @@ const reinitPlayersForNextRound = () => {
   });
 };
 
+const reset = () => {
+  players = [];
+  playersSockets = [];
+  waitedPlayers = [];
+};
+
 module.exports = {
   createPlayer,
   getPlayerSocketByName,
+  getPlayerBySocketId,
   removePlayer,
   getPlayers,
   getNbPlayers,
@@ -141,5 +152,6 @@ module.exports = {
   getWaitedPlayers,
   setWaitedPlayers,
   removeWaitedPlayer,
-  reinitPlayersForNextRound
+  reinitPlayersForNextRound,
+  reset
 };

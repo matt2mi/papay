@@ -68,7 +68,8 @@ export class PlayingComponent implements OnInit {
     });
     this.playersService.waitedPlayersForNextRound$.subscribe(players => this.waitedPlayersForNextRound = players);
     this.playersService.newTour$.subscribe(() => this.initDeck());
-    this.playersService.gameOver$.subscribe(() => this.gameOver());
+    this.playersService.gameOver$.subscribe(() => this.gameOver(''));
+    this.playersService.playerDisconnected$.subscribe((name: string) => this.gameOver(name));
   }
 
   initDeck() {
@@ -175,7 +176,12 @@ export class PlayingComponent implements OnInit {
     });
   }
 
-  gameOver() {
-    this.router.navigate(['scores']);
+  gameOver(name: string) {
+    if (name) {
+      alert(name + ' a quitté le jeu...');
+      this.router.navigate(['login']);
+    } else {
+      this.router.navigate(['scores']);
+    }
   }
 }

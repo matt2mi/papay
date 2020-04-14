@@ -40,6 +40,9 @@ export class PlayersService {
   private gameOverSource = new BehaviorSubject([]);
   gameOver$ = this.gameOverSource.asObservable().pipe(skip(1));
 
+  private playerDisconnectedSource = new BehaviorSubject('');
+  playerDisconnected$ = this.playerDisconnectedSource.asObservable().pipe(skip(1));
+
   constructor(public http: HttpClient, public socket: Socket) {
     this.currentPlayer = new Player();
   }
@@ -62,6 +65,7 @@ export class PlayersService {
       this.waitedPlayersForNextRoundSource.next(players));
     this.socket.on('newTour', () => this.newTourSource.next(null));
     this.socket.on('gameOver', (players: Player[]) => this.gameOverSource.next(players));
+    this.socket.on('playerDisconnected', (playerName: string) => this.playerDisconnectedSource.next(playerName));
   }
 
   getCurrentPlayer(): Player {

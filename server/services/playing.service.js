@@ -119,11 +119,20 @@ const unWaitPlayer = (name, io) => {
   }
 };
 
+const reset = () => {
+  firstPlayerToPlay = null;
+  playedCardsOfRound = [];
+  startingPlayerOfRound = null;
+  nbCardsPlayedInTour = 0;
+  nbTour = 1;
+};
+
 module.exports = {
   startParty,
   emitPlayerTurn,
   receivePlayerCard,
   findLooser,
   setFirstPlayerToPlay,
-  unWaitPlayer
+  unWaitPlayer,
+  reset
 };

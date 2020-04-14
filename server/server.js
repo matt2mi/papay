@@ -91,6 +91,13 @@ const server = app.listen(port, () => {
 // =============================================================================
 const io = require("socket.io")(server);
 
+const resetServer = () => {
+  playersService.reset();
+  playingService.reset();
+  chatService.reset();
+  partyStarted = false;
+};
+
 io.on('connection', (socket) => {
   socket.on('createPlayer', name => {
     // TODO: cleaner ?
@@ -111,10 +118,24 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', function () {
-    playersService.removePlayer(socket);
-    io.emit('newPlayer', playersService.getPlayers());
+    if (partyStarted) {
+      const playerDisconnected = playersService.getPlayerBySocketId(socket.id);
+      console.log('disconnected', playerDisconnected.name);
+      io.emit('playerDisconnected', playerDisconnected.name);
+      resetServer();
+    } else {
+      playersService.removePlayer(socket);
+      io.emit('newPlayer', playersService.getPlayers());
+    }
   });
 });
+
+// TODO : score en live
+// TODO : dernière carte du pli (cacher cartes du deck le temps de voir le pli)
+// TODO : à qui on donne les cartes
+// TODO : bloquer vraiment clic sur cartes quand grisées
+// TODO : bug sur l'enchainement - trop vite ?
+// TODO : possible spectateur ? (juste pli visible et chat)
 
 /*
 Suite des actions Websocket
