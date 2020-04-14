@@ -55,9 +55,9 @@ https://fireship.io/lessons/sharing-data-between-angular-components-four-methods
 
 #### Déploiement
 
-Google app engine : https://medium.com/google-cloud/a-node-js-websocket-server-on-google-app-engine-c6c32a486e9a
-
 Heroku : https://devcenter.heroku.com/articles/node-websockets
+
+pour deployer sur heroku : git push heroku HEAD:master
 
 ## Temps passé
 

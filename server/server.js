@@ -82,12 +82,10 @@ app.post('/newChatMessage', (req, res) => {
   res.send({ok: true});
 });
 
-const port = process.env.PORT || 18184;
+const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {
   console.log(`Api on port ${port}`);
 });
-console.log('url', process.env.URL);
-console.log('PORT', process.env.PORT);
 
 // WEBSOCKETS
 // =============================================================================
