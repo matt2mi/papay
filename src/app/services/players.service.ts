@@ -12,26 +12,28 @@ import {skip} from 'rxjs/internal/operators';
 export class PlayersService {
   private currentPlayer: Player;
 
-  partyStarted$ = this.partyStartedSource.asObservable().pipe(skip(1));
-  nextPlayerTurn$ = this.nextPlayerTurnSource.asObservable().pipe(skip(1));
-  roundLooser$ = this.roundLooserSource.asObservable().pipe(skip(1));
-  endOfTour$ = this.endOfTourSource.asObservable().pipe(skip(1));
-
-  private partyStartedSource = new BehaviorSubject(null);
-  waitedPlayersForNextRound$ = this.waitedPlayersForNextRoundSource.asObservable().pipe(skip(1));
-
-  private nextPlayerTurnSource = new BehaviorSubject({nextPlayerName: '', cardsPlayedWithPlayer: []});
   // skip(1) permet de ne pas envoyer le premier appel dû à l'abonnement dans chaque component et d'attendre le vrai retour
-  private createPlayerSource = new BehaviorSubject(null);
+  private newPlayersSource = new BehaviorSubject([]);
+  newPlayers$ = this.newPlayersSource.asObservable().pipe(skip(1));
 
-  private roundLooserSource = new BehaviorSubject('');
+  private createPlayerSource = new BehaviorSubject(null);
   createPlayer$ = this.createPlayerSource.asObservable().pipe(skip(1));
 
+  private partyStartedSource = new BehaviorSubject(null);
+  partyStarted$ = this.partyStartedSource.asObservable().pipe(skip(1));
+
+  private nextPlayerTurnSource = new BehaviorSubject({nextPlayerName: '', cardsPlayedWithPlayer: []});
+  nextPlayerTurn$ = this.nextPlayerTurnSource.asObservable().pipe(skip(1));
+
+  private roundLooserSource = new BehaviorSubject('');
+  roundLooser$ = this.roundLooserSource.asObservable().pipe(skip(1));
+
   private endOfTourSource = new BehaviorSubject([]);
-  private newPlayersSource = new BehaviorSubject([]);
+  endOfTour$ = this.endOfTourSource.asObservable().pipe(skip(1));
 
   private waitedPlayersForNextRoundSource = new BehaviorSubject([]);
-  newPlayers$ = this.newPlayersSource.asObservable().pipe(skip(1));
+  waitedPlayersForNextRound$ = this.waitedPlayersForNextRoundSource.asObservable().pipe(skip(1));
+
   private newTourSource = new BehaviorSubject(null);
   newTour$ = this.newTourSource.asObservable().pipe(skip(1));
 

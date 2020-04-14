@@ -27,6 +27,7 @@ app.get('/startParty', (req, res) => {
     res.status(403).send({error: true, message: 'bug: partie déjà started'});
   }
 });
+
 app.get('/getDeck/:name', (req, res) => {
   const player = playersService.getPlayerByName(req.params.name);
   if(player) {
@@ -35,6 +36,7 @@ app.get('/getDeck/:name', (req, res) => {
     res.status(403).send({message: 'pseudo de joueur introuvable.'});
   }
 });
+
 app.post('/giveCards', (req, res) => {
   // endpoint pour donner ses cartes à son voisin avant le tour
   const player = playersService.getPlayerByName(req.body.name);
@@ -60,6 +62,7 @@ app.post('/giveCards', (req, res) => {
     res.status(403).send({message: 'pseudo de joueur introuvable.'});
   }
 });
+
 app.post('/playCard', (req, res) => {
   playingService.receivePlayerCard(req.body.playerName, req.body.card, io);
   res.send({ok: true}); // ballec :p
@@ -73,6 +76,7 @@ app.get('/goNextTour/:name', (req, res) => {
 app.get('/players', (req, res) => res.send(playersService.getPlayers()));
 
 app.get('/chatMessages', (req, res) => res.send({messages: chatService.getMessages()}));
+
 app.post('/newChatMessage', (req, res) => {
   chatService.addMessage(req.body.message, io);
   res.send({ok: true});
@@ -97,7 +101,7 @@ io.on('connection', (socket) => {
         console.log('New user connected', name);
         socket.emit('creatingPlayer', {name, error: {value: false, message: ''}});
         if(playersService.getNbPlayers() === 8) {
-          startParty();
+          playingService.startParty(io);
         }
       } catch (error) {
         socket.emit('creatingPlayer', {name, error: {value: true, message: error.message}});
@@ -110,18 +114,6 @@ io.on('connection', (socket) => {
     io.emit('newPlayer', playersService.getPlayers());
   });
 });
-
-// // Session exemple
-// const session = require('./gamingSession');
-
-// session.createPlayers();
-
-// session.sample4PlayersSession();
-// session.sample4PlayersSession();
-// session.sample4PlayersSession();
-// session.sample4PlayersSession();
-
-// session.displayScores();
 
 /*
 Suite des actions Websocket
