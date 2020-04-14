@@ -141,7 +141,11 @@ Heroku : https://devcenter.heroku.com/articles/node-websockets
 
 ###### 13/04
 
-00h - 
+00h - 1h
+
+###### 14/04
+
+11h - 12h
 
 #### HC
 
