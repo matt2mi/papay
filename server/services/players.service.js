@@ -98,6 +98,10 @@ const addLoosingCards = (loosingCards, looserNameOfRound) => {
   player.collectedLoosingCards = player.collectedLoosingCards.concat(loosingCards);
 };
 
+const emptyCollectedLoosingCards = () => {
+  players.forEach(player => player.collectedLoosingCards = []);
+};
+
 const getNextPlayer = previousPlayerName => {
   const currentPlayerId = players.findIndex(player => player.name === previousPlayerName);
   if (currentPlayerId < 0) {
@@ -148,6 +152,7 @@ module.exports = {
   hasEveryPlayerGivenCards,
   sendDecks,
   addLoosingCards,
+  emptyCollectedLoosingCards,
   getNextPlayer,
   getWaitedPlayers,
   setWaitedPlayers,

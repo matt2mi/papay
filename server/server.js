@@ -51,7 +51,7 @@ app.post('/giveCards', (req, res) => {
 
         // on démarre la partie en avertissant le premier joueur que c'est son tour
         const nextPlayer = playingService.setFirstPlayerToPlay();
-        io.emit('nextPlayerTurn', {nextPlayerName: nextPlayer.name, cardsPlayedWithPlayer: []});
+        io.emit('nextPlayerTurn', {playerNameWaitedToPlay: nextPlayer.name, cardsPlayedWithPlayer: []});
         playingService.emitPlayerTurn(nextPlayer.name);
       } catch (e) {
         console.error(e);
@@ -130,10 +130,8 @@ io.on('connection', (socket) => {
   });
 });
 
-// TODO : score en live
+// TODO : bon nb cartes à donner
 // TODO : dernière carte du pli (cacher cartes du deck le temps de voir le pli)
-// TODO : à qui on donne les cartes
-// TODO : bloquer vraiment clic sur cartes quand grisées
 // TODO : bug sur l'enchainement - trop vite ?
 // TODO : possible spectateur ? (juste pli visible et chat)
 

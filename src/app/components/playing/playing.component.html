@@ -1,7 +1,28 @@
 <div class="row">
-  <!--Le pli en cours-->
-  <div class="col-12" *ngIf="!showRoundLooserName && !scoresState">
-    <h2>Pli n°{{nbRound}} - à {{nextPlayerName === currentPlayer?.name ? 'toi' : nextPlayerName}} de jouer</h2>
+  <div class="col-12 text-center">
+    <h2 *ngIf="isTimeToGiveCard">
+      Tu reçois les cartes de {{previousPlayer?.name}} et tu donnes à {{nextPlayer?.name}}
+    </h2>
+    <h2 *ngIf="isTimeToPlay">
+      Pli n°{{nbRound}} - à {{playerNameWaitedToPlay === currentPlayer?.name ? 'toi' : playerNameWaitedToPlay}} de jouer
+    </h2>
+    <h2 *ngIf="isTimeToGetScores">
+      Points du tour
+    </h2>
+  </div>
+</div>
+
+<div class="row mb-3">
+  <div class="offset-1 col-3 text-center" style="border: 1px solid white;">
+    <div *ngFor="let player of leftPlayers" [ngClass]="{'has-to-play': playerNameWaitedToPlay === player.name}">
+      {{player.name}}:{{' ' + player.roundScore}} points dans ce tour
+    </div>
+  </div>
+
+  <div class="col-4 text-center" style="border: 1px solid white;">
+    <h2>
+      Pli n°{{nbRound}} - à {{playerNameWaitedToPlay === currentPlayer?.name ? 'toi' : playerNameWaitedToPlay}} de jouer
+    </h2>
 
     <div *ngIf="cardFold?.length > 0">
       <div class="my-card" *ngFor="let playerAndCard of cardFold">
@@ -9,13 +30,27 @@
         playerAndCard?.card?.family?.label}}
       </div>
     </div>
+
+    <div class="col-12" *ngIf="showRoundLooserName && !isTimeToGetScores">
+      <h2>Ce pli est pour : {{roundLooserName}}</h2>
+    </div>
   </div>
 
-  <div class="col-12" *ngIf="showRoundLooserName && !scoresState">
-    <h2>Ce pli est pour : {{roundLooserName}}</h2>
+  <div class="col-3 text-center" style="border: 1px solid white;">
+    <div *ngFor="let player of rightPlayers" [ngClass]="{'has-to-play': playerNameWaitedToPlay === player.name}">
+      {{player.name}}:{{' ' + player.roundScore}} points dans ce tour
+    </div>
   </div>
 
-  <div class="col-12" *ngIf="scoresState">
+  <div class="offset-4 col-4 text-center" style="border: 1px solid white;">
+    <div [ngClass]="{'has-to-play': playerNameWaitedToPlay === currentPlayer.name}">
+      Moi: {{currentPlayer.roundScore}} points dans ce tour
+    </div>
+  </div>
+</div>
+
+<div class="row" *ngIf="isTimeToGetScores">
+  <div class="col-12">
     <h2>Points de ce tour :</h2>
 
     <div *ngFor="let player of connectedPlayers">
@@ -31,11 +66,14 @@
 </div>
 
 <!--Le deck du joueur-->
-<div class="row" *ngIf="!scoresState">
-  <div class="col-12">
-    <h2>Mes Cartes <span *ngIf="family40">- le 7 qui vaut 40 points: le 7 de {{family40?.label}}</span></h2>
+<div class="row" *ngIf="!isTimeToGetScores && !showRoundLooserName">
+  <div class="col-12 text-center">
+    <h2 *ngIf="family40">le 7 qui vaut 40 points: le 7 de {{family40?.label}}</h2>
+  </div>
+
+  <div class="col-12 text-center">
     <div class="deck">
-      <div *ngFor="let card of currentPlayer.deck" class="card-place" [hidden]="card.played">
+      <div *ngFor="let card of currentPlayer?.deck" class="card-place" [hidden]="card.played">
         <button type="button" class="card-button"
                 [ngClass]="{'not-clickable': !card.isPlayable, 'selected': card.toGive, 'newOne': card.newOne}"
                 [ngStyle]="{'background-image': 'url(assets/img/' + card.number + card.family.label + '.png)'}"
@@ -44,14 +82,12 @@
       </div>
     </div>
   </div>
-</div>
 
-<div class="row" *ngIf="isTimeToGiveCard && !scoresState">
-  <button type="button" class="btn btn-primary"
-          [disabled]="getCardToGive().length < 3"
-          (click)="giveCards()">
-    Donner ces cartes
-  </button>
+  <div class="col-12 text-center" *ngIf="isTimeToGiveCard && !isTimeToGetScores">
+    <button type="button" class="btn btn-primary" [disabled]="getCardToGive().length < 3" (click)="giveCards()">
+      Donner ces cartes
+    </button>
+  </div>
 </div>
 
 <div class="row">

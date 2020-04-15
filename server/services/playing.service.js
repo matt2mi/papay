@@ -22,9 +22,9 @@ const emitPlayerTurn = firstPlayerName => {
   currentPlayerSocket.emit('yourTurn', true);
 };
 
-const emitNextPlayerTurn = (io, nextPlayerName) => {
-  io.emit('nextPlayerTurn', {nextPlayerName, cardsPlayedWithPlayer: playedCardsOfRound});
-  emitPlayerTurn(nextPlayerName);
+const emitNextPlayerTurn = (io, playerNameWaitedToPlay) => {
+  io.emit('nextPlayerTurn', {playerNameWaitedToPlay, cardsPlayedWithPlayer: playedCardsOfRound});
+  emitPlayerTurn(playerNameWaitedToPlay);
 };
 
 const receivePlayerCard = (playerName, card, io) => {
@@ -37,14 +37,15 @@ const receivePlayerCard = (playerName, card, io) => {
     // trouver le perdant
     const looser = findLooser(playedCardsOfRound);
 
-    io.emit('roundLooser', looser.name);
-
     // lui donner les cartes du pli
     giveCardOfRoundToLooser(looser);
+    cardsService.countScore();
+    io.emit('roundLooser', playersService.getPlayerByName(looser.name));
 
     if (nbCardsPlayedInTour === 60) { // TODO: mettre 3 au lieu de 60 pour tester plus vite
       // la dernière carte du tour vient d'être jouée
       cardsService.countScore();
+      playersService.emptyCollectedLoosingCards();
       if (nbTour === playersService.getNbPlayers()) {
         // game over
         io.emit('gameOver');
