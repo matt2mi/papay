@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Router} from '@angular/router';
 import {PlayersService} from '../../services/players.service';
-import { CardsService } from 'src/app/services/cards.service';
+import {CardsService} from 'src/app/services/cards.service';
 
 @Component({
   selector: 'app-login',
@@ -17,8 +17,8 @@ export class LoginComponent implements OnInit {
   });
 
   constructor(public router: Router,
-    public playersService: PlayersService,
-    public cardsService: CardsService) {
+              public playersService: PlayersService,
+              public cardsService: CardsService) {
   }
 
   ngOnInit() {
@@ -26,13 +26,11 @@ export class LoginComponent implements OnInit {
     this.cardsService.initSocket();
     this.playersService.createPlayer$.subscribe(result => {
       this.errorMessage = '';
-      if (result) {
-        if (!result.error) {
-          this.playersService.setCurrentPlayerName(result.name);
-          this.router.navigate(['waiting']);
-        } else {
-          this.errorMessage = result.message;
-        }
+      if (!result.error.value) {
+        this.playersService.setCurrentPlayerName(result.name);
+        this.router.navigate(['waiting']);
+      } else {
+        this.errorMessage = result.error.message;
       }
     });
   }

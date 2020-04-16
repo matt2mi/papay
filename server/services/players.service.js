@@ -1,8 +1,8 @@
 const Player = require('../models/player');
-const utilsService = require('./utils.service');
 
 let players = [];
-const playersSockets = [];
+let playersSockets = [];
+let waitedPlayers = []; // les joueurs attendus pour passer au tour suivant
 
 const createPlayer = (socket, name, io) => {
   if (isExistingPlayerName(name)) {
@@ -18,6 +18,10 @@ const createPlayer = (socket, name, io) => {
 const getPlayerSocketByName = name => {
   const player = getPlayerByName(name);
   return player ? playersSockets.find(socket => socket.id === player.socketId) : null;
+};
+
+const getPlayerBySocketId = socketId => {
+  return players.find(player => player.socketId === socketId);
 };
 
 const removePlayer = socket => {
@@ -78,34 +82,6 @@ const hasEveryPlayerGivenCards = () => {
   return !players.some(player => !player.hasGivenCards);
 };
 
-// cardsGiven: tableau d'objets contenant une liste de cartes données par un joueur et une référence vers ce joueur
-// [{cards: Card[], player: Player}, {...}, ...]
-const handleGivenCards = cardsGivenByPlayer => {
-  // ajout des cartes données par le voisin précédent
-  players.forEach((player, id) => {
-    if (players[id - 1]) {
-      const cardsToAdd = cardsGivenByPlayer.find(c => c.player.name === players[id - 1].name);
-      player.deck = player.deck.concat(cardsToAdd.cards.map(card => ({...card, newOne: true})));
-    } else {
-      const cardsToAdd = cardsGivenByPlayer.find(c => c.player.name === players[players.length - 1].name);
-      player.deck = player.deck.concat(cardsToAdd.cards.map(card => ({...card, newOne: true})));
-    }
-  });
-
-  // suppression des cartes données au voisin suivant
-  players.forEach(player => {
-    const cardsToRemove = cardsGivenByPlayer.find(c => c.player.name === player.name);
-    cardsToRemove.cards.forEach(card => {
-      const cardId = utilsService.getIndexOfCard(player.deck, card);
-      player.deck.splice(cardId, 1);
-    });
-  });
-
-  players.forEach(player => utilsService.sortCards(player.deck));
-
-  return players;
-};
-
 const sendDecks = family40 => {
   players.forEach(player => {
     const socket = getPlayerSocketByName(player.name);
@@ -122,6 +98,10 @@ const addLoosingCards = (loosingCards, looserNameOfRound) => {
   player.collectedLoosingCards = player.collectedLoosingCards.concat(loosingCards);
 };
 
+const emptyCollectedLoosingCards = () => {
+  players.forEach(player => player.collectedLoosingCards = []);
+};
+
 const getNextPlayer = previousPlayerName => {
   const currentPlayerId = players.findIndex(player => player.name === previousPlayerName);
   if (currentPlayerId < 0) {
@@ -134,9 +114,34 @@ const getNextPlayer = previousPlayerName => {
   }
 };
 
+const getWaitedPlayers = () => {
+  return waitedPlayers;
+};
+
+const setWaitedPlayers = () => {
+  waitedPlayers = [];
+  waitedPlayers = waitedPlayers.concat(players);
+};
+
+const removeWaitedPlayer = id => waitedPlayers.splice(id, 1);
+
+const reinitPlayersForNextRound = () => {
+  players.forEach(player => {
+    player.hasGivenCards = false;
+    player.deck = [];
+  });
+};
+
+const reset = () => {
+  players = [];
+  playersSockets = [];
+  waitedPlayers = [];
+};
+
 module.exports = {
   createPlayer,
   getPlayerSocketByName,
+  getPlayerBySocketId,
   removePlayer,
   getPlayers,
   getNbPlayers,
@@ -145,8 +150,13 @@ module.exports = {
   setPlayersDecks,
   handleGivenCardsOneByOne,
   hasEveryPlayerGivenCards,
-  handleGivenCards,
   sendDecks,
   addLoosingCards,
-  getNextPlayer
+  emptyCollectedLoosingCards,
+  getNextPlayer,
+  getWaitedPlayers,
+  setWaitedPlayers,
+  removeWaitedPlayer,
+  reinitPlayersForNextRound,
+  reset
 };

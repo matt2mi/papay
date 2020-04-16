@@ -18,15 +18,16 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname + '/index.html')));
 
-const startParty = () => {
-  partyStarted = true;
-  cardsService.setDealedDecksToPlayers();
-  io.emit('partyStarted', true);
-};
-
 app.get('/startParty', (req, res) => {
-  startParty();
+  if (!partyStarted) {
+    partyStarted = true;
+    playingService.startParty(io);
+    res.status(200).send({error: false, message: 'ok'});
+  } else {
+    res.status(403).send({error: true, message: 'bug: partie déjà started'});
+  }
 });
+
 app.get('/getDeck/:name', (req, res) => {
   const player = playersService.getPlayerByName(req.params.name);
   if(player) {
@@ -35,6 +36,7 @@ app.get('/getDeck/:name', (req, res) => {
     res.status(403).send({message: 'pseudo de joueur introuvable.'});
   }
 });
+
 app.post('/giveCards', (req, res) => {
   // endpoint pour donner ses cartes à son voisin avant le tour
   const player = playersService.getPlayerByName(req.body.name);
@@ -48,9 +50,8 @@ app.post('/giveCards', (req, res) => {
         playersService.sendDecks(cardsService.get40Family());
 
         // on démarre la partie en avertissant le premier joueur que c'est son tour
-        const nextPlayer = playersService.getPlayers()[0];
-        playingService.setFirstPlayerToPlay(nextPlayer);
-        io.emit('nextPlayerTurn', {nextPlayerName: nextPlayer.name, cardsPlayedWithPlayer: []});
+        const nextPlayer = playingService.setFirstPlayerToPlay();
+        io.emit('nextPlayerTurn', {playerNameWaitedToPlay: nextPlayer.name, cardsPlayedWithPlayer: []});
         playingService.emitPlayerTurn(nextPlayer.name);
       } catch (e) {
         console.error(e);
@@ -61,6 +62,7 @@ app.post('/giveCards', (req, res) => {
     res.status(403).send({message: 'pseudo de joueur introuvable.'});
   }
 });
+
 app.post('/playCard', (req, res) => {
   playingService.receivePlayerCard(req.body.playerName, req.body.card, io);
   res.send({ok: true}); // ballec :p
@@ -71,60 +73,67 @@ app.get('/goNextTour/:name', (req, res) => {
   res.send(true);
 });
 
-app.get('/players', (req, res) => res.send({players: playersService.getPlayers()}));
+app.get('/players', (req, res) => res.send(playersService.getPlayers()));
 
 app.get('/chatMessages', (req, res) => res.send({messages: chatService.getMessages()}));
+
 app.post('/newChatMessage', (req, res) => {
   chatService.addMessage(req.body.message, io);
   res.send({ok: true});
 });
 
-const server = app.listen(3000, () => {
-  console.log(`Api on port 3000`);
+const port = process.env.PORT || 3000;
+const server = app.listen(port, () => {
+  console.log(`Api on port ${port}`);
 });
 
 // WEBSOCKETS
 // =============================================================================
-
 const io = require("socket.io")(server);
 
-io.on('connection', (socket) => {
-  console.log('New user connected');
+const resetServer = () => {
+  playersService.reset();
+  playingService.reset();
+  chatService.reset();
+  partyStarted = false;
+};
 
+io.on('connection', (socket) => {
   socket.on('createPlayer', name => {
     // TODO: cleaner ?
     if(partyStarted) {
-      socket.emit('creatingPlayer', {error: true, message: 'partie déjà démarrée'});
+      socket.emit('creatingPlayer', {name: '', error: {value: true, message: 'partie déjà démarrée'}});
     } else {
       try {
         playersService.createPlayer(socket, name, io);
-        socket.emit('creatingPlayer', {error: false, name});
+        console.log('New user connected', name);
+        socket.emit('creatingPlayer', {name, error: {value: false, message: ''}});
         if(playersService.getNbPlayers() === 8) {
-          startParty();
+          playingService.startParty(io);
         }
       } catch (error) {
-        socket.emit('creatingPlayer', {error: true, message: error.message});
+        socket.emit('creatingPlayer', {name, error: {value: true, message: error.message}});
       }
     }
   });
 
   socket.on('disconnect', function () {
-    playersService.removePlayer(socket);
-    io.emit('newPlayer', playersService.getPlayers());
+    if (partyStarted) {
+      const playerDisconnected = playersService.getPlayerBySocketId(socket.id);
+      console.log('disconnected', playerDisconnected.name);
+      io.emit('playerDisconnected', playerDisconnected.name);
+      resetServer();
+    } else {
+      playersService.removePlayer(socket);
+      io.emit('newPlayer', playersService.getPlayers());
+    }
   });
 });
 
-// // Session exemple
-// const session = require('./gamingSession');
-
-// session.createPlayers();
-
-// session.sample4PlayersSession();
-// session.sample4PlayersSession();
-// session.sample4PlayersSession();
-// session.sample4PlayersSession();
-
-// session.displayScores();
+// TODO : bon nb cartes à donner
+// TODO : dernière carte du pli (cacher cartes du deck le temps de voir le pli)
+// TODO : bug sur l'enchainement - trop vite ?
+// TODO : possible spectateur ? (juste pli visible et chat)
 
 /*
 Suite des actions Websocket

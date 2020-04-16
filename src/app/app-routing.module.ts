@@ -10,7 +10,7 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'waiting', component: WaitingPlayersComponent},
   {path: 'playing', component: PlayingComponent},
-  {path: 'scores/:mode', component: ScoresComponent},
+  {path: 'scores', component: ScoresComponent},
   {path: '**', redirectTo: '/login', pathMatch: 'full'},
   // { path: '', redirectTo: '/login', pathMatch: 'full' },
   // { path: '**', component: PageNotFoundComponent }

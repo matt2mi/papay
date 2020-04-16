@@ -19,25 +19,19 @@ export class WaitingPlayersComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.playersService.getNewPlayers$
-      .subscribe(connectedPlayers => this.connectedPlayers = connectedPlayers);
+    this.playersService.newPlayers$
+      .subscribe((connectedPlayers: Player[]) => this.connectedPlayers = connectedPlayers);
     this.playersService.getConnectedPlayers()
-      .subscribe(({players}) => this.connectedPlayers = players);
-    this.playersService.partyStarted$
-      .subscribe(start => {
-        if (start) {
-          this.router.navigate(['playing']);
-        }
-      });
+      .subscribe((players: Player[]) => this.connectedPlayers = players);
+    this.playersService.partyStarted$.subscribe(() => this.router.navigate(['playing']));
   }
 
   startParty() {
-    console.log('startParty');
     if (this.connectedPlayers.length > 2 && this.connectedPlayers.length < 9) {
       this.playersService.startParty()
         .subscribe(
           () => this.router.navigate(['playing']),
-          () => this.errorMessage = 'Erreur, partie non démarrée.');
+          (error: { error: boolean, message: string }) => this.errorMessage = error.message);
     }
   }
 }

@@ -71,7 +71,6 @@ const countScore = () => {
     });
     player.roundScore = score;
     player.globalScore += score;
-    player.collectedLoosingCards = [];
   });
 };
 

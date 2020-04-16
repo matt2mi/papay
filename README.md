@@ -53,6 +53,12 @@ console.log(util.inspect(myObject, false, null, true /* enable colors */))
 
 https://fireship.io/lessons/sharing-data-between-angular-components-four-methods/
 
+#### Déploiement
+
+Heroku : https://devcenter.heroku.com/articles/node-websockets
+
+pour deployer sur heroku : git push heroku HEAD:master
+
 ## Temps passé
 
 #### MD
@@ -128,6 +134,26 @@ https://fireship.io/lessons/sharing-data-between-angular-components-four-methods
 14h - 16h
 
 23h - 1h
+
+###### 13/04
+
+15h - 19h30
+
+###### 13/04
+
+00h - 1h
+
+###### 14/04
+
+11h - 12h
+
+17h - 19h15
+
+###### 15/04
+
+16h - 18h
+
+1h - 2h
 
 #### HC
 

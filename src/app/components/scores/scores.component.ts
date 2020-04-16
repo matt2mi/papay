@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import Player from '../../models/player';
 import {PlayersService} from '../../services/players.service';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-scores',
@@ -10,31 +10,16 @@ import {ActivatedRoute, Router} from '@angular/router';
 })
 export class ScoresComponent {
 
-  mode = '';
   currentPlayer: Player;
   connectedPlayers: Player[];
 
-  constructor(public playersService: PlayersService, public router: Router, public activatedRoute: ActivatedRoute) {
+  constructor(public playersService: PlayersService, public router: Router) {
     this.currentPlayer = this.playersService.getCurrentPlayer();
-    // this.connectedPlayers = this.playersService.getConnectedPlayers();
-    this.activatedRoute.params.subscribe(params => this.mode = params.mode);
-  }
-
-  getLoosingCards(player) {
-    let resultStr = '';
-    let result = 0;
-    player.collectedLoosingCards.forEach(card => {
-      resultStr += ', ' + card.number + ' de ' + card.family.label;
-      result += card.number;
-    });
-    return {result, resultStr};
-  }
-
-  nextTurn() {
-    this.router.navigate(['playing']);
+    this.playersService.getConnectedPlayers().subscribe((players: Player[]) => this.connectedPlayers = players);
   }
 
   restart() {
-    this.router.navigate(['login']);
+    console.log('restart');
+    // TODO appel http / attendre tout le monde / renvoyer un socket pour dire restart
   }
 }

@@ -12,6 +12,20 @@ class Player {
     this.deck = deck ? deck : [];
     this.socketId = socketId ? socketId : '';
   }
+
+  static clonePlayer = player => {
+    const newPlayer = new Player();
+
+    newPlayer.name = player.name;
+    newPlayer.deck = player.deck;
+    newPlayer.socketId = player.socketId;
+    newPlayer.collectedLoosingCards = player.collectedLoosingCards;
+    newPlayer.roundScore = player.roundScore;
+    newPlayer.globalScore = player.globalScore;
+    newPlayer.hasGivenCards = player.hasGivenCards;
+
+    return newPlayer;
+  };
 }
 
 module.exports = Player;

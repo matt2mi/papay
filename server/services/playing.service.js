@@ -1,5 +1,6 @@
 const playersService = require('./players.service');
 const cardsService = require('./cards.service');
+const Player = require('../models/player');
 
 // un tour = tous les plis entre deux distribution de cartes
 // un pli = round = une carte jouée par joueur
@@ -8,16 +9,22 @@ let firstPlayerToPlay; // le joueur qui entame le tour
 let playedCardsOfRound = []; // cartes d'un pli [{card: Card, player: Player}, ... ]
 let startingPlayerOfRound; // le joueur qui joue une carte en premier sur ce pli (perdant du pli précédent)
 let nbCardsPlayedInTour = 0; // nombre de carte jouées dans le tour => identifier la fin du tour
-let waitedPlayers = playersService.getPlayers(); // les joueurs attendus pour passer au tour suivant
+let nbTour = 1; // le nombre de tour joué depuis le début => game over quand nbTour === nbPlayers
+
+const startParty = io => {
+  playersService.setWaitedPlayers();
+  cardsService.setDealedDecksToPlayers();
+  io.emit('partyStarted', true);
+};
 
 const emitPlayerTurn = firstPlayerName => {
   const currentPlayerSocket = playersService.getPlayerSocketByName(firstPlayerName);
   currentPlayerSocket.emit('yourTurn', true);
 };
 
-const emitNextPlayerTurn = (io, nextPlayerName) => {
-  io.emit('nextPlayerTurn', {nextPlayerName, cardsPlayedWithPlayer: playedCardsOfRound});
-  emitPlayerTurn(nextPlayerName);
+const emitNextPlayerTurn = (io, playerNameWaitedToPlay) => {
+  io.emit('nextPlayerTurn', {playerNameWaitedToPlay, cardsPlayedWithPlayer: playedCardsOfRound});
+  emitPlayerTurn(playerNameWaitedToPlay);
 };
 
 const receivePlayerCard = (playerName, card, io) => {
@@ -30,15 +37,25 @@ const receivePlayerCard = (playerName, card, io) => {
     // trouver le perdant
     const looser = findLooser(playedCardsOfRound);
 
-    io.emit('roundLooser', looser.name);
-
     // lui donner les cartes du pli
     giveCardOfRoundToLooser(looser);
+    cardsService.countScore();
+    io.emit('roundLooser', playersService.getPlayerByName(looser.name));
 
-    if (nbCardsPlayedInTour === 3) { // 60 normalement, 3 pour des tests moins longs !!
+    if (nbCardsPlayedInTour === 60) { // TODO: mettre 3 au lieu de 60 pour tester plus vite
       // la dernière carte du tour vient d'être jouée
       cardsService.countScore();
-      io.emit('endOfTour', playersService.getPlayers());
+      playersService.emptyCollectedLoosingCards();
+      if (nbTour === playersService.getNbPlayers()) {
+        // game over
+        io.emit('gameOver');
+      } else {
+        nbTour++;
+        // tour suivant
+        playersService.reinitPlayersForNextRound();
+        nbCardsPlayedInTour = 0;
+        io.emit('endOfTour', playersService.getPlayers());
+      }
     } else {
       emitNextPlayerTurn(io, looser.name);
     }
@@ -79,25 +96,44 @@ const setStartingPlayerOfRound = player => {
   startingPlayerOfRound = player;
 };
 
-const setFirstPlayerToPlay = player => {
-  firstPlayerToPlay = player;
+const setFirstPlayerToPlay = () => {
+  if (firstPlayerToPlay) {
+    // il existe déjà (un tour a déjà été joué) => donc on set le joueur suivant
+    firstPlayerToPlay = Player.clonePlayer(playersService.getNextPlayer(firstPlayerToPlay.name));
+  } else {
+    // il n'existe pas, c'est le premier tour de jeu, donc le premier de la liste commence
+    firstPlayerToPlay = Player.clonePlayer(playersService.getPlayers()[0]);
+  }
+  return firstPlayerToPlay;
 };
 
 const unWaitPlayer = (name, io) => {
+  const waitedPlayers = playersService.getWaitedPlayers();
   const id = waitedPlayers.findIndex(player => player.name === name);
-  waitedPlayers.splice(id, 1);
+  playersService.removeWaitedPlayer(id);
   if (waitedPlayers.length > 0) {
     io.emit('waitedPlayersForNextRound', waitedPlayers);
   } else {
-    // TODO go next tour (prochains devs)
-    console.log('go next tour');
+    playersService.setWaitedPlayers();
+    cardsService.setDealedDecksToPlayers();
+    io.emit('newTour');
   }
 };
 
+const reset = () => {
+  firstPlayerToPlay = null;
+  playedCardsOfRound = [];
+  startingPlayerOfRound = null;
+  nbCardsPlayedInTour = 0;
+  nbTour = 1;
+};
+
 module.exports = {
+  startParty,
   emitPlayerTurn,
   receivePlayerCard,
   findLooser,
   setFirstPlayerToPlay,
-  unWaitPlayer
+  unWaitPlayer,
+  reset
 };

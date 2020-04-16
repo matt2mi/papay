@@ -158,7 +158,6 @@ describe('playersService', function () {
     describe('each players should receive five cards from his previous neighbor deck', function () {
       it('pl1 should get the 5 cards of pl3', function () {
         const expectedPlayer1Deck = expectedPlayers[0].deck;
-        console.log('expectedPlayer1Deck', expectedPlayer1Deck);
         expect(expectedPlayer1Deck).to.deep.include({...pl3ToPl1[0], newOne: true, toGive: false});
         expect(expectedPlayer1Deck).to.deep.include({...pl3ToPl1[1], newOne: true, toGive: false});
         expect(expectedPlayer1Deck).to.deep.include({...pl3ToPl1[2], newOne: true, toGive: false});

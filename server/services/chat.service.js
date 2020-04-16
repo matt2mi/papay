@@ -1,4 +1,4 @@
-const messages = [];
+let messages = [];
 
 const addMessage = (msg, io) => {
   messages.push(msg);
@@ -9,4 +9,8 @@ const getMessages = () => {
   return messages;
 };
 
-module.exports = { addMessage, getMessages };
+const reset = () => {
+  messages = [];
+};
+
+module.exports = {addMessage, getMessages, reset};
