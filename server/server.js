@@ -130,8 +130,7 @@ io.on('connection', (socket) => {
   });
 });
 
-// TODO : bon nb cartes à donner
-// TODO : dernière carte du pli (cacher cartes du deck le temps de voir le pli)
+// TODO : bon nb cartes à donner (back)
 // TODO : bug sur l'enchainement - trop vite ?
 // TODO : possible spectateur ? (juste pli visible et chat)
 

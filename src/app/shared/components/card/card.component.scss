@@ -1,0 +1,31 @@
+.card-button {
+  width: 100%;
+  height: 8rem;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  border: 0;
+  padding: 0;
+  background-color: dimgray;
+}
+
+.not-clickable {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.selected {
+  height: 10rem;
+}
+
+.newOne {
+  height: 10rem;
+  opacity: 1;
+}
+
+.forty-seven {
+  position: absolute;
+  bottom: 33px;
+  left: 6px;
+  color: red;
+}

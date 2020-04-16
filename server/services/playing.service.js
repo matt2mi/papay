@@ -59,6 +59,7 @@ const receivePlayerCard = (playerName, card, io) => {
     } else {
       emitNextPlayerTurn(io, looser.name);
     }
+    playedCardsOfRound = [];
   } else {
     // pli incomplet => on notifie le joueur suivant
     const nextPlayer = playersService.getNextPlayer(playerName);
@@ -89,7 +90,6 @@ const giveCardOfRoundToLooser = (looserOfRound) => {
   const loosingCards = playedCardsOfRound.map(cardAndPlayer => cardAndPlayer.card);
   playersService.addLoosingCards(loosingCards, looserOfRound.name);
   setStartingPlayerOfRound(looserOfRound);
-  playedCardsOfRound = [];
 };
 
 const setStartingPlayerOfRound = player => {
