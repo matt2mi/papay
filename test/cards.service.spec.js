@@ -14,9 +14,9 @@ describe('cardsService', function () {
         {family: {id: 4, label: 'Papayoo'}, number: 4}
       ];
       playersService.setPlayers([player]);
-      const bonusFamily = {id: 1, label: 'Coeur'};
+      cardsService.set40Family();
 
-      cardsService.countScore(bonusFamily);
+      cardsService.countScore();
 
       expect(playersService.getPlayers()[0].roundScore).to.equal(6);
     });
@@ -25,14 +25,17 @@ describe('cardsService', function () {
       const player = new Player('nom', []);
       player.collectedLoosingCards = [
         {family: {id: 1, label: 'Coeur'}, number: 2},
+        {family: {id: 0, label: 'Pique'}, number: 7},
         {family: {id: 1, label: 'Coeur'}, number: 7},
+        {family: {id: 2, label: 'Carreau'}, number: 7},
+        {family: {id: 3, label: 'Trefle'}, number: 7},
         {family: {id: 4, label: 'Papayoo'}, number: 2},
         {family: {id: 4, label: 'Papayoo'}, number: 4}
       ];
       playersService.setPlayers([player]);
-      const bonusFamily = {id: 1, label: 'Coeur'};
+      cardsService.set40Family();
 
-      cardsService.countScore(bonusFamily);
+      cardsService.countScore();
 
       expect(playersService.getPlayers()[0].roundScore).to.equal(46);
     });
