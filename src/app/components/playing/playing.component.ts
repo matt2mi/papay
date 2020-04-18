@@ -4,7 +4,7 @@ import Card from '../../models/card';
 import {PlayersService} from '../../services/players.service';
 import {Router} from '@angular/router';
 import {CardsService} from 'src/app/services/cards.service';
-import {Family} from '../../models/family';
+import {FAMILIES, Family} from '../../models/family';
 
 @Component({
   selector: 'app-playing',
@@ -15,6 +15,11 @@ export class PlayingComponent implements OnInit {
 
   isCurrentPlayerTurn = false;
   isTimeToPlay = false;
+  showRoundLooserName = false;
+  isTimeToGiveCard = false;
+  isTimeToGetScores = false;
+  isReady = false;
+
   playerNameWaitedToPlay = '';
   currentPlayer: Player;
   previousPlayer: Player;
@@ -22,14 +27,11 @@ export class PlayingComponent implements OnInit {
   connectedPlayers: Player[];
   family40: Family;
   cardFold: { player: Player, card: Card }[] = [];
-  isTimeToGiveCard = false;
+  nbCardToGive = 5;
   cardToGiveErrorMessage;
-  showRoundLooserName = false;
   roundLooserName = '';
   nbRound = 1;
-  isTimeToGetScores = false;
   waitedPlayersForNextRound: Player[] = [];
-  isReady = false;
   leftPlayers: Player[] = [];
   rightPlayers: Player[] = [];
 
@@ -45,6 +47,7 @@ export class PlayingComponent implements OnInit {
     this.playersService.getConnectedPlayers().subscribe((players: Player[]) => {
       this.connectedPlayers = players;
       this.setLeftAndRightPlayers();
+      this.setNbCardToGive();
     });
 
     this.cardsService.getDeckWithGivenCards$.subscribe((result: { deck: Card[], family40: Family }) => {
@@ -53,6 +56,7 @@ export class PlayingComponent implements OnInit {
       this.family40 = result.family40;
       this.getBackCards();
       this.setAllCardsClickablesOrNot(false);
+      this.isTimeToPlay = true;
     });
     this.playersService.nextPlayerTurn$.subscribe(result => {
       this.playerNameWaitedToPlay = result.playerNameWaitedToPlay;
@@ -78,7 +82,7 @@ export class PlayingComponent implements OnInit {
     this.playersService.playerDisconnected$.subscribe((name: string) => this.gameOver(name));
   }
 
-  nextPlayerTurn(data){
+  nextPlayerTurn(data) {
     this.cardFold =  data.cardsPlayedWithPlayer;
     if (data.playerNameWaitedToPlay === this.currentPlayer.name) {
       // c'est au tour du joueur de jouer
@@ -113,34 +117,24 @@ export class PlayingComponent implements OnInit {
       {family: {id: 4, label: 'Papayoo'}, number: 13, newOne: false},
       {family: {id: 4, label: 'Papayoo'}, number: 20, newOne: false}
     ];
-    this.currentPlayer = new Player('coco', deck);
+    this.currentPlayer = new Player('matt', deck);
     this.connectedPlayers = [
       new Player('mimi'),
       new Player('matt'),
-      new Player('toyo'),
-      // new Player('coco'),
-      // new Player('gu'),
-      // new Player('cle'),
-      // new Player('marion'),
-      // new Player('melanie'),
+      new Player('hugo'),
+      new Player('coco'),
+      new Player('gu'),
+      new Player('cle'),
+      new Player('marion'),
+      new Player('melanie'),
     ];
-    const currentPlayerId = this.connectedPlayers.findIndex(pl => pl.name === this.currentPlayer.name);
-    if (this.connectedPlayers[currentPlayerId - 1]) {
-      this.previousPlayer = this.connectedPlayers[currentPlayerId - 1];
-    } else {
-      this.previousPlayer = this.connectedPlayers[this.connectedPlayers.length - 1];
-    }
-    if (this.connectedPlayers[currentPlayerId + 1]) {
-      this.nextPlayer = this.connectedPlayers[currentPlayerId + 1];
-    } else {
-      this.nextPlayer = this.connectedPlayers[0];
-    }
     this.setLeftAndRightPlayers();
+    this.setNbCardToGive();
     this.isTimeToGiveCard = true;
     this.setAllCardsClickablesOrNot(true);
 
     for (let i = 0; i < this.connectedPlayers.length; i++) {
-      this.cardFold.push({player: this.connectedPlayers[i], card: new Card(i + 2, {id: i, label: 'Pique'})});
+      this.cardFold.push({player: this.connectedPlayers[i], card: new Card(i + 2, FAMILIES[4])});
     }
   }
 
@@ -190,6 +184,19 @@ export class PlayingComponent implements OnInit {
     this.rightPlayers.reverse();
   }
 
+  setNbCardToGive() {
+    if (this.connectedPlayers.length < 5) {
+      // 3 & 4 joueurs => 5 cartes
+      this.nbCardToGive = 5;
+    } else if (this.connectedPlayers.length > 5) {
+      // 6, 7 et 8 joueurs => 3 cartes
+      this.nbCardToGive = 3;
+    } else {
+      // 5 joueurs => 4 cartes
+      this.nbCardToGive = 4;
+    }
+  }
+
   initDeck() {
     this.playersService.getCurrentPlayerDeck().subscribe(({deck}) => {
       this.isTimeToGetScores = false;
@@ -218,7 +225,7 @@ export class PlayingComponent implements OnInit {
   clickCard(card: Card) {
     if (card.isPlayable) {
       if (this.isTimeToGiveCard) {
-        this.currentPlayer.deck.find(c => c === card).toGive = !card.toGive && this.getCardToGive().length < 3;
+        this.currentPlayer.deck.find(c => c === card).toGive = !card.toGive && this.getCardToGive().length < this.nbCardToGive;
       } else {
         // We are playing
         this.cardsService.playCard(card, this.currentPlayer.name)
@@ -235,8 +242,8 @@ export class PlayingComponent implements OnInit {
   }
 
   giveCards() {
-    if (this.getCardToGive().length !== 3) {
-      this.cardToGiveErrorMessage = 'Tu dois donner 3 cartes';
+    if (this.getCardToGive().length !== this.nbCardToGive) {
+      this.cardToGiveErrorMessage = `Tu dois donner ${this.nbCardToGive} cartes`;
     } else {
       this.cardsService.giveCard(this.getCardToGive(), this.playersService.getCurrentPlayer().name)
         .subscribe(() => {
@@ -247,13 +254,19 @@ export class PlayingComponent implements OnInit {
   }
 
   handleRoundLooser(roundLooser: Player) {
+    this.isTimeToPlay = false;
     this.showRoundLooserName = true;
     this.updatePlayerRoundScore(roundLooser);
     this.roundLooserName = roundLooser.name;
     setTimeout(
       () => {
+        this.isTimeToPlay = true;
         this.showRoundLooserName = false;
         this.nbRound++;
+        this.cardFold = [];
+        if (this.isCurrentPlayerTurn) {
+          this.canPlayCards();
+        }
       },
       4000
     );
@@ -313,4 +326,9 @@ export class PlayingComponent implements OnInit {
       this.router.navigate(['scores']);
     }
   }
+
+  is40Seven(card: Card): boolean {
+    return this.family40 && card.family.id === this.family40.id && card.number === 7;
+  }
 }
+ // quand scores du tour saffiche, je veux rien d'autre (pli n° + point du tour)

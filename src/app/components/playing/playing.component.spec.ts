@@ -148,9 +148,9 @@ describe('PlayingComponent', () => {
       new Player('mimi')
     ];
     const expectedRightPlayers = [
-      new Player('toyo'),
+      new Player('gu'),
       new Player('coco'),
-      new Player('gu')
+      new Player('toyo')
     ];
     component.rightPlayers = [];
     component.leftPlayers = [];

@@ -130,10 +130,11 @@ io.on('connection', (socket) => {
   });
 });
 
-// TODO : bon nb cartes à donner
-// TODO : dernière carte du pli (cacher cartes du deck le temps de voir le pli)
-// TODO : bug sur l'enchainement - trop vite ?
-// TODO : possible spectateur ? (juste pli visible et chat)
+// TODO front : afficher mieux l'écran (sans les border blanches moches)
+// TODO front : afficher dans le front le joueur qui est maître du pli
+// TODO front : surligner dans le pli la carte que le joueur a donné
+// TODO front: au login, proposer au joueur d'ajouter une image (url ou fichier / base64) (stockée localStorage ?)
+// TODO front: afficher l'image à côté de son nom / mettre des images aléatoires moches pour ceux qui n'ont pas d'images
 
 /*
 Suite des actions Websocket
