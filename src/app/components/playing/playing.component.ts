@@ -6,9 +6,6 @@ import {Router} from '@angular/router';
 import {CardsService} from 'src/app/services/cards.service';
 import {FAMILIES, Family} from '../../models/family';
 
-// TODO next
-enum PartyState {}
-
 @Component({
   selector: 'app-playing',
   templateUrl: './playing.component.html',
@@ -22,8 +19,6 @@ export class PlayingComponent implements OnInit {
   isTimeToGiveCard = false;
   isTimeToGetScores = false;
   isReady = false;
-
-  partyState = ''; // TODO next
 
   playerNameWaitedToPlay = '';
   currentPlayer: Player;
