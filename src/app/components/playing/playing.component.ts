@@ -56,14 +56,11 @@ export class PlayingComponent implements OnInit {
     });
     this.playersService.nextPlayerTurn$.subscribe(result => {
       this.playerNameWaitedToPlay = result.playerNameWaitedToPlay;
-      this.cardFold = result.cardsPlayedWithPlayer;
-      if (result.playerNameWaitedToPlay === this.currentPlayer.name) {
-        // c'est au tour du joueur de jouer
-        this.isCurrentPlayerTurn = true;
-        this.canPlayCards();
+      if (result.cardsPlayedWithPlayer.length === 0) {
+          // wait before end the round
+          setTimeout(() => this.nextPlayerTurn(result), 3000);
       } else {
-        this.isCurrentPlayerTurn = false;
-        this.setAllCardsClickablesOrNot(false);
+        this.nextPlayerTurn(result);
       }
     });
     this.playersService.roundLooser$.subscribe((roundLooser: Player) => {
@@ -79,6 +76,18 @@ export class PlayingComponent implements OnInit {
     this.playersService.newTour$.subscribe(() => this.initDeck());
     this.playersService.gameOver$.subscribe(() => this.gameOver(''));
     this.playersService.playerDisconnected$.subscribe((name: string) => this.gameOver(name));
+  }
+
+  nextPlayerTurn(data){
+    this.cardFold =  data.cardsPlayedWithPlayer;
+    if (data.playerNameWaitedToPlay === this.currentPlayer.name) {
+      // c'est au tour du joueur de jouer
+      this.isCurrentPlayerTurn = true;
+      this.canPlayCards();
+    } else {
+      this.isCurrentPlayerTurn = false;
+      this.setAllCardsClickablesOrNot(false);
+    }
   }
 
   testFrontOnly() {
@@ -109,10 +118,11 @@ export class PlayingComponent implements OnInit {
       new Player('mimi'),
       new Player('matt'),
       new Player('toyo'),
-      new Player('coco'),
-      new Player('gu'),
-      new Player('cle'),
-      // new Player('marion')
+      // new Player('coco'),
+      // new Player('gu'),
+      // new Player('cle'),
+      // new Player('marion'),
+      // new Player('melanie'),
     ];
     const currentPlayerId = this.connectedPlayers.findIndex(pl => pl.name === this.currentPlayer.name);
     if (this.connectedPlayers[currentPlayerId - 1]) {
@@ -128,6 +138,10 @@ export class PlayingComponent implements OnInit {
     this.setLeftAndRightPlayers();
     this.isTimeToGiveCard = true;
     this.setAllCardsClickablesOrNot(true);
+
+    for (let i = 0; i < this.connectedPlayers.length; i++) {
+      this.cardFold.push({player: this.connectedPlayers[i], card: new Card(i + 2, {id: i, label: 'Pique'})});
+    }
   }
 
   setLeftAndRightPlayers() {
