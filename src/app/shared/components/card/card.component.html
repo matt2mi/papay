@@ -1,6 +1,0 @@
-<button type="button" class="card-button"
-        [ngClass]="{'not-clickable': !card.isPlayable, 'selected': card.toGive, 'newOne': card.newOne}"
-        [ngStyle]="{'background-image': 'url(assets/img/' + card.number + card.family.label + '.png)'}"
-        (click)="onClickCard()">
-  <span *ngIf="is40Seven" class="forty-seven">40 pts</span>
-</button>
