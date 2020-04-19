@@ -38,6 +38,7 @@
   height: 12rem;
   margin-top: 2rem;
   position: relative;
+  padding-left: 28%;
 }
 
 .cardFolded {
@@ -45,3 +46,27 @@
   position: absolute;
 }
 
+.mine {
+  border: 1px solid yellow;
+}
+
+.border-white {
+  border: 1px solid white;
+}
+
+.border-bottom-white {
+  border-bottom: 1px solid white;
+}
+
+.absolute-bottom {
+  position: absolute;
+  bottom: 0;
+}
+
+.playing-board-size {
+  min-height: 290px;
+}
+
+.forty-seven-card {
+  border: 2px solid red;
+}

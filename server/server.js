@@ -131,13 +131,12 @@ io.on('connection', (socket) => {
 });
 
 // Bugs :
-// TODO : cacher plateau de jeu au début, au moment de donner les cartes
 // TODO : la dernière carte du pli avant fin du tour n'est pas visible
 
 // Evols :
 // TODO front : afficher mieux l'écran (sans les border blanches moches)
+// TODO : icone music on/off musique "Carlos - papayou"
 // TODO front : afficher dans le front le joueur qui est maître du pli
-// TODO front : surligner dans le pli la carte que le joueur a donné
 // TODO front: au login, proposer au joueur d'ajouter une image (url ou fichier / base64) (stockée localStorage ?)
 // TODO front: afficher l'image à côté de son nom / mettre des images aléatoires moches pour ceux qui n'ont pas d'images
 
