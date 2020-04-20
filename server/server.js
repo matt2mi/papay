@@ -131,14 +131,35 @@ io.on('connection', (socket) => {
 });
 
 // Bugs :
+// TODO : bug dans les points du tour et totaux au 2e tour (les classer dans l'ordre)
+// TODO : bug dans les scores finaux
+// TODO : info de qui on attend pr donner ses cartes
+// TODO : deuxieme tour : plateau pas caché quand on donne ses cartes
+// TODO : ne pas mettre les cartes coeur et carreau a coté (alterner noir et rouge)
+// TODO - CHAT : envoyer message avec entrée dans le chat
+// TODO - CHAT : faire espace après avoir envoyé un message dans le chat envoie un msg vide (le bouton est selectionné)
+// TODO : numéro du nombre de pli foireux: inutile, le supprimer pour mettre le nombre de tour restant ?
+
 
 // Evols :
-// TODO : popup temp pour message dans chat
-// TODO front : afficher mieux l'écran (sans les border blanches moches)
-// TODO : icone music on/off musique "Carlos - papayou"
-// TODO front : afficher dans le front le joueur qui est maître du pli
-// TODO front: au login, proposer au joueur d'ajouter une image (url ou fichier / base64) (stockée localStorage ?)
-// TODO front: afficher l'image à côté de son nom / mettre des images aléatoires moches pour ceux qui n'ont pas d'images
+// TODO : ajouter du son:
+// pour jouer la musique de Carlos Papayou (activée par défaut)
+// pour la distribution des cartes
+// pour jouer une carte
+// pour récupérer le pli (rire d'andy chez celui qui prend le 7 à 40 pts)
+// pour wizzer quelqu'un trop lent
+// TODO - CHAT : repenser l'affichage du chat (une icone ouvre un menu transparent en mode smartphone / à un endroit visible en mode pc)
+// TODO - CHAT : afficher un popup pour un nouveau message dans le chat
+// TODO - CHAT : dans le chat et l'interface de jeu : mettre une couleur unique par joueur
+// TODO : ajouter des gifs ? pour le 7 à 40 pts
+// TODO : pas assez clair le "à toi de jouer"
+// TODO : image d'un vrai tapis de jeu vert en fond du plateau de jeu
+// TODO : faire tourner les cartes dans l'autre sens dans le pli en cours (sens de jeu des joueurs)
+// TODO : afficher mieux l'écran (sans les border blanches moches)
+// TODO : icone son et/ou music on/off musique "Carlos - papayou"
+// TODO : afficher dans le front le joueur qui est maître du pli
+// TODO : au login, proposer au joueur d'ajouter une image (url ou fichier / base64) (stockée localStorage ?)
+// TODO : afficher l'image à côté de son nom / mettre des images aléatoires moches pour ceux qui n'ont pas d'images
 
 /*
 Suite des actions Websocket
