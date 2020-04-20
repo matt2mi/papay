@@ -78,9 +78,9 @@
 
 <!--Le deck du joueur-->
 <div class="row" *ngIf="!isTimeToGetScores && !showRoundLooserName">
-  <div class="col-12 text-center">
+  <div class="col-12 text-center" *ngIf="family40">
     <span><img src="../../../assets/d8.gif" style="height: 32px;"></span>
-    <span *ngIf="family40" style="font-size: x-large;"> : le 7 de {{family40?.label}}</span>
+    <span style="font-size: x-large;"> : le 7 de {{family40?.label}}</span>
   </div>
 
   <div class="col-12 text-center">
