@@ -41,45 +41,45 @@ export class PlayingComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.testFrontOnly();
-    this.currentPlayer = this.playersService.getCurrentPlayer();
-    this.initDeck();
-    this.playersService.getConnectedPlayers().subscribe((players: Player[]) => {
-      this.connectedPlayers = players;
-      this.setLeftAndRightPlayers();
-      this.setNbCardToGive();
-    });
+    this.testFrontOnly();
+    // this.currentPlayer = this.playersService.getCurrentPlayer();
+    // this.initDeck();
+    // this.playersService.getConnectedPlayers().subscribe((players: Player[]) => {
+    //   this.connectedPlayers = players;
+    //   this.setLeftAndRightPlayers();
+    //   this.setNbCardToGive();
+    // });
 
-    this.cardsService.getDeckWithGivenCards$.subscribe((result: { deck: Card[], family40: Family }) => {
-      this.isTimeToGiveCard = false;
-      this.currentPlayer.deck = result.deck;
-      this.family40 = result.family40;
-      this.getBackCards();
-      this.setAllCardsClickablesOrNot(false);
-      this.isTimeToPlay = true;
-    });
-    this.playersService.nextPlayerTurn$.subscribe(result => {
-      this.playerNameWaitedToPlay = result.playerNameWaitedToPlay;
-      if (result.cardsPlayedWithPlayer.length === 0) {
-          // wait before end the round
-          setTimeout(() => this.nextPlayerTurn(result), 3000);
-      } else {
-        this.nextPlayerTurn(result);
-      }
-    });
-    this.playersService.roundLooser$.subscribe((roundLooser: Player) => {
-      this.setAllCardsClickablesOrNot(false);
-      this.handleRoundLooser(roundLooser);
-    });
-    this.playersService.endOfTour$.subscribe(players => {
-      this.setAllCardsClickablesOrNot(false);
-      this.isReady = false;
-      this.endTour(players);
-    });
-    this.playersService.waitedPlayersForNextRound$.subscribe(players => this.waitedPlayersForNextRound = players);
-    this.playersService.newTour$.subscribe(() => this.initDeck());
-    this.playersService.gameOver$.subscribe(() => this.gameOver(''));
-    this.playersService.playerDisconnected$.subscribe((name: string) => this.gameOver(name));
+    // this.cardsService.getDeckWithGivenCards$.subscribe((result: { deck: Card[], family40: Family }) => {
+    //   this.isTimeToGiveCard = false;
+    //   this.currentPlayer.deck = result.deck;
+    //   this.family40 = result.family40;
+    //   this.getBackCards();
+    //   this.setAllCardsClickablesOrNot(false);
+    //   this.isTimeToPlay = true;
+    // });
+    // this.playersService.nextPlayerTurn$.subscribe(result => {
+    //   this.playerNameWaitedToPlay = result.playerNameWaitedToPlay;
+    //   if (result.cardsPlayedWithPlayer.length === 0) {
+    //       // wait before end the round
+    //       setTimeout(() => this.nextPlayerTurn(result), 3000);
+    //   } else {
+    //     this.nextPlayerTurn(result);
+    //   }
+    // });
+    // this.playersService.roundLooser$.subscribe((roundLooser: Player) => {
+    //   this.setAllCardsClickablesOrNot(false);
+    //   this.handleRoundLooser(roundLooser);
+    // });
+    // this.playersService.endOfTour$.subscribe(players => {
+    //   this.setAllCardsClickablesOrNot(false);
+    //   this.isReady = false;
+    //   this.endTour(players);
+    // });
+    // this.playersService.waitedPlayersForNextRound$.subscribe(players => this.waitedPlayersForNextRound = players);
+    // this.playersService.newTour$.subscribe(() => this.initDeck());
+    // this.playersService.gameOver$.subscribe(() => this.gameOver(''));
+    // this.playersService.playerDisconnected$.subscribe((name: string) => this.gameOver(name));
   }
 
   nextPlayerTurn(data) {
@@ -96,26 +96,26 @@ export class PlayingComponent implements OnInit {
 
   testFrontOnly() {
     const deck = [
-      {family: {id: 0, label: 'Pique'}, number: 3, newOne: false},
-      {family: {id: 0, label: 'Pique'}, number: 6, newOne: false},
-      {family: {id: 1, label: 'Coeur'}, number: 6, newOne: false},
-      {family: {id: 1, label: 'Coeur'}, number: 7, newOne: false},
-      {family: {id: 1, label: 'Coeur'}, number: 10, newOne: false},
-      {family: {id: 2, label: 'Carreau'}, number: 1, newOne: false},
-      {family: {id: 2, label: 'Carreau'}, number: 3, newOne: false},
-      {family: {id: 2, label: 'Carreau'}, number: 7, newOne: false},
-      {family: {id: 2, label: 'Carreau'}, number: 8, newOne: false},
-      {family: {id: 3, label: 'Trefle'}, number: 2, newOne: false},
-      {family: {id: 3, label: 'Trefle'}, number: 3, newOne: false},
-      {family: {id: 3, label: 'Trefle'}, number: 8, newOne: false},
-      {family: {id: 3, label: 'Trefle'}, number: 9, newOne: false},
-      {family: {id: 4, label: 'Papayoo'}, number: 2, newOne: false},
-      {family: {id: 4, label: 'Papayoo'}, number: 4, newOne: false},
-      {family: {id: 4, label: 'Papayoo'}, number: 6, newOne: false},
-      {family: {id: 4, label: 'Papayoo'}, number: 7, newOne: false},
-      {family: {id: 4, label: 'Papayoo'}, number: 8, newOne: false},
-      {family: {id: 4, label: 'Papayoo'}, number: 13, newOne: false},
-      {family: {id: 4, label: 'Papayoo'}, number: 20, newOne: false}
+      {family: {id: 0, label: 'Pique'}, number: 3, newOne: false, isPlayable: true},
+      {family: {id: 0, label: 'Pique'}, number: 6, newOne: false, isPlayable: true},
+      {family: {id: 1, label: 'Coeur'}, number: 6, newOne: false, isPlayable: true},
+      {family: {id: 1, label: 'Coeur'}, number: 7, newOne: false, isPlayable: true},
+      {family: {id: 1, label: 'Coeur'}, number: 10, newOne: false, isPlayable: true},
+      {family: {id: 2, label: 'Carreau'}, number: 1, newOne: false, isPlayable: true},
+      {family: {id: 2, label: 'Carreau'}, number: 3, newOne: false, isPlayable: true},
+      {family: {id: 2, label: 'Carreau'}, number: 7, newOne: false, isPlayable: true},
+      {family: {id: 2, label: 'Carreau'}, number: 8, newOne: false, isPlayable: true},
+      {family: {id: 3, label: 'Trefle'}, number: 2, newOne: false, isPlayable: true},
+      {family: {id: 3, label: 'Trefle'}, number: 3, newOne: false, isPlayable: true},
+      {family: {id: 3, label: 'Trefle'}, number: 8, newOne: false, isPlayable: true},
+      {family: {id: 3, label: 'Trefle'}, number: 9, newOne: false, isPlayable: true},
+      {family: {id: 4, label: 'Papayoo'}, number: 2, newOne: false, isPlayable: true},
+      {family: {id: 4, label: 'Papayoo'}, number: 4, newOne: false, isPlayable: true},
+      {family: {id: 4, label: 'Papayoo'}, number: 6, newOne: false, isPlayable: true},
+      {family: {id: 4, label: 'Papayoo'}, number: 7, newOne: false, isPlayable: true},
+      {family: {id: 4, label: 'Papayoo'}, number: 8, newOne: false, isPlayable: true},
+      {family: {id: 4, label: 'Papayoo'}, number: 13, newOne: false, isPlayable: true},
+      {family: {id: 4, label: 'Papayoo'}, number: 20, newOne: false, isPlayable: false}
     ];
     this.currentPlayer = new Player('matt', deck);
     this.connectedPlayers = [
@@ -131,10 +131,10 @@ export class PlayingComponent implements OnInit {
     this.setLeftAndRightPlayers();
     this.setNbCardToGive();
     this.isTimeToGiveCard = true;
-    this.setAllCardsClickablesOrNot(true);
+    // this.setAllCardsClickablesOrNot(true);
 
     for (let i = 0; i < this.connectedPlayers.length; i++) {
-      this.cardFold.push({player: this.connectedPlayers[i], card: new Card(i + 2, FAMILIES[4])});
+      this.cardFold.push({player: this.connectedPlayers[i], card: new Card(i + 2, FAMILIES[1])});
     }
   }
 

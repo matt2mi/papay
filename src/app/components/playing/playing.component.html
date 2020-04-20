@@ -87,13 +87,18 @@
   </div>
 
   <div class="col-12 text-center">
-    <div class="deck">
-      <div *ngFor="let card of currentPlayer?.deck" class="card-place" [hidden]="card.played">
-        <button type="button" class="card-button"
-                [ngClass]="{'not-clickable': !card.isPlayable, 'selected': card.toGive, 'newOne': card.newOne}"
-                [ngStyle]="{'background-image': 'url(assets/img/' + card.number + card.family.label + '.png)'}"
-                (click)="clickCard(card)">
-        </button>
+    <div class="deckContainer">
+      <div class="deck">
+        <div *ngFor="let card of currentPlayer?.deck; let rowIndex=index" 
+          class="card-place" 
+          [ngStyle]="{'left': rowIndex*5 +'%'}"
+          [ngClass]="{'selected': card.toGive, 'newOne': card.newOne}"
+          [hidden]="card.played">
+          <img class="card-button"
+                  [ngClass]="{'not-clickable': !card.isPlayable}"
+                  [ngStyle]="{'background-image': 'url(assets/img/' + card.number + card.family.label + '.png)'}"
+                  (click)="card.isPlayable && clickCard(card)"/>
+        </div>
       </div>
     </div>
   </div>

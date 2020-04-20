@@ -1,19 +1,24 @@
 .not-clickable {
   cursor: not-allowed;
-  opacity: 0.6;
+  filter: brightness(50%);
+  -webkit-filter: brightness(50%);
+}
+
+.deck {
+  position: relative;
+  height: 10rem;
 }
 
 .card-place {
-  width: 50px;
-  height: 10rem;
+  width: 200px;
+  height: 100%;
   display: inline-flex;
-  position: relative;
+  position: absolute;
 }
 
 .card-button {
+  height: 100%;
   width: 100%;
-  height: 8rem;
-  position: absolute;
   bottom: 0;
   border: 0;
   padding: 0;
@@ -21,11 +26,11 @@
 }
 
 .selected {
-  height: 10rem;
+  bottom: 20%;
 }
 
 .newOne {
-  height: 10rem;
+  bottom: 20%;
   opacity: 1;
 }
 
