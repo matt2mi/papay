@@ -259,7 +259,7 @@ export class PlayingComponent implements OnInit {
 
   handleRoundLooser(roundLooser: Player, playedCardsOfRound: { card: Card, player: Player }[]) {
     this.cardFold = playedCardsOfRound;
-    this.isTimeToPlay = false;
+    // this.isTimeToPlay = false;
     this.showRoundLooserName = true;
     this.updatePlayerRoundScore(roundLooser);
     this.roundLooserName = roundLooser.name;

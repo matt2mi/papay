@@ -133,6 +133,7 @@ io.on('connection', (socket) => {
 // Bugs :
 
 // Evols :
+// TODO : popup temp pour message dans chat
 // TODO front : afficher mieux l'écran (sans les border blanches moches)
 // TODO : icone music on/off musique "Carlos - papayou"
 // TODO front : afficher dans le front le joueur qui est maître du pli

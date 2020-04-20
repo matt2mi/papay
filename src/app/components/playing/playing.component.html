@@ -22,7 +22,7 @@
   <div class="col-6 col-md-4 border-white">
     <div class="row playing-board-size">
       <div class="col-12 text-center mb-3">
-        <h2 *ngIf="isTimeToPlay && !isTimeToGetScores">
+        <h2 *ngIf="isTimeToPlay && !isTimeToGetScores && !showRoundLooserName">
           Pli n°{{nbRound}} - à {{playerNameWaitedToPlay === currentPlayer?.name ? 'toi' : playerNameWaitedToPlay}} de
           jouer
         </h2>
