@@ -40,7 +40,7 @@ const receivePlayerCard = (playerName, card, io) => {
     // lui donner les cartes du pli
     giveCardOfRoundToLooser(looser);
     cardsService.countScore();
-    io.emit('roundLooser', playersService.getPlayerByName(looser.name));
+    io.emit('roundLooser', {looser: playersService.getPlayerByName(looser.name), playedCardsOfRound});
 
     if (nbCardsPlayedInTour === 60) { // TODO: mettre 3 au lieu de 60 pour tester plus vite
       // la dernière carte du tour vient d'être jouée

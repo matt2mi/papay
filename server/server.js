@@ -131,8 +131,8 @@ io.on('connection', (socket) => {
 });
 
 // Bugs :
+// TODO : double clic rapide joue deux cartes :/
 // TODO : cacher plateau de jeu au début, au moment de donner les cartes
-// TODO : la dernière carte du pli avant fin du tour n'est pas visible
 
 // Evols :
 // TODO front : afficher mieux l'écran (sans les border blanches moches)

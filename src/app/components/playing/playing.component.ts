@@ -61,15 +61,16 @@ export class PlayingComponent implements OnInit {
     this.playersService.nextPlayerTurn$.subscribe(result => {
       this.playerNameWaitedToPlay = result.playerNameWaitedToPlay;
       if (result.cardsPlayedWithPlayer.length === 0) {
-          // wait before end the round
-          setTimeout(() => this.nextPlayerTurn(result), 3000);
+        // wait before end the round
+        setTimeout(() => this.nextPlayerTurn(result), 3000);
       } else {
         this.nextPlayerTurn(result);
       }
     });
-    this.playersService.roundLooser$.subscribe((roundLooser: Player) => {
+    this.playersService.roundLooser$.subscribe((result: { looser: Player, playedCardsOfRound: { card: Card, player: Player }[] }) => {
+      console.log('result', result);
       this.setAllCardsClickablesOrNot(false);
-      this.handleRoundLooser(roundLooser);
+      this.handleRoundLooser(result.looser, result.playedCardsOfRound);
     });
     this.playersService.endOfTour$.subscribe(players => {
       this.setAllCardsClickablesOrNot(false);
@@ -83,7 +84,7 @@ export class PlayingComponent implements OnInit {
   }
 
   nextPlayerTurn(data) {
-    this.cardFold =  data.cardsPlayedWithPlayer;
+    this.cardFold = data.cardsPlayedWithPlayer;
     if (data.playerNameWaitedToPlay === this.currentPlayer.name) {
       // c'est au tour du joueur de jouer
       this.isCurrentPlayerTurn = true;
@@ -253,7 +254,8 @@ export class PlayingComponent implements OnInit {
     }
   }
 
-  handleRoundLooser(roundLooser: Player) {
+  handleRoundLooser(roundLooser: Player, playedCardsOfRound: { card: Card, player: Player }[]) {
+    this.cardFold = playedCardsOfRound;
     this.isTimeToPlay = false;
     this.showRoundLooserName = true;
     this.updatePlayerRoundScore(roundLooser);
@@ -331,4 +333,3 @@ export class PlayingComponent implements OnInit {
     return this.family40 && card.family.id === this.family40.id && card.number === 7;
   }
 }
- // quand scores du tour saffiche, je veux rien d'autre (pli n° + point du tour)

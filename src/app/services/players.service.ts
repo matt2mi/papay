@@ -25,7 +25,7 @@ export class PlayersService {
   private nextPlayerTurnSource = new BehaviorSubject({playerNameWaitedToPlay: '', cardsPlayedWithPlayer: []});
   nextPlayerTurn$ = this.nextPlayerTurnSource.asObservable().pipe(skip(1));
 
-  private roundLooserSource = new BehaviorSubject(null);
+  private roundLooserSource = new BehaviorSubject({looser: null, playedCardsOfRound: []});
   roundLooser$ = this.roundLooserSource.asObservable().pipe(skip(1));
 
   private endOfTourSource = new BehaviorSubject([]);
@@ -59,7 +59,8 @@ export class PlayersService {
     this.socket.on('nextPlayerTurn',
       (result: { playerNameWaitedToPlay: string, cardsPlayedWithPlayer: { card: Card, player: Player }[] }) =>
         this.nextPlayerTurnSource.next(result));
-    this.socket.on('roundLooser', (roundLooser: Player) => this.roundLooserSource.next(roundLooser));
+    this.socket.on('roundLooser', (result: { looser: Player, playedCardsOfRound: { card: Card, player: Player }[] }) =>
+      this.roundLooserSource.next(result));
     this.socket.on('endOfTour', (players: Player[]) => this.endOfTourSource.next(players));
     this.socket.on('waitedPlayersForNextRound', (players: Player[]) =>
       this.waitedPlayersForNextRoundSource.next(players));
