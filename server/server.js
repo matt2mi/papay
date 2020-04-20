@@ -131,7 +131,6 @@ io.on('connection', (socket) => {
 });
 
 // Bugs :
-// TODO : la dernière carte du pli avant fin du tour n'est pas visible
 
 // Evols :
 // TODO front : afficher mieux l'écran (sans les border blanches moches)
