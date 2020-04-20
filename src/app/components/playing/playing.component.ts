@@ -79,8 +79,8 @@ export class PlayingComponent implements OnInit {
     });
     this.playersService.waitedPlayersForNextRound$.subscribe(players => this.waitedPlayersForNextRound = players);
     this.playersService.newTour$.subscribe(() => this.initDeck());
-    this.playersService.gameOver$.subscribe(() => this.gameOver(''));
-    this.playersService.playerDisconnected$.subscribe((name: string) => this.gameOver(name));
+    this.playersService.gameOver$.subscribe((players: Player[]) => this.endTour(players, true));
+    this.playersService.playerDisconnected$.subscribe((name: string) => this.playerDisconnection(name));
   }
 
   nextPlayerTurn(data) {
@@ -259,9 +259,8 @@ export class PlayingComponent implements OnInit {
 
   handleRoundLooser(roundLooser: Player, playedCardsOfRound: { card: Card, player: Player }[]) {
     this.cardFold = playedCardsOfRound;
-    // this.isTimeToPlay = false;
     this.showRoundLooserName = true;
-    this.updatePlayerRoundScore(roundLooser);
+    this.updateLooserRoundScore(roundLooser);
     this.roundLooserName = roundLooser.name;
     setTimeout(
       () => {
@@ -277,18 +276,30 @@ export class PlayingComponent implements OnInit {
     );
   }
 
-  updatePlayerRoundScore(roundLooser: Player) {
-    const looser = this.connectedPlayers.find(player => player.name === roundLooser.name);
-    looser.roundScore = roundLooser.roundScore;
+  updateLooserRoundScore(roundLooser: Player) {
     if (roundLooser.name === this.currentPlayer.name) {
       this.currentPlayer.roundScore = roundLooser.roundScore;
+    } else {
+      const looser = this.connectedPlayers.find(player => player.name === roundLooser.name);
+      looser.roundScore = roundLooser.roundScore;
     }
   }
 
-  endTour(players: Player[]) {
-    this.connectedPlayers = players;
+  endTour(players: Player[], isGameOver = false) {
+    players.forEach(player => {
+      if (player.name === this.currentPlayer.name) {
+        this.currentPlayer.roundScore = player.roundScore;
+        this.currentPlayer.globalScore = player.globalScore;
+      }
+      const playerToUpdate = this.connectedPlayers.find(connectedPlayer => player.name === connectedPlayer.name);
+      playerToUpdate.roundScore = player.roundScore;
+      playerToUpdate.globalScore = player.globalScore;
+    });
     this.waitedPlayersForNextRound = players;
     this.isTimeToGetScores = true;
+    if (isGameOver) {
+      setTimeout(() => this.gameOver(), 4000);
+    }
   }
 
   isCardsInDeckOfFamilyASked() {
@@ -320,16 +331,18 @@ export class PlayingComponent implements OnInit {
       this.roundLooserName = '';
       this.nbRound = 1;
       this.family40 = null;
+      this.connectedPlayers.forEach(player => player.roundScore = 0);
+      this.currentPlayer.roundScore = 0;
     });
   }
 
-  gameOver(name: string) {
-    if (name) {
-      alert(name + ' a quitté le jeu...');
-      this.router.navigate(['login']);
-    } else {
-      this.router.navigate(['scores']);
-    }
+  gameOver() {
+    this.router.navigate(['scores']);
+  }
+
+  playerDisconnection(name: string) {
+    alert(name + ' a quitté le jeu...');
+    this.router.navigate(['login']);
   }
 
   is40Seven(card: Card): boolean {

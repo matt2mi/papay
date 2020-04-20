@@ -35,7 +35,7 @@
           <h2>Scores du tour :</h2>
 
           <div *ngFor="let player of connectedPlayers">
-            {{player.name + ' : ' + player.roundScore + ' points'}}
+            {{player.name + ' : ' + player.roundScore + ' points => ' + player.globalScore}}
           </div>
 
           <button type="button" class="btn btn-primary my-3" (click)="readyForNextTour()" *ngIf="!isReady">

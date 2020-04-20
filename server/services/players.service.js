@@ -129,6 +129,7 @@ const reinitPlayersForNextRound = () => {
   players.forEach(player => {
     player.hasGivenCards = false;
     player.deck = [];
+    player.roundScore = 0;
   });
 };
 

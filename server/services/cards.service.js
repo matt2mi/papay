@@ -62,7 +62,13 @@ const setDealedDecksToPlayers = () => {
   playersService.setPlayersDecks(playersDecks);
 };
 
-const countScore = () => {
+const countEndTourScore = () => {
+  playersService.getPlayers().forEach(player => {
+    player.globalScore += player.roundScore;
+  });
+};
+
+const countRoundScore = () => {
   playersService.getPlayers().forEach(player => {
     let score = 0;
     player.collectedLoosingCards.forEach(card => {
@@ -70,7 +76,6 @@ const countScore = () => {
       if (card.family.label === family40.label && card.number === 7) return score += 40;
     });
     player.roundScore = score;
-    player.globalScore += score;
   });
 };
 
@@ -80,7 +85,8 @@ const set40Family = () => family40 = families.getFamilyById(Math.floor(Math.rand
 
 module.exports = {
   setDealedDecksToPlayers,
-  countScore,
+  countEndTourScore,
+  countRoundScore,
   get40Family,
   set40Family
 };

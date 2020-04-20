@@ -4,8 +4,8 @@
   </div>
 
   <div class="offset-3 col-9 mb-3">
-    <div *ngFor="let player of connectedPlayers">
-      <h2>{{player?.name + ': ' + player?.globalScore}}</h2>
+    <div *ngFor="let player of connectedPlayers; let id = index">
+      <h2>n°{{id}}: {{player?.name + ' avec ' + player?.globalScore}}</h2>
     </div>
   </div>
 

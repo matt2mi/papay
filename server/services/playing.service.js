@@ -39,22 +39,24 @@ const receivePlayerCard = (playerName, card, io) => {
 
     // lui donner les cartes du pli
     giveCardOfRoundToLooser(looser);
-    cardsService.countScore();
+    cardsService.countRoundScore();
     io.emit('roundLooser', {looser: playersService.getPlayerByName(looser.name), playedCardsOfRound});
 
-    if (nbCardsPlayedInTour === 60) { // TODO: mettre 3 au lieu de 60 pour tester plus vite
+    if (nbCardsPlayedInTour === 6) { // TODO: mettre 3 au lieu de 60 pour tester plus vite
       // la dernière carte du tour vient d'être jouée
-      cardsService.countScore();
       playersService.emptyCollectedLoosingCards();
+      cardsService.countEndTourScore();
+      console.log('countEndTourScore',
+        playersService.getPlayers().map(player => player.name + ':' + player.roundScore + '/' + player.globalScore));
       if (nbTour === playersService.getNbPlayers()) {
         // game over
-        io.emit('gameOver');
+        io.emit('gameOver', playersService.getPlayers());
       } else {
         nbTour++;
         // tour suivant
+        io.emit('endOfTour', playersService.getPlayers());
         playersService.reinitPlayersForNextRound();
         nbCardsPlayedInTour = 0;
-        io.emit('endOfTour', playersService.getPlayers());
       }
     } else {
       emitNextPlayerTurn(io, looser.name);

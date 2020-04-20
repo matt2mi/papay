@@ -15,7 +15,9 @@ export class ScoresComponent {
 
   constructor(public playersService: PlayersService, public router: Router) {
     this.currentPlayer = this.playersService.getCurrentPlayer();
-    this.playersService.getConnectedPlayers().subscribe((players: Player[]) => this.connectedPlayers = players);
+    this.playersService.getConnectedPlayers().subscribe((players: Player[]) => {
+      this.connectedPlayers = players.sort((player1, player2) => player1.globalScore - player2.globalScore);
+    });
   }
 
   restart() {
