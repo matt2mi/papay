@@ -1,25 +1,27 @@
-<div class="row mb-3">
-  <div class="offset-1 col-3 text-center" style="border: 1px solid white;">
-    <div *ngFor="let player of leftPlayers" class="mb-2"
-         [ngClass]="{'has-to-play': playerNameWaitedToPlay === player.name}">
-      <div>{{player.name}}:</div>
+<div class="row mb-3 text-center">
+  <div class="col-12">
+    <h2 *ngIf="isTimeToGiveCard">
+      Tu reçois {{nbCardToGive}} cartes de {{previousPlayer?.name}} et tu en donnes {{nbCardToGive}} à
+      {{nextPlayer?.name}}
+    </h2>
+  </div>
+</div>
 
-      <div>{{player.roundScore}} pts tour</div>
+<div class="row mb-3" *ngIf="isTimeToPlay">
+  <div class="col-3 offset-md-1 col-lg-2 offset-lg-2 text-center overflow-auto border-white position-relative">
+    <div class="absolute-bottom">
+      <div *ngFor="let player of leftPlayers; let id = index" class="py-2"
+           [ngClass]="{'has-to-play': playerNameWaitedToPlay === player.name, 'border-bottom-white': id !== leftPlayers.length - 1}">
+        <div>{{player.name}}</div>
 
-      <div>{{player.globalScore}} pts total</div>
-
-      <hr/>
+        <div>tour: {{player.roundScore}} / total: {{player.globalScore}}</div>
+      </div>
     </div>
   </div>
 
-  <div class="col-4" style="border: 1px solid white;">
-    <div class="row" style="min-height: 310px;">
+  <div class="col-6 col-md-4 border-white">
+    <div class="row playing-board-size">
       <div class="col-12 text-center mb-3">
-        <h2 *ngIf="isTimeToGiveCard">
-          Tu reçois {{nbCardToGive}} cartes de {{previousPlayer?.name}} et tu en donnes {{nbCardToGive}} à
-          {{nextPlayer?.name}}
-        </h2>
-
         <h2 *ngIf="isTimeToPlay && !isTimeToGetScores">
           Pli n°{{nbRound}} - à {{playerNameWaitedToPlay === currentPlayer?.name ? 'toi' : playerNameWaitedToPlay}} de
           jouer
@@ -46,44 +48,39 @@
         </div>
       </div>
 
-      <div *ngIf="cardFold?.length > 0" class="cardsFold col-6 offset-3">
+      <div *ngIf="cardFold?.length > 0" class="cardsFold col-12">
         <img *ngFor="let playerAndCard of cardFold; let rowIndex=index"
              class="cardFolded"
              [src]="'assets/img/' + playerAndCard.card.number + playerAndCard.card.family.label + '.png'"
-             [ngClass]="{'mine' : currentPlayer?.name != playerAndCard.player.name}"
+             [ngClass]="{'mine' : currentPlayer?.name === playerAndCard.player.name, 'forty-seven-card': is40Seven(playerAndCard.card)}"
              [ngStyle]="{'transform' : 'rotate(' + (340/connectedPlayers?.length)*rowIndex + 'deg) translate(0rem,2rem)'}"/>
       </div>
     </div>
   </div>
 
-  <div class="col-3 text-center" style="border: 1px solid white;">
-    <div *ngFor="let player of rightPlayers" class="mb-2"
-         [ngClass]="{'has-to-play': playerNameWaitedToPlay === player.name}">
-      <div>{{player.name}}:</div>
+  <div class="col-3 col-lg-2 text-center overflow-auto border-white position-relative">
+    <div class="absolute-bottom">
+      <div *ngFor="let player of rightPlayers; let id = index" class="py-2"
+           [ngClass]="{'has-to-play': playerNameWaitedToPlay === player.name, 'border-bottom-white': id !== rightPlayers.length - 1}">
+        <div>{{player.name}}</div>
 
-      <div>{{player.roundScore}} pts tour</div>
-
-      <div>{{player.globalScore}} pts total</div>
-
-      <hr/>
+        <div>tour: {{player.roundScore}} / total: {{player.globalScore}}</div>
+      </div>
     </div>
   </div>
 
-  <div class="offset-4 col-4 text-center" style="border: 1px solid white;">
+  <div class="offset-3 offset-md-4 col-6 col-md-4 text-center border-white">
     <div [ngClass]="{'has-to-play': playerNameWaitedToPlay === currentPlayer?.name}">
-      <div>Moi:</div>
-
-      <div>{{currentPlayer?.roundScore}} pts tour</div>
-
-      <div>{{currentPlayer?.globalScore}} pts total</div>
+      <div>Moi: {{currentPlayer?.roundScore}} pts tour / {{currentPlayer?.globalScore}} pts total</div>
     </div>
   </div>
 </div>
 
 <!--Le deck du joueur-->
 <div class="row" *ngIf="!isTimeToGetScores && !showRoundLooserName">
-  <div class="col-12 text-center">
-    <h2 *ngIf="family40">le 7 qui vaut 40 points: le 7 de {{family40?.label}}</h2>
+  <div class="col-12 text-center" *ngIf="family40">
+    <span><img src="../../../assets/d8.gif" style="height: 32px;"></span>
+    <span style="font-size: x-large;"> : le 7 de {{family40?.label}}</span>
   </div>
 
   <div class="col-12 text-center">
@@ -106,7 +103,7 @@
   </div>
 </div>
 
-<div class="row">
+<div class="row mt-2">
   <div class="col-12">
     <app-chat [currentPlayerName]="currentPlayer?.name"></app-chat>
   </div>

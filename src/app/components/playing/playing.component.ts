@@ -123,7 +123,7 @@ export class PlayingComponent implements OnInit {
       new Player('mimi'),
       new Player('matt'),
       new Player('hugo'),
-      new Player('coco'),
+      new Player('maximedelachavonnery'),
       new Player('gu'),
       new Player('cle'),
       new Player('marion'),
@@ -133,10 +133,13 @@ export class PlayingComponent implements OnInit {
     this.setNbCardToGive();
     this.isTimeToGiveCard = true;
     this.setAllCardsClickablesOrNot(true);
+    this.family40 = FAMILIES[2];
 
     for (let i = 0; i < this.connectedPlayers.length; i++) {
-      this.cardFold.push({player: this.connectedPlayers[i], card: new Card(i + 2, FAMILIES[4])});
+      this.cardFold.push({player: this.connectedPlayers[i], card: new Card(i + 2, FAMILIES[2])});
     }
+
+    this.isTimeToPlay = true;
   }
 
   setLeftAndRightPlayers() {
