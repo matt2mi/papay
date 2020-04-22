@@ -1,0 +1,218 @@
+.not-playable {
+  cursor: not-allowed;
+  position: absolute;
+  height: 125px;
+  width: 100px;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 12px;
+}
+
+.card {
+  z-index: 1;
+  color: black;
+  height: 125px;
+  width: 100px;
+  position: relative;
+
+  border: 5px solid white;
+  border-radius: 12px;
+}
+
+.card:before {
+  background: none;
+  border: 1px solid black;
+  border-radius: 12px;
+  content: "";
+  display: block;
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+}
+
+.logo {
+  width: 68px;
+  height: 75px;
+  position: absolute;
+  top: 22px;
+  left: 0;
+}
+
+.logo-papayoo {
+  width: 38px;
+  height: 11px;
+  position: absolute;
+  top: 5px;
+  left: 25px;
+}
+
+.logo-papayoo-bottom {
+  width: 38px;
+  height: 11px;
+  position: absolute;
+  bottom: 5px;
+  left: 25px;
+  transform: rotate(180deg);
+}
+
+.number {
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  font-family: numbers, sans-serif;
+  font-size: 1.5rem;
+}
+
+.top-left {
+  position: absolute;
+  top: 4px;
+  left: 2px;
+}
+
+.top-right {
+  position: absolute;
+  top: 4px;
+  right: 2px;
+}
+
+.bottom-right {
+  position: absolute;
+  bottom: 4px;
+  right: 2px;
+  transform: rotate(180deg);
+}
+
+.bottom-left {
+  position: absolute;
+  bottom: 4px;
+  left: 2px;
+  transform: rotate(180deg);
+}
+
+/* Spades */
+.spades {
+  background-color: rgb(0, 80, 146);
+  background-image: -webkit-gradient(
+      linear,
+      0 0,
+      0 100%,
+      color-stop(0.5, rgb(2, 96, 174)),
+      color-stop(0.5, transparent),
+      to(transparent)
+  );
+  background-image: -moz-linear-gradient(
+      to right,
+      rgb(2, 96, 174) 50%,
+      transparent 50%,
+      transparent
+  );
+  background-image: -o-linear-gradient(
+      to right,
+      rgb(2, 96, 174) 50%,
+      transparent 50%,
+      transparent
+  );
+  background-image: linear-gradient(
+      to right,
+      rgb(2, 96, 174) 50%,
+      transparent 50%,
+      transparent
+  );
+  -webkit-background-size: 15px 10px;
+  -moz-background-size: 15px 10px;
+  background-size: 15px 10px;
+}
+
+.spades-logo {
+  background-image: url("../../../../assets/spades/spades-logo.png");
+}
+
+.spades-logo-papayoo {
+  background-image: url("../../../../assets/spades/spades-papayoo.png");
+}
+
+/* Hearts */
+.hearts {
+  background-image: url("../../../../assets/hearts/hearts-back.png");
+  background-repeat: repeat;
+}
+
+.hearts-logo {
+  width: 67px;
+  background-image: url("../../../../assets/hearts/hearts-logo.png");
+}
+
+.hearts-logo-papayoo {
+  background-image: url("../../../../assets/hearts/hearts-papayoo.png");
+}
+
+/* Chamrocks */
+.chamrocks {
+  background-image: url("../../../../assets/chamrocks/chamrocks-back.png");
+  background-repeat: repeat;
+}
+
+.chamrocks-logo {
+  top: 19px;
+  background-image: url("../../../../assets/chamrocks/chamrocks-logo.png");
+}
+
+.chamrocks-logo-papayoo {
+  background-image: url("../../../../assets/chamrocks/chamrocks-papayoo.png");
+}
+
+/* Diamonds */
+.diamonds {
+  background-color: rgb(249, 165, 27);
+  background-image: -webkit-gradient(
+      linear,
+      0 0,
+      0 100%,
+      color-stop(0.5, rgb(247, 146, 30)),
+      color-stop(0.5, transparent),
+      to(transparent)
+  );
+  background-image: -moz-linear-gradient(
+      rgb(247, 146, 30) 50%,
+      transparent 50%,
+      transparent
+  );
+  background-image: -o-linear-gradient(
+      rgb(247, 146, 30) 50%,
+      transparent 50%,
+      transparent
+  );
+  background-image: linear-gradient(
+      rgb(247, 146, 30) 50%,
+      transparent 50%,
+      transparent
+  );
+  -webkit-background-size: 30px 15px;
+  -moz-background-size: 30px 15px;
+  background-size: 30px 15px;
+}
+
+.diamonds-logo {
+  width: 52px;
+  height: 70px;
+  background-image: url("../../../../assets/diamonds/diamonds-logo.png");
+}
+
+.diamonds-logo-papayoo {
+  background-image: url("../../../../assets/diamonds/diamonds-papayoo.png");
+}
+
+/* Papayoo */
+.papayoos {
+  background-color: rgb(24, 24, 24);
+}
+
+.papayoos-numbers {
+  color: rgb(247, 36, 4);
+}
+
+.papayoos-logo {
+  width: 65px;
+  height: 63px;
+  left: 15px;
+  background-image: url("../../../../assets/papayoos/papayoos-logo.png");
+}

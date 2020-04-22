@@ -97,26 +97,26 @@ export class PlayingComponent implements OnInit {
 
   testFrontOnly() {
     const deck = [
-      {family: {id: 0, label: 'Pique'}, number: 3, newOne: false},
-      {family: {id: 0, label: 'Pique'}, number: 6, newOne: false},
-      {family: {id: 1, label: 'Coeur'}, number: 6, newOne: false},
-      {family: {id: 1, label: 'Coeur'}, number: 7, newOne: false},
-      {family: {id: 1, label: 'Coeur'}, number: 10, newOne: false},
-      {family: {id: 2, label: 'Carreau'}, number: 1, newOne: false},
-      {family: {id: 2, label: 'Carreau'}, number: 3, newOne: false},
-      {family: {id: 2, label: 'Carreau'}, number: 7, newOne: false},
-      {family: {id: 2, label: 'Carreau'}, number: 8, newOne: false},
-      {family: {id: 3, label: 'Trefle'}, number: 2, newOne: false},
-      {family: {id: 3, label: 'Trefle'}, number: 3, newOne: false},
-      {family: {id: 3, label: 'Trefle'}, number: 8, newOne: false},
-      {family: {id: 3, label: 'Trefle'}, number: 9, newOne: false},
-      {family: {id: 4, label: 'Papayoo'}, number: 2, newOne: false},
-      {family: {id: 4, label: 'Papayoo'}, number: 4, newOne: false},
-      {family: {id: 4, label: 'Papayoo'}, number: 6, newOne: false},
-      {family: {id: 4, label: 'Papayoo'}, number: 7, newOne: false},
-      {family: {id: 4, label: 'Papayoo'}, number: 8, newOne: false},
-      {family: {id: 4, label: 'Papayoo'}, number: 13, newOne: false},
-      {family: {id: 4, label: 'Papayoo'}, number: 20, newOne: false}
+      new Card(3, FAMILIES[0], true, false, true),
+      new Card(6, FAMILIES[0], true, false),
+      new Card(6, FAMILIES[1], true, false, true),
+      new Card(7, FAMILIES[1], true, false),
+      new Card(10, FAMILIES[1], true, false),
+      new Card(1, FAMILIES[2], true, false),
+      new Card(3, FAMILIES[2], true, false),
+      new Card(7, FAMILIES[2], true, false),
+      new Card(8, FAMILIES[2], true, false, true),
+      new Card(2, FAMILIES[3], true, false),
+      new Card(3, FAMILIES[3], true, false),
+      new Card(8, FAMILIES[3], true, false),
+      new Card(9, FAMILIES[3], true, false, true),
+      new Card(2, FAMILIES[4], true, false),
+      new Card(4, FAMILIES[4], true, false, true),
+      new Card(6, FAMILIES[4], true, false),
+      new Card(7, FAMILIES[4], true, false),
+      new Card(8, FAMILIES[4], true, false),
+      new Card(13, FAMILIES[4], true, false),
+      new Card(20, FAMILIES[4], true, false),
     ];
     this.currentPlayer = new Player('matt', deck);
     this.connectedPlayers = [
@@ -133,13 +133,14 @@ export class PlayingComponent implements OnInit {
     this.setNbCardToGive();
     this.isTimeToGiveCard = true;
     this.setAllCardsClickablesOrNot(true);
-    this.family40 = FAMILIES[2];
+    this.family40 = FAMILIES[3];
 
     for (let i = 0; i < this.connectedPlayers.length; i++) {
-      this.cardFold.push({player: this.connectedPlayers[i], card: new Card(i + 2, FAMILIES[2])});
+      this.cardFold.push({player: this.connectedPlayers[i], card: new Card(i + 2, FAMILIES[4])});
     }
 
-    this.isTimeToPlay = true;
+    this.playerNameWaitedToPlay = 'matt';
+    this.isTimeToPlay = false;
   }
 
   setLeftAndRightPlayers() {
@@ -227,21 +228,19 @@ export class PlayingComponent implements OnInit {
   }
 
   clickCard(card: Card) {
-    if (card.isPlayable) {
-      if (this.isTimeToGiveCard) {
-        this.currentPlayer.deck.find(c => c === card).toGive = !card.toGive && this.getCardToGive().length < this.nbCardToGive;
-      } else {
-        // We are playing
-        this.cardsService.playCard(card, this.currentPlayer.name)
-          .subscribe(
-            () => {
-              this.isCurrentPlayerTurn = false;
-              const currentCard = this.currentPlayer.deck.find(c => c.family.id === card.family.id && c.number === card.number);
-              currentCard.played = true;
-            },
-            error => console.error('pas joué', error)
-          );
-      }
+    if (this.isTimeToGiveCard) {
+      this.currentPlayer.deck.find(c => c === card).toGive = !card.toGive && this.getCardToGive().length < this.nbCardToGive;
+    } else {
+      // We are playing
+      this.cardsService.playCard(card, this.currentPlayer.name)
+        .subscribe(
+          () => {
+            this.isCurrentPlayerTurn = false;
+            const currentCard = this.currentPlayer.deck.find(c => c.family.id === card.family.id && c.number === card.number);
+            currentCard.played = true;
+          },
+          error => console.error('pas joué', error)
+        );
     }
   }
 

@@ -2,6 +2,6 @@
   <div class="w-100" *ngFor="let msg of messages">{{msg}}</div>
 </div>
 <div class="w-100">
-  <input type="text" class="input-chat w-75" [(ngModel)]="message" #ctrl="ngModel">
-  <button (click)="sendMessage()">Envoyer</button>
+  <input type="text" class="input-chat w-100" [(ngModel)]="message" #ctrl="ngModel"
+         placeholder="envoie un message avec entrée" (keyup.enter)="sendMessage()">
 </div>

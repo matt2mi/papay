@@ -8,9 +8,11 @@ export default class Card {
   toGive = false;
   played = false;
 
-  constructor(nb: number, family: Family, isPlayable = false) {
+  constructor(nb: number, family: Family, isPlayable = false, newOne = false, toGive = false) {
     this.number = nb;
     this.family = family;
     this.isPlayable = isPlayable;
+    this.newOne = newOne;
+    this.toGive = toGive;
   }
 }
