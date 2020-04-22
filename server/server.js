@@ -131,14 +131,8 @@ io.on('connection', (socket) => {
 });
 
 // Bugs :
-// TODO : bug dans les points du tour et totaux au 2e tour (les classer dans l'ordre)
-// TODO : bug dans les scores finaux
 // TODO : info de qui on attend pr donner ses cartes
 // TODO : deuxieme tour : plateau pas caché quand on donne ses cartes
-// TODO : ne pas mettre les cartes coeur et carreau a coté (alterner noir et rouge)
-// TODO - CHAT : envoyer message avec entrée dans le chat
-// TODO - CHAT : faire espace après avoir envoyé un message dans le chat envoie un msg vide (le bouton est selectionné)
-// TODO : numéro du nombre de pli foireux: inutile, le supprimer pour mettre le nombre de tour restant ?
 
 
 // Evols :

@@ -18,15 +18,19 @@ export class ChatComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.chatService.initSocket();
-    this.chatService.getNewMessages$.subscribe(messages => this.messages = messages);
-    this.chatService.getMessages().subscribe(({messages}) => this.messages = messages);
-    this.scrollChatToBottom();
+    this.chatService.getNewMessages$.subscribe(messages => {
+      this.messages = messages;
+      this.scrollChatToBottom();
+    });
+    this.chatService.getMessages().subscribe(({messages}) => {
+      this.messages = messages;
+      this.scrollChatToBottom();
+    });
   }
 
   sendMessage() {
     this.chatService.addNewMessage(this.currentPlayerName + ': ' + this.message);
     this.message = '';
-    setTimeout(() => this.scrollChatToBottom(), 200);
   }
 
   scrollChatToBottom() {

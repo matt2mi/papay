@@ -1,3 +1,13 @@
+.deck-card {
+  cursor: pointer;
+  margin-top: 40px;
+}
+
+.selected {
+  position: relative;
+  top: -35px;
+}
+
 .not-clickable {
   cursor: not-allowed;
   opacity: 0.6;
@@ -12,21 +22,12 @@
 
 .card-button {
   width: 100%;
-  height: 8rem;
   position: absolute;
   bottom: 0;
   border: 0;
   padding: 0;
   background-color: dimgray;
-}
-
-.selected {
-  height: 10rem;
-}
-
-.newOne {
-  height: 10rem;
-  opacity: 1;
+  border-radius: 12px;
 }
 
 .has-to-play {
@@ -58,9 +59,21 @@
   border-bottom: 1px solid white;
 }
 
-.absolute-bottom {
+.absolute-top {
+  position: absolute;
+  top: 0;
+}
+
+.absolute-bottom-right {
   position: absolute;
   bottom: 0;
+  right: 10px;
+}
+
+.absolute-bottom-left {
+  position: absolute;
+  bottom: 0;
+  left: 10px;
 }
 
 .playing-board-size {
@@ -69,4 +82,8 @@
 
 .forty-seven-card {
   border: 2px solid red;
+}
+
+.game-board {
+  background: radial-gradient(green 0, black 150%);
 }

@@ -79,8 +79,8 @@ export class PlayingComponent implements OnInit {
     });
     this.playersService.waitedPlayersForNextRound$.subscribe(players => this.waitedPlayersForNextRound = players);
     this.playersService.newTour$.subscribe(() => this.initDeck());
-    this.playersService.gameOver$.subscribe(() => this.gameOver(''));
-    this.playersService.playerDisconnected$.subscribe((name: string) => this.gameOver(name));
+    this.playersService.gameOver$.subscribe((players: Player[]) => this.endTour(players, true));
+    this.playersService.playerDisconnected$.subscribe((name: string) => this.playerDisconnection(name));
   }
 
   nextPlayerTurn(data) {
@@ -97,26 +97,26 @@ export class PlayingComponent implements OnInit {
 
   testFrontOnly() {
     const deck = [
-      {family: {id: 0, label: 'Pique'}, number: 3, newOne: false},
-      {family: {id: 0, label: 'Pique'}, number: 6, newOne: false},
-      {family: {id: 1, label: 'Coeur'}, number: 6, newOne: false},
-      {family: {id: 1, label: 'Coeur'}, number: 7, newOne: false},
-      {family: {id: 1, label: 'Coeur'}, number: 10, newOne: false},
-      {family: {id: 2, label: 'Carreau'}, number: 1, newOne: false},
-      {family: {id: 2, label: 'Carreau'}, number: 3, newOne: false},
-      {family: {id: 2, label: 'Carreau'}, number: 7, newOne: false},
-      {family: {id: 2, label: 'Carreau'}, number: 8, newOne: false},
-      {family: {id: 3, label: 'Trefle'}, number: 2, newOne: false},
-      {family: {id: 3, label: 'Trefle'}, number: 3, newOne: false},
-      {family: {id: 3, label: 'Trefle'}, number: 8, newOne: false},
-      {family: {id: 3, label: 'Trefle'}, number: 9, newOne: false},
-      {family: {id: 4, label: 'Papayoo'}, number: 2, newOne: false},
-      {family: {id: 4, label: 'Papayoo'}, number: 4, newOne: false},
-      {family: {id: 4, label: 'Papayoo'}, number: 6, newOne: false},
-      {family: {id: 4, label: 'Papayoo'}, number: 7, newOne: false},
-      {family: {id: 4, label: 'Papayoo'}, number: 8, newOne: false},
-      {family: {id: 4, label: 'Papayoo'}, number: 13, newOne: false},
-      {family: {id: 4, label: 'Papayoo'}, number: 20, newOne: false}
+      new Card(3, FAMILIES[0], true, false, true),
+      new Card(6, FAMILIES[0], true, false),
+      new Card(6, FAMILIES[1], true, false, true),
+      new Card(7, FAMILIES[1], true, false),
+      new Card(10, FAMILIES[1], true, false),
+      new Card(1, FAMILIES[2], true, false),
+      new Card(3, FAMILIES[2], true, false),
+      new Card(7, FAMILIES[2], true, false),
+      new Card(8, FAMILIES[2], true, false, true),
+      new Card(2, FAMILIES[3], true, false),
+      new Card(3, FAMILIES[3], true, false),
+      new Card(8, FAMILIES[3], true, false),
+      new Card(9, FAMILIES[3], true, false, true),
+      new Card(2, FAMILIES[4], true, false),
+      new Card(4, FAMILIES[4], true, false, true),
+      new Card(6, FAMILIES[4], true, false),
+      new Card(7, FAMILIES[4], true, false),
+      new Card(8, FAMILIES[4], true, false),
+      new Card(13, FAMILIES[4], true, false),
+      new Card(20, FAMILIES[4], true, false),
     ];
     this.currentPlayer = new Player('matt', deck);
     this.connectedPlayers = [
@@ -133,13 +133,14 @@ export class PlayingComponent implements OnInit {
     this.setNbCardToGive();
     this.isTimeToGiveCard = true;
     this.setAllCardsClickablesOrNot(true);
-    this.family40 = FAMILIES[2];
+    this.family40 = FAMILIES[3];
 
     for (let i = 0; i < this.connectedPlayers.length; i++) {
-      this.cardFold.push({player: this.connectedPlayers[i], card: new Card(i + 2, FAMILIES[2])});
+      this.cardFold.push({player: this.connectedPlayers[i], card: new Card(i + 2, FAMILIES[4])});
     }
 
-    this.isTimeToPlay = true;
+    this.playerNameWaitedToPlay = 'matt';
+    this.isTimeToPlay = false;
   }
 
   setLeftAndRightPlayers() {
@@ -227,21 +228,19 @@ export class PlayingComponent implements OnInit {
   }
 
   clickCard(card: Card) {
-    if (card.isPlayable) {
-      if (this.isTimeToGiveCard) {
-        this.currentPlayer.deck.find(c => c === card).toGive = !card.toGive && this.getCardToGive().length < this.nbCardToGive;
-      } else {
-        // We are playing
-        this.cardsService.playCard(card, this.currentPlayer.name)
-          .subscribe(
-            () => {
-              this.isCurrentPlayerTurn = false;
-              const currentCard = this.currentPlayer.deck.find(c => c.family.id === card.family.id && c.number === card.number);
-              currentCard.played = true;
-            },
-            error => console.error('pas joué', error)
-          );
-      }
+    if (this.isTimeToGiveCard) {
+      this.currentPlayer.deck.find(c => c === card).toGive = !card.toGive && this.getCardToGive().length < this.nbCardToGive;
+    } else {
+      // We are playing
+      this.cardsService.playCard(card, this.currentPlayer.name)
+        .subscribe(
+          () => {
+            this.isCurrentPlayerTurn = false;
+            const currentCard = this.currentPlayer.deck.find(c => c.family.id === card.family.id && c.number === card.number);
+            currentCard.played = true;
+          },
+          error => console.error('pas joué', error)
+        );
     }
   }
 
@@ -259,9 +258,8 @@ export class PlayingComponent implements OnInit {
 
   handleRoundLooser(roundLooser: Player, playedCardsOfRound: { card: Card, player: Player }[]) {
     this.cardFold = playedCardsOfRound;
-    // this.isTimeToPlay = false;
     this.showRoundLooserName = true;
-    this.updatePlayerRoundScore(roundLooser);
+    this.updateLooserRoundScore(roundLooser);
     this.roundLooserName = roundLooser.name;
     setTimeout(
       () => {
@@ -277,18 +275,30 @@ export class PlayingComponent implements OnInit {
     );
   }
 
-  updatePlayerRoundScore(roundLooser: Player) {
-    const looser = this.connectedPlayers.find(player => player.name === roundLooser.name);
-    looser.roundScore = roundLooser.roundScore;
+  updateLooserRoundScore(roundLooser: Player) {
     if (roundLooser.name === this.currentPlayer.name) {
       this.currentPlayer.roundScore = roundLooser.roundScore;
+    } else {
+      const looser = this.connectedPlayers.find(player => player.name === roundLooser.name);
+      looser.roundScore = roundLooser.roundScore;
     }
   }
 
-  endTour(players: Player[]) {
-    this.connectedPlayers = players;
+  endTour(players: Player[], isGameOver = false) {
+    players.forEach(player => {
+      if (player.name === this.currentPlayer.name) {
+        this.currentPlayer.roundScore = player.roundScore;
+        this.currentPlayer.globalScore = player.globalScore;
+      }
+      const playerToUpdate = this.connectedPlayers.find(connectedPlayer => player.name === connectedPlayer.name);
+      playerToUpdate.roundScore = player.roundScore;
+      playerToUpdate.globalScore = player.globalScore;
+    });
     this.waitedPlayersForNextRound = players;
     this.isTimeToGetScores = true;
+    if (isGameOver) {
+      setTimeout(() => this.gameOver(), 4000);
+    }
   }
 
   isCardsInDeckOfFamilyASked() {
@@ -320,16 +330,18 @@ export class PlayingComponent implements OnInit {
       this.roundLooserName = '';
       this.nbRound = 1;
       this.family40 = null;
+      this.connectedPlayers.forEach(player => player.roundScore = 0);
+      this.currentPlayer.roundScore = 0;
     });
   }
 
-  gameOver(name: string) {
-    if (name) {
-      alert(name + ' a quitté le jeu...');
-      this.router.navigate(['login']);
-    } else {
-      this.router.navigate(['scores']);
-    }
+  gameOver() {
+    this.router.navigate(['scores']);
+  }
+
+  playerDisconnection(name: string) {
+    alert(name + ' a quitté le jeu...');
+    this.router.navigate(['login']);
   }
 
   is40Seven(card: Card): boolean {
