@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, Input} from '@angular/core';
-import {ChatService} from '../../services/chat.service';
+import {ChatService, Messages} from '../../services/chat.service';
 
 @Component({
   selector: 'app-chat',
@@ -9,7 +9,8 @@ import {ChatService} from '../../services/chat.service';
 export class ChatComponent implements AfterViewInit {
 
   @Input() currentPlayerName;
-  messages: string[] = [];
+  @Input() currentPlayerColor;
+  messages: Messages[] = [];
   message = '';
 
   constructor(public chatService: ChatService) {
@@ -17,12 +18,12 @@ export class ChatComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.chatService.initSocket();
-    this.chatService.getNewMessages$.subscribe(messages => this.messages = messages);
-    this.chatService.getMessages().subscribe(({messages}) => this.messages = messages);
+    this.chatService.getNewMessages$.subscribe((messages: Messages[]) => this.messages = messages);
+    this.chatService.getMessages().subscribe((messages: Messages[]) => this.messages = messages);
   }
 
   sendMessage() {
-    this.chatService.addNewMessage(this.currentPlayerName + ': ' + this.message);
+    this.chatService.addNewMessage(this.currentPlayerName + ': ' + this.message, this.currentPlayerColor);
     this.message = '';
   }
 }

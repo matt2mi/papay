@@ -11,7 +11,8 @@
   <div class="col-3 col-md-2 text-center overflow-auto position-relative">
     <div class="absolute-bottom-right">
       <div *ngFor="let player of leftPlayers; let id = index" class="py-2"
-           [ngClass]="{'has-to-play': playerNameWaitedToPlay === player.name, 'border-bottom-white': id !== leftPlayers.length - 1}">
+           [ngClass]="{'has-to-play': playerNameWaitedToPlay === player.name, 'border-bottom-white': id !== leftPlayers.length - 1}"
+           [ngStyle]="{'color': player.color}">
         <div>{{player.name}}</div>
 
         <div>tour: {{player.roundScore}} / total: {{player.globalScore}}</div>
@@ -61,7 +62,8 @@
 
     <div class="absolute-bottom-left">
       <div *ngFor="let player of rightPlayers; let id = index" class="py-2"
-           [ngClass]="{'has-to-play': playerNameWaitedToPlay === player.name, 'border-bottom-white': id !== rightPlayers.length - 1}">
+           [ngClass]="{'has-to-play': playerNameWaitedToPlay === player.name, 'border-bottom-white': id !== rightPlayers.length - 1}"
+           [ngStyle]="{'color': player.color}">
         <div>{{player.name}}</div>
 
         <div>tour: {{player.roundScore}} / total: {{player.globalScore}}</div>
@@ -70,12 +72,14 @@
   </div>
 
   <div class="d-none d-md-block col-2 col-md-4">
-    <app-chat [currentPlayerName]="currentPlayer?.name"></app-chat>
+    <app-chat [currentPlayerName]="currentPlayer?.name" [currentPlayerColor]="currentPlayer?.color"></app-chat>
   </div>
 
   <div class="offset-3 offset-md-2 col-6 col-md-4 text-center">
     <div [ngClass]="{'has-to-play': playerNameWaitedToPlay === currentPlayer?.name}">
-      <div>Moi: {{currentPlayer?.roundScore}} pts tour / {{currentPlayer?.globalScore}} pts total</div>
+      <div [ngStyle]="{'color': currentPlayer?.color}">Moi: {{currentPlayer?.roundScore}} pts tour /
+        {{currentPlayer?.globalScore}} pts total
+      </div>
     </div>
   </div>
 </div>
@@ -116,6 +120,6 @@
 
 <div class="row mt-3 d-block d-md-none">
   <div class="col-12">
-    <app-chat [currentPlayerName]="currentPlayer?.name"></app-chat>
+    <app-chat [currentPlayerName]="currentPlayer?.name" [currentPlayerColor]="currentPlayer?.color"></app-chat>
   </div>
 </div>

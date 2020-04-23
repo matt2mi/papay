@@ -14,11 +14,9 @@ import {PlayingComponent} from './components/playing/playing.component';
 import {ScoresComponent} from './components/scores/scores.component';
 import {ChatComponent} from './shared/components/chat/chat.component';
 import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
-import { CardComponent } from './shared/components/card/card.component';
+import {CardComponent} from './shared/components/card/card.component';
 
-// wss://safe-beach-39902.herokuapp.com
 const wsUrl = window.location.origin.replace(/^http/, 'ws');
-console.log('wsUrl', wsUrl);
 const socketIOConfig: SocketIoConfig = { url: wsUrl, options: {} };
 
 @NgModule({

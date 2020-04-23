@@ -68,7 +68,6 @@ export class PlayingComponent implements OnInit {
       }
     });
     this.playersService.roundLooser$.subscribe((result: { looser: Player, playedCardsOfRound: { card: Card, player: Player }[] }) => {
-      console.log('result', result);
       this.setAllCardsClickablesOrNot(false);
       this.handleRoundLooser(result.looser, result.playedCardsOfRound);
     });
@@ -118,7 +117,7 @@ export class PlayingComponent implements OnInit {
       new Card(13, FAMILIES[4], true, false),
       new Card(20, FAMILIES[4], true, false),
     ];
-    this.currentPlayer = new Player('matt', deck);
+    this.currentPlayer = new Player('matt', deck, 'red');
     this.connectedPlayers = [
       new Player('mimi'),
       new Player('matt'),
@@ -131,7 +130,7 @@ export class PlayingComponent implements OnInit {
     ];
     this.setLeftAndRightPlayers();
     this.setNbCardToGive();
-    this.isTimeToGiveCard = true;
+    this.isTimeToGiveCard = false;
     this.setAllCardsClickablesOrNot(true);
     this.family40 = FAMILIES[3];
 
@@ -140,7 +139,7 @@ export class PlayingComponent implements OnInit {
     }
 
     this.playerNameWaitedToPlay = 'matt';
-    this.isTimeToPlay = false;
+    this.isTimeToPlay = true;
   }
 
   setLeftAndRightPlayers() {

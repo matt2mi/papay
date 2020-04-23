@@ -46,8 +46,6 @@ const receivePlayerCard = (playerName, card, io) => {
       // la dernière carte du tour vient d'être jouée
       playersService.emptyCollectedLoosingCards();
       cardsService.countEndTourScore();
-      console.log('countEndTourScore',
-        playersService.getPlayers().map(player => player.name + ':' + player.roundScore + '/' + player.globalScore));
       if (nbTour === playersService.getNbPlayers()) {
         // game over
         io.emit('gameOver', playersService.getPlayers());

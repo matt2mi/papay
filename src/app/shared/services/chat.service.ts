@@ -3,6 +3,11 @@ import {HttpClient} from '@angular/common/http';
 import {Socket} from 'ngx-socket-io';
 import {BehaviorSubject, Observable} from 'rxjs';
 
+export type Messages = {
+  message: string;
+  color: string
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -15,16 +20,17 @@ export class ChatService {
   }
 
   initSocket() {
-    this.socket.on('newMessage', messages => this.messagesSource.next(messages));
+    this.socket.on('newMessage', (messages: Messages[]) =>
+      this.messagesSource.next(messages));
   }
 
-  getMessages(): Observable<{ messages: string[] }> {
-    return this.http.get<{ messages: string[] }>('chatMessages');
+  getMessages(): Observable<Messages[]> {
+    return this.http.get<Messages[]>('chatMessages');
   }
 
-  addNewMessage(message: string) {
+  addNewMessage(message: string, color: string) {
     this.http
-      .post('newChatMessage', {message})
+      .post('newChatMessage', {message, color})
       .subscribe();
   }
 }

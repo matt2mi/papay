@@ -53,7 +53,7 @@ export class PlayersService {
 
   initSocket() {
     this.socket.on('newPlayer', (players: Player[]) => this.newPlayersSource.next(players));
-    this.socket.on('creatingPlayer', (result: { name: string, error: { value: boolean, message: string } }) =>
+    this.socket.on('creatingPlayer', (result: { name: string, color: string, error: { value: boolean, message: string } }) =>
       this.createPlayerSource.next(result));
     this.socket.on('partyStarted', () => this.partyStartedSource.next(null));
     this.socket.on('nextPlayerTurn',
@@ -73,8 +73,9 @@ export class PlayersService {
     return this.currentPlayer;
   }
 
-  setCurrentPlayerName(name: string) {
+  setCurrentPlayerNameAndColor(name: string, color: string) {
     this.currentPlayer.name = name;
+    this.currentPlayer.color = color;
   }
 
   getCurrentPlayerDeck(): Observable<{ deck: Card[] }> {
