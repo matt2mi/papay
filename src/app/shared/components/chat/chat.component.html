@@ -1,5 +1,5 @@
 <div class="chat" #chat>
-  <div class="w-100" *ngFor="let msg of messages">{{msg}}</div>
+  <div class="w-100 msg" *ngFor="let msg of messages">{{msg}}</div>
 </div>
 <div class="w-100">
   <input type="text" class="input-chat w-100" [(ngModel)]="message" #ctrl="ngModel"
