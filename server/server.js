@@ -144,6 +144,7 @@ io.on('connection', (socket) => {
 
 // Evols :
 // TODO : ajouter du son:
+// pour un nouveau message ds le chat
 // pour jouer la musique de Carlos Papayou (activée par défaut)
 // pour la distribution des cartes
 // pour jouer une carte
