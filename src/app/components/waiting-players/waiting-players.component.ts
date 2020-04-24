@@ -15,15 +15,34 @@ export class WaitingPlayersComponent implements OnInit {
   connectedPlayers: Player[] = [];
 
   constructor(public router: Router, public playersService: PlayersService) {
-    this.currentPlayer = this.playersService.getCurrentPlayer();
   }
 
   ngOnInit() {
+    // this.testFrontOnly();
+    this.initComponent();
+  }
+
+  initComponent() {
+    this.currentPlayer = this.playersService.getCurrentPlayer();
     this.playersService.newPlayers$
       .subscribe((connectedPlayers: Player[]) => this.connectedPlayers = connectedPlayers);
     this.playersService.getConnectedPlayers()
       .subscribe((players: Player[]) => this.connectedPlayers = players);
     this.playersService.partyStarted$.subscribe(() => this.router.navigate(['playing']));
+  }
+
+  testFrontOnly() {
+    this.currentPlayer = new Player('matt');
+    this.connectedPlayers = [
+      new Player('mimi'),
+      new Player('matt'),
+      new Player('hugo'),
+      new Player('hugo'),
+      new Player('hugo'),
+      new Player('hugo'),
+      new Player('hugo'),
+      new Player('hugo'),
+    ];
   }
 
   startParty() {

@@ -1,4 +1,4 @@
-<div class="chat" #chat>
+<div class="chat">
   <div class="w-100 msg" *ngFor="let messageAndColor of messages">
     <span [ngStyle]="{'color': messageAndColor.color}">{{messageAndColor.message}}</span>
   </div>

@@ -1,29 +1,30 @@
-import {AfterViewInit, Component, Input} from '@angular/core';
-import {ChatService, Messages} from '../../services/chat.service';
+import {Component, Input, OnInit} from '@angular/core';
+import {ChatService, Message} from '../../services/chat.service';
 
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss']
 })
-export class ChatComponent implements AfterViewInit {
+export class ChatComponent implements OnInit {
 
   @Input() currentPlayerName;
   @Input() currentPlayerColor;
-  messages: Messages[] = [];
+  messages: Message[] = [];
   message = '';
 
   constructor(public chatService: ChatService) {
   }
 
-  ngAfterViewInit() {
-    this.chatService.initSocket();
-    this.chatService.getNewMessages$.subscribe((messages: Messages[]) => this.messages = messages);
-    this.chatService.getMessages().subscribe((messages: Messages[]) => this.messages = messages);
+  ngOnInit() {
+    this.chatService.getMessages().subscribe((messages: Message[]) => this.messages = messages);
+    this.chatService.getNewMessage().subscribe((message: Message) => this.messages.push(message));
   }
 
   sendMessage() {
-    this.chatService.addNewMessage(this.currentPlayerName + ': ' + this.message, this.currentPlayerColor);
+    const message = this.currentPlayerName + ': ' + this.message;
+    const color = this.currentPlayerColor;
+    this.chatService.addNewMessage(message, color).subscribe(() => this.messages.push({message, color}));
     this.message = '';
   }
 }

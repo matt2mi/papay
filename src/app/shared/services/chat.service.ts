@@ -1,9 +1,10 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Socket} from 'ngx-socket-io';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
+import {PlayersService} from '../../services/players.service';
 
-export type Messages = {
+export type Message = {
   message: string;
   color: string
 };
@@ -13,24 +14,26 @@ export type Messages = {
 })
 export class ChatService {
 
-  private messagesSource = new BehaviorSubject([]);
-  getNewMessages$ = this.messagesSource.asObservable();
+  getNewMessage$: Observable<Message>;
 
-  constructor(public http: HttpClient, public socket: Socket) {
+  constructor(public http: HttpClient, public socket: Socket, public playersService: PlayersService) {
   }
 
-  initSocket() {
-    this.socket.on('newMessage', (messages: Messages[]) =>
-      this.messagesSource.next(messages));
+  getNewMessage(): Observable<Message> {
+    return this.getNewMessage$ = new Observable((observer) =>
+      this.socket.on('newMessage', (message: Message) => {
+        if (this.playersService.getCurrentPlayer() && this.playersService.getCurrentPlayer().name !== message.message.split(':')[0]) {
+          observer.next(message);
+        }
+      })
+    );
   }
 
-  getMessages(): Observable<Messages[]> {
-    return this.http.get<Messages[]>('chatMessages');
+  getMessages(): Observable<Message[]> {
+    return this.http.get<Message[]>('chatMessages');
   }
 
-  addNewMessage(message: string, color: string) {
-    this.http
-      .post('newChatMessage', {message, color})
-      .subscribe();
+  addNewMessage(message: string, color: string): Observable<boolean> {
+    return this.http.post<boolean>('newChatMessage', {message, color});
   }
 }

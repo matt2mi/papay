@@ -1,5 +1,14 @@
 <mat-toolbar color="primary" class="mb-3">
-  <span>{{title}}</span>
+  <mat-toolbar-row>
+    <span>{{title}}</span>
+    <span class="spacer"></span>
+    <div *ngIf="displayChatNotifIcon" class="clickable d-flex d-md-none" (click)="scrollToChat()">
+      <mat-icon aria-hidden="false" aria-label="Example home icon" class="mr-1">chat</mat-icon>
+      <div class="notif text-center" *ngIf="nbNewMessages">
+        <mat-icon aria-hidden="false" aria-label="scroll To Top">arrow_downward</mat-icon>
+      </div>
+    </div>
+  </mat-toolbar-row>
 </mat-toolbar>
 
 <div class="container-fluid">

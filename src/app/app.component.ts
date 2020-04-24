@@ -1,12 +1,36 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {ChatService} from './shared/services/chat.service';
+import {NavigationEnd, Router} from '@angular/router';
+import {filter} from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'Papay\'';
+  displayChatNotifIcon = false;
+  nbNewMessages = 0;
+
+  constructor(public chatService: ChatService, public router: Router) {
+  }
+
+  ngOnInit() {
+    this.router.events
+      .pipe(filter((event: any) => event instanceof NavigationEnd && event.url === '/playing'))
+      .subscribe(() => this.displayChatNotifIcon = true);
+    this.chatService.getNewMessage().subscribe(() => this.nbNewMessages++);
+  }
+
+  scrollToChat() {
+    this.nbNewMessages = 0;
+    const body = document.body;
+    const html = document.documentElement;
+
+    const height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+    window.scrollTo(0, height);
+  }
 }
 
 /*

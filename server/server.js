@@ -79,7 +79,7 @@ app.get('/chatMessages', (req, res) => res.send(chatService.getMessages()));
 
 app.post('/newChatMessage', (req, res) => {
   chatService.addMessage(req.body.message, req.body.color, io);
-  res.send({ok: true});
+  res.send(true);
 });
 
 const port = process.env.PORT || 3000;
@@ -142,7 +142,6 @@ io.on('connection', (socket) => {
 // TODO : info de qui on attend pr donner ses cartes
 // TODO : deuxieme tour : plateau pas caché quand on donne ses cartes
 
-
 // Evols :
 // TODO : ajouter du son:
 // pour jouer la musique de Carlos Papayou (activée par défaut)
@@ -150,8 +149,6 @@ io.on('connection', (socket) => {
 // pour jouer une carte
 // pour récupérer le pli (rire d'andy chez celui qui prend le 7 à 40 pts)
 // pour wizzer quelqu'un trop lent
-// TODO - CHAT : repenser l'affichage du chat (une icone ouvre un menu transparent en mode smartphone)
-// TODO - CHAT : afficher un popup pour un nouveau message dans le chat
 // TODO : ajouter des gifs ? pour le 7 à 40 pts
 // TODO : pas assez clair le "à toi de jouer"
 // TODO : image d'un vrai tapis de jeu vert en fond du plateau de jeu
