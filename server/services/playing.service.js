@@ -17,14 +17,15 @@ const startParty = io => {
   io.emit('partyStarted', true);
 };
 
-const emitPlayerTurn = firstPlayerName => {
-  const currentPlayerSocket = playersService.getPlayerSocketByName(firstPlayerName);
-  currentPlayerSocket.emit('yourTurn', true);
-};
-
 const emitNextPlayerTurn = (io, playerNameWaitedToPlay) => {
-  io.emit('nextPlayerTurn', {playerNameWaitedToPlay, cardsPlayedWithPlayer: playedCardsOfRound});
-  emitPlayerTurn(playerNameWaitedToPlay);
+  playersService.getPlayers().forEach(player => {
+    const playerSocket = playersService.getPlayerSocketByName(player.name);
+    if (player.name === playerNameWaitedToPlay) {
+      playerSocket.emit('yourTurn', playedCardsOfRound);
+    } else {
+      playerSocket.emit('nextPlayerTurn', {playerNameWaitedToPlay, cardsPlayedWithPlayer: playedCardsOfRound});
+    }
+  });
 };
 
 const receivePlayerCard = (playerName, card, io) => {
@@ -42,24 +43,27 @@ const receivePlayerCard = (playerName, card, io) => {
     cardsService.countRoundScore();
     io.emit('roundLooser', {looser: playersService.getPlayerByName(looser.name), playedCardsOfRound});
 
-    if (nbCardsPlayedInTour === 60) { // TODO: mettre 3 au lieu de 60 pour tester plus vite
-      // la dernière carte du tour vient d'être jouée
-      playersService.emptyCollectedLoosingCards();
-      cardsService.countEndTourScore();
-      if (nbTour === playersService.getNbPlayers()) {
-        // game over
-        io.emit('gameOver', playersService.getPlayers());
+    setTimeout(() => {
+      // on laisse l'affichage du perdant du pli pendant 3 secondes
+      playedCardsOfRound = [];
+      if (nbCardsPlayedInTour === 60) { // TODO: mettre 3 au lieu de 60 pour tester plus vite
+        // la dernière carte du tour vient d'être jouée
+        playersService.emptyCollectedLoosingCards();
+        cardsService.countEndTourScore();
+        if (nbTour === playersService.getNbPlayers()) {
+          // game over
+          io.emit('gameOver');
+        } else {
+          nbTour++;
+          // tour suivant
+          io.emit('endOfTour', playersService.getPlayers());
+          playersService.reinitPlayersForNextRound();
+          nbCardsPlayedInTour = 0;
+        }
       } else {
-        nbTour++;
-        // tour suivant
-        io.emit('endOfTour', playersService.getPlayers());
-        playersService.reinitPlayersForNextRound();
-        nbCardsPlayedInTour = 0;
+        emitNextPlayerTurn(io, looser.name);
       }
-    } else {
-      emitNextPlayerTurn(io, looser.name);
-    }
-    playedCardsOfRound = [];
+    }, 3000);
   } else {
     // pli incomplet => on notifie le joueur suivant
     const nextPlayer = playersService.getNextPlayer(playerName);
@@ -112,7 +116,7 @@ const unWaitPlayer = (name, io) => {
   const id = waitedPlayers.findIndex(player => player.name === name);
   playersService.removeWaitedPlayer(id);
   if (waitedPlayers.length > 0) {
-    io.emit('waitedPlayersForNextRound', waitedPlayers);
+    io.emit('waitedPlayersForNextTour', waitedPlayers);
   } else {
     playersService.setWaitedPlayers();
     cardsService.setDealedDecksToPlayers();
@@ -130,7 +134,7 @@ const reset = () => {
 
 module.exports = {
   startParty,
-  emitPlayerTurn,
+  emitNextPlayerTurn,
   receivePlayerCard,
   findLooser,
   setFirstPlayerToPlay,

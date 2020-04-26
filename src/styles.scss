@@ -13,6 +13,7 @@ html, body {
   height: 100%;
   background-color: dimgray;
   color: #f9fbff;
+  overscroll-behavior: none;
 }
 
 body {
@@ -28,4 +29,8 @@ body {
 
 .txt-primary {
   color: #c2185b !important;
+}
+
+.clickable {
+  cursor: pointer;
 }

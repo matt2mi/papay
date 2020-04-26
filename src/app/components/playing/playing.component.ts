@@ -13,27 +13,45 @@ import {FAMILIES, Family} from '../../models/family';
 })
 export class PlayingComponent implements OnInit {
 
-  isCurrentPlayerTurn = false;
-  isTimeToPlay = false;
-  showRoundLooserName = false;
-  isTimeToGiveCard = false;
-  isTimeToGetScores = false;
-  isReady = false;
-
-  playerNameWaitedToPlay = '';
   currentPlayer: Player;
-  previousPlayer: Player;
-  nextPlayer: Player;
-  connectedPlayers: Player[];
-  family40: Family;
-  cardFold: { player: Player, card: Card }[] = [];
+
+  // Existing states:
+  /*
+  partyState = ...
+  *  'givingCards' => (cardsGived = true): afficher tu reçois x de et donne à x
+  *  'givingCards' => (cardsGived = false): attente don des autres joueurs
+  *
+  *  'playing' => (isCurrentPlayerTurn = false, showRoundLooserName = false): attente de son tour de jeu
+  *  'playing' => (isCurrentPlayerTurn = true, showRoundLooserName = false): Son tour de jeu / surligner Moi: ... et afficher à toi de jouer
+  *  'playing' => (isCurrentPlayerTurn = false, showRoundLooserName = true): pli complet - afficher ce pli est pour...
+  *  'playing' => (family40 = true): afficher le 7 de...
+  *
+  *  'endTourScores' => (isReady = false): afficher scores du tour et bouton passer tour suivant...
+  *  'endTourScores' => (isReady = true): afficher scores du tour et cacher bouton tour suivant
+  * */
+  partyState: '' | 'givingCards' | 'playing' | 'endTourScores' = '';
+
+  // givingCards (cardsGived)
+  cardsGived = false;
   nbCardToGive = 5;
   cardToGiveErrorMessage;
-  roundLooserName = '';
-  nbRound = 1;
-  waitedPlayersForNextRound: Player[] = [];
+  previousPlayer: Player;
+  nextPlayer: Player;
+
+  // playing (isCurrentPlayerTurn, showRoundLooserName, !!family40)
+  isCurrentPlayerTurn = false;
+  showRoundLooserName = false;
+  family40: Family;
+  playerNameWaitedToPlay = '';
+  connectedPlayers: Player[];
+  cardFold: { player: Player, card: Card }[] = [];
   leftPlayers: Player[] = [];
   rightPlayers: Player[] = [];
+  roundLooserName = '';
+
+  // endTourScores (isReady)
+  isReady = false;
+  waitedPlayersForNextTour: Player[] = [];
 
   constructor(public router: Router,
               public playersService: PlayersService,
@@ -45,6 +63,11 @@ export class PlayingComponent implements OnInit {
     this.initComponent();
   }
 
+  setPartyState(newState: '' | 'givingCards' | 'playing' | 'endTourScores') {
+    console.log('newState', newState);
+    this.partyState = newState;
+  }
+
   initComponent() {
     this.currentPlayer = this.playersService.getCurrentPlayer();
     this.initDeck();
@@ -52,50 +75,42 @@ export class PlayingComponent implements OnInit {
       this.connectedPlayers = players;
       this.setLeftAndRightPlayers();
       this.setNbCardToGive();
+      this.setPartyState('givingCards');
     });
 
-    this.cardsService.getDeckWithGivenCards$.subscribe((result: { deck: Card[], family40: Family }) => {
-      this.isTimeToGiveCard = false;
+    this.cardsService.getDeckWithGivenCards().subscribe((result: { deck: Card[], family40: Family }) => {
       this.currentPlayer.deck = result.deck;
       this.family40 = result.family40;
       this.getBackCards();
       this.setAllCardsClickablesOrNot(false);
-      this.isTimeToPlay = true;
+      this.setPartyState('playing');
     });
-    this.playersService.nextPlayerTurn$.subscribe(result => {
-      this.playerNameWaitedToPlay = result.playerNameWaitedToPlay;
-      if (result.cardsPlayedWithPlayer.length === 0) {
-        // wait before end the round
-        setTimeout(() => this.nextPlayerTurn(result), 3000);
-      } else {
-        this.nextPlayerTurn(result);
-      }
-    });
-    this.playersService.roundLooser$.subscribe((result: { looser: Player, playedCardsOfRound: { card: Card, player: Player }[] }) => {
-      this.setAllCardsClickablesOrNot(false);
-      this.handleRoundLooser(result.looser, result.playedCardsOfRound);
-    });
-    this.playersService.endOfTour$.subscribe(players => {
-      this.setAllCardsClickablesOrNot(false);
-      this.isReady = false;
-      this.endTour(players);
-    });
-    this.playersService.waitedPlayersForNextRound$.subscribe(players => this.waitedPlayersForNextRound = players);
-    this.playersService.newTour$.subscribe(() => this.initDeck());
-    this.playersService.gameOver$.subscribe((players: Player[]) => this.endTour(players, true));
-    this.playersService.playerDisconnected$.subscribe((name: string) => this.playerDisconnection(name));
+    this.playersService.yourTurn()
+      .subscribe((cardsPlayedWithPlayer: { card: Card, player: Player }[]) =>
+        this.yourTurn(cardsPlayedWithPlayer));
+    this.playersService.nextPlayerTurn()
+      .subscribe((result: { playerNameWaitedToPlay: string, cardsPlayedWithPlayer: { card: Card, player: Player }[] }) =>
+        this.nextPlayerTurn(result));
+    this.playersService.roundLooser().subscribe((result: { looser: Player, playedCardsOfRound: { card: Card, player: Player }[] }) =>
+      this.handleRoundLooser(result.looser, result.playedCardsOfRound));
+    this.playersService.endOfTour().subscribe(players => this.endTour(players));
+    this.playersService.waitedPlayersForNextTour().subscribe(players => this.waitedPlayersForNextTour = players);
+    this.playersService.newTour().subscribe(() => this.newTour());
+    this.playersService.gameOver().subscribe(() => this.gameOver());
+    this.playersService.playerDisconnected().subscribe((name: string) => this.playerDisconnection(name));
   }
 
-  nextPlayerTurn(data) {
-    this.cardFold = data.cardsPlayedWithPlayer;
-    if (data.playerNameWaitedToPlay === this.currentPlayer.name) {
-      // c'est au tour du joueur de jouer
-      this.isCurrentPlayerTurn = true;
-      this.canPlayCards();
-    } else {
-      this.isCurrentPlayerTurn = false;
-      this.setAllCardsClickablesOrNot(false);
-    }
+  initDeck() {
+    this.playersService.getCurrentPlayerDeck().subscribe(({deck}) => {
+      this.currentPlayer.deck = deck;
+      this.setAllCardsClickablesOrNot(true);
+    }, error => {
+      console.error(error);
+    });
+  }
+
+  setAllCardsClickablesOrNot(clickability: boolean) {
+    this.currentPlayer.deck.forEach(card => card.isPlayable = clickability);
   }
 
   testFrontOnly() {
@@ -134,7 +149,7 @@ export class PlayingComponent implements OnInit {
     ];
     this.setLeftAndRightPlayers();
     this.setNbCardToGive();
-    this.isTimeToGiveCard = false;
+    this.setPartyState('givingCards');
     this.setAllCardsClickablesOrNot(true);
     this.family40 = FAMILIES[3];
 
@@ -143,7 +158,6 @@ export class PlayingComponent implements OnInit {
     }
 
     this.playerNameWaitedToPlay = 'matt';
-    this.isTimeToPlay = true;
   }
 
   setLeftAndRightPlayers() {
@@ -205,19 +219,39 @@ export class PlayingComponent implements OnInit {
     }
   }
 
-  initDeck() {
-    this.playersService.getCurrentPlayerDeck().subscribe(({deck}) => {
-      this.isTimeToGetScores = false;
-      this.currentPlayer.deck = deck;
-      this.isTimeToGiveCard = true;
-      this.setAllCardsClickablesOrNot(true);
-    }, error => {
-      console.error(error);
-    });
+  isCardsInDeckOfFamilyASked() {
+    // renvoit true si, dans le deck du joueur, il y a une carte (non jouée) qui est de la famille demandée par la première carte du pli
+    return this.currentPlayer.deck
+      .filter(card => !card.played)
+      .some(card => card.family.id === this.cardFold[0].card.family.id);
   }
 
-  setAllCardsClickablesOrNot(clickability: boolean) {
-    this.currentPlayer.deck.forEach(card => card.isPlayable = clickability);
+  canPlayCards() {
+    if (this.cardFold.length !== 0 && this.isCardsInDeckOfFamilyASked()) {
+      console.log('canPlayCards - cardFold pas vide');
+      // cas : au moins une carte de la couleur demandée => seulement cette carte sera jouable
+      this.currentPlayer.deck.forEach(card => card.isPlayable = card.family.id === this.cardFold[0].card.family.id);
+    } else {
+      console.log('canPlayCards - cardFold vide ou aucune carte de la couleur demandée');
+      // cas : le joueur est le premier à jouer OU aucune carte de la couleur demandée
+      // => toutes les cartes sont jouables
+      this.setAllCardsClickablesOrNot(true);
+    }
+  }
+
+  yourTurn(cardsPlayedWithPlayer: { card: Card; player: Player }[]) {
+    this.cardFold = cardsPlayedWithPlayer;
+    this.isCurrentPlayerTurn = true;
+    this.playerNameWaitedToPlay = this.currentPlayer.name;
+    this.showRoundLooserName = false;
+    this.canPlayCards();
+  }
+
+  nextPlayerTurn({playerNameWaitedToPlay, cardsPlayedWithPlayer}) {
+    this.isCurrentPlayerTurn = false;
+    this.showRoundLooserName = false;
+    this.playerNameWaitedToPlay = playerNameWaitedToPlay;
+    this.cardFold = cardsPlayedWithPlayer;
   }
 
   getBackCards() {
@@ -230,52 +264,49 @@ export class PlayingComponent implements OnInit {
     return this.currentPlayer.deck.filter(c => c.toGive);
   }
 
+  selectCardToGive(card: Card) {
+    this.currentPlayer.deck
+      .find(c => c === card)
+      .toGive = !card.toGive && this.getCardToGive().length < this.nbCardToGive;
+  }
+
   clickCard(card: Card) {
-    if (this.isTimeToGiveCard) {
-      this.currentPlayer.deck.find(c => c === card).toGive = !card.toGive && this.getCardToGive().length < this.nbCardToGive;
-    } else {
-      // We are playing
-      this.cardsService.playCard(card, this.currentPlayer.name)
-        .subscribe(
-          () => {
-            this.isCurrentPlayerTurn = false;
-            const currentCard = this.currentPlayer.deck.find(c => c.family.id === card.family.id && c.number === card.number);
-            currentCard.played = true;
-          },
-          error => console.error('pas joué', error)
-        );
-    }
+    this.setAllCardsClickablesOrNot(false);
+    this.cardsService.playCard(card, this.currentPlayer.name)
+      .subscribe(
+        () => {
+          // const currentCard = this.currentPlayer.deck.find(c => c.family.id === card.family.id && c.number === card.number);
+          // currentCard.played = true;
+          card.played = true;
+        },
+        error => {
+          console.log('card', card);
+          console.error('n\' a pas été jouée', error);
+          this.canPlayCards();
+        }
+      );
   }
 
   giveCards() {
-    if (this.getCardToGive().length !== this.nbCardToGive) {
-      this.cardToGiveErrorMessage = `Tu dois donner ${this.nbCardToGive} cartes`;
-    } else {
-      this.cardsService.giveCard(this.getCardToGive(), this.playersService.getCurrentPlayer().name)
-        .subscribe(() => {
-          this.isTimeToGiveCard = false;
+    this.cardsService.giveCard(this.getCardToGive(), this.playersService.getCurrentPlayer().name)
+      .subscribe(
+        () => {
+          this.cardsGived = true;
           this.setAllCardsClickablesOrNot(false);
+        },
+        error => {
+          console.error('cartes pas données...');
+          console.error(error);
+          this.cardsGived = false;
         });
-    }
   }
 
   handleRoundLooser(roundLooser: Player, playedCardsOfRound: { card: Card, player: Player }[]) {
+    this.setAllCardsClickablesOrNot(false);
     this.cardFold = playedCardsOfRound;
-    this.showRoundLooserName = true;
     this.updateLooserRoundScore(roundLooser);
+    this.showRoundLooserName = true;
     this.roundLooserName = roundLooser.name;
-    setTimeout(
-      () => {
-        this.isTimeToPlay = true;
-        this.showRoundLooserName = false;
-        this.nbRound++;
-        this.cardFold = [];
-        if (this.isCurrentPlayerTurn) {
-          this.canPlayCards();
-        }
-      },
-      4000
-    );
   }
 
   updateLooserRoundScore(roundLooser: Player) {
@@ -287,7 +318,9 @@ export class PlayingComponent implements OnInit {
     }
   }
 
-  endTour(players: Player[], isGameOver = false) {
+  endTour(players: Player[]) {
+    this.setPartyState('endTourScores');
+    this.isReady = false;
     players.forEach(player => {
       if (player.name === this.currentPlayer.name) {
         this.currentPlayer.roundScore = player.roundScore;
@@ -297,44 +330,29 @@ export class PlayingComponent implements OnInit {
       playerToUpdate.roundScore = player.roundScore;
       playerToUpdate.globalScore = player.globalScore;
     });
-    this.waitedPlayersForNextRound = players;
-    this.isTimeToGetScores = true;
-    if (isGameOver) {
-      setTimeout(() => this.gameOver(), 4000);
-    }
-  }
-
-  isCardsInDeckOfFamilyASked() {
-    // renvoit true si, dans le deck du joueur, il y a une carte (non jouée) qui est de la famille demandée par la première carte du pli
-    return this.currentPlayer.deck
-      .filter(card => !card.played)
-      .some(card => card.family.id === this.cardFold[0].card.family.id);
-  }
-
-  canPlayCards() {
-    if (this.cardFold.length !== 0 && this.isCardsInDeckOfFamilyASked()) {
-      // cas : au moins une carte de la couleur demandée => seulement cette carte sera jouable
-      this.currentPlayer.deck.forEach(card => card.isPlayable = card.family.id === this.cardFold[0].card.family.id);
-    } else {
-      // cas : le joueur est le premier à jouer OU aucune carte de la couleur demandée
-      // => toutes les cartes sont jouables
-      this.setAllCardsClickablesOrNot(true);
-    }
+    this.waitedPlayersForNextTour = players;
   }
 
   readyForNextTour() {
     this.playersService.readyForNextTour().subscribe(() => {
       this.isReady = true;
       this.isCurrentPlayerTurn = false;
-      this.playerNameWaitedToPlay = '';
-      this.cardFold = [];
-      this.isTimeToGiveCard = false;
       this.showRoundLooserName = false;
-      this.roundLooserName = '';
-      this.nbRound = 1;
+      this.cardFold = [];
       this.family40 = null;
       this.connectedPlayers.forEach(player => player.roundScore = 0);
       this.currentPlayer.roundScore = 0;
+    });
+  }
+
+  newTour() {
+    this.playersService.getCurrentPlayerDeck().subscribe(({deck}) => {
+      this.currentPlayer.deck = deck;
+      this.setAllCardsClickablesOrNot(true);
+      this.cardsGived = false;
+      this.setPartyState('givingCards');
+    }, error => {
+      console.error(error);
     });
   }
 

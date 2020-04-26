@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
 import Card from '../models/card';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
 import {Socket} from 'ngx-socket-io';
 import {HttpClient} from '@angular/common/http';
-import {skip} from 'rxjs/internal/operators';
 import {Family} from '../models/family';
 
 @Injectable({
@@ -11,15 +10,15 @@ import {Family} from '../models/family';
 })
 export class CardsService {
 
-  private getDeckWithGivenSource = new BehaviorSubject(null);
-  getDeckWithGivenCards$ = this.getDeckWithGivenSource.asObservable().pipe(skip(1));
+  private getDeckWithGivenCards$: Observable<{ deck: Card[], family40: Family }>;
 
   constructor(public http: HttpClient, public socket: Socket) {
   }
 
-  initSocket() {
-    this.socket.on('newDeck', (deckAndFamily40: { deck: Card[], family40: Family }) =>
-      this.getDeckWithGivenSource.next(deckAndFamily40));
+  getDeckWithGivenCards(): Observable<{ deck: Card[], family40: Family }> {
+    return this.getDeckWithGivenCards$ = new Observable((observer) =>
+      this.socket.on('newDeck', (deckAndFamily40: { deck: Card[], family40: Family }) =>
+        observer.next(deckAndFamily40)));
   }
 
   giveCard(cards: Card[], name: string): Observable<{ cards: Card[], name: string }> {

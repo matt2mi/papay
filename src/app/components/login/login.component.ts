@@ -22,9 +22,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.playersService.initSocket();
-    this.cardsService.initSocket();
-    this.playersService.createPlayer$.subscribe(result => {
+    this.playersService.creatingPlayer().subscribe(result => {
       this.errorMessage = '';
       if (!result.error.value) {
         this.playersService.setCurrentPlayerNameAndColor(result.name, result.color);

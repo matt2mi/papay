@@ -1,9 +1,10 @@
-<div class="chat">
+<div class="chat" #chatContainer>
   <div class="w-100 msg" *ngFor="let messageAndColor of messages">
     <span [ngStyle]="{'color': messageAndColor.color}">{{messageAndColor.message}}</span>
   </div>
 </div>
 <div class="w-100">
   <input type="text" class="input-chat w-100" [(ngModel)]="message" #ctrl="ngModel"
-         placeholder="envoie un message avec entrée" (keyup.enter)="sendMessage()">
+         placeholder="envoie un message avec entrée" (keyup.enter)="sendMessage()"
+         [ngStyle]="{'color': currentPlayerColor}">
 </div>

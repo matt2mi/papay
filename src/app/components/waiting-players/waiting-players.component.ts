@@ -24,11 +24,11 @@ export class WaitingPlayersComponent implements OnInit {
 
   initComponent() {
     this.currentPlayer = this.playersService.getCurrentPlayer();
-    this.playersService.newPlayers$
+    this.playersService.newPlayers()
       .subscribe((connectedPlayers: Player[]) => this.connectedPlayers = connectedPlayers);
     this.playersService.getConnectedPlayers()
       .subscribe((players: Player[]) => this.connectedPlayers = players);
-    this.playersService.partyStarted$.subscribe(() => this.router.navigate(['playing']));
+    this.playersService.partyStarted().subscribe(() => this.router.navigate(['playing']));
   }
 
   testFrontOnly() {
