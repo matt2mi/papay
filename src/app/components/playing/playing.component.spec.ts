@@ -23,18 +23,18 @@ describe('PlayingComponent', () => {
             getCurrentPlayer: () => new Player(),
             getCurrentPlayerDeck: () => of(),
             getConnectedPlayers: () => of(),
-            nextPlayerTurn$: of(),
-            roundLooser$: of(),
-            endOfTour$: of(),
-            waitedPlayersForNextRound$: of(),
-            newTour$: of(),
-            gameOver$: of(),
-            playerDisconnected$: of()
+            nextPlayerTurn: () => of(),
+            roundLooser: () => of(),
+            endOfTour: () => of(),
+            waitedPlayersForNextTour: () => of(),
+            newTour: () => of(),
+            gameOver: () => of(),
+            playerDisconnected: () => of()
           }
         },
         {
           provide: CardsService, useValue: {
-            getDeckWithGivenCards$: of()
+            getDeckWithGivenCards: () => of()
           }
         },
       ]

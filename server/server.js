@@ -51,8 +51,7 @@ app.post('/giveCards', (req, res) => {
 
         // on démarre la partie en avertissant le premier joueur que c'est son tour
         const nextPlayer = playingService.setFirstPlayerToPlay();
-        io.emit('nextPlayerTurn', {playerNameWaitedToPlay: nextPlayer.name, cardsPlayedWithPlayer: []});
-        playingService.emitPlayerTurn(nextPlayer.name);
+        playingService.emitNextPlayerTurn(io, nextPlayer.name);
       } catch (e) {
         console.error(e);
       }
@@ -139,7 +138,10 @@ io.on('connection', (socket) => {
 });
 
 // Bugs :
+// TODO : possibilité de supprimer quelqu'un dans la liste avant de lancer la partie ?
+// TODO : clean chat on disconnect
 // TODO : info de qui on attend pr donner ses cartes
+// TODO : avoir le chat quand on donne ses cartes
 // TODO : deuxieme tour : plateau pas caché quand on donne ses cartes
 
 // Evols :

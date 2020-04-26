@@ -4,11 +4,5 @@
   color: black;
   border: 3px solid darkgrey;
   width: 100%;
-  overflow-y: scroll;
-  overscroll-behavior-y: contain;
-  scroll-snap-type: y mandatory;
-}
-
-.msg:last-child {
-  scroll-snap-align: end;
+  overflow: scroll;
 }

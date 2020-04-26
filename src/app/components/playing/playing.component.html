@@ -1,129 +1,153 @@
-<div class="row text-center">
+<!--Donner les cartes-->
+<div class="row text-center" *ngIf="partyState === 'givingCards'">
   <div class="col-12">
-    <h2 *ngIf="isTimeToGiveCard">
+    <h2>
       Tu reçois {{nbCardToGive}} cartes de {{previousPlayer?.name}} et tu en donnes {{nbCardToGive}} à
       {{nextPlayer?.name}}
     </h2>
   </div>
-</div>
 
-<div class="row mb-3" *ngIf="isTimeToPlay">
-  <div class="col-3 col-md-2 text-center overflow-auto position-relative">
-    <div class="absolute-bottom-right">
-      <div *ngFor="let player of leftPlayers; let id = index" class="py-2"
-           [ngClass]="{'has-to-play': playerNameWaitedToPlay === player.name, 'border-bottom-white': id !== leftPlayers.length - 1}"
-           [ngStyle]="{'color': player.color}">
-        <div>{{player.name}}</div>
-
-        <div>tour: {{player.roundScore}} / total: {{player.globalScore}}</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-6 col-md-4 border-white game-board">
-    <div class="row playing-board-size">
-      <div class="col-12 text-center mb-3">
-        <h2 *ngIf="showRoundLooserName && !isTimeToGetScores">
-          Ce pli est pour {{roundLooserName === currentPlayer?.name ? 'toi' : roundLooserName}}
-        </h2>
-
-        <div *ngIf="isTimeToGetScores">
-          <h2>Scores du tour :</h2>
-
-          <div *ngFor="let player of connectedPlayers">
-            {{player.name + ' : ' + player.roundScore + ' points => ' + player.globalScore}}
-          </div>
-
-          <button type="button" class="btn btn-primary my-3" (click)="readyForNextTour()" *ngIf="!isReady">
-            Passer au tour suivant
-          </button>
-
-          <div>On attend encore :
-            <span *ngFor="let player of waitedPlayersForNextRound">{{player.name + ', '}}</span>
-          </div>
-        </div>
-      </div>
-
-      <div *ngIf="cardFold?.length > 0" class="cardsFold col-12">
-        <div *ngFor="let playerAndCard of cardFold; let rowIndex=index" class="cardFolded"
-             [ngStyle]="{'transform' : 'rotate(' + (-340/connectedPlayers?.length)*rowIndex + 'deg) translate(0rem,3rem)'}"
-             [ngClass]="{'mine' : currentPlayer?.name === playerAndCard.player.name, 'forty-seven-card': is40Seven(playerAndCard.card)}">
-          <app-card [number]="playerAndCard.card.number" [familyId]="playerAndCard.card.family.id"></app-card>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-3 col-md-2 text-center overflow-auto position-relative">
-    <div *ngIf="family40 && isTimeToPlay && !isTimeToGetScores && !showRoundLooserName" class="absolute-top">
-      <span><img src="../../../assets/d8.gif" style="height: 21px;"></span>
-      <span style="font-size: large;"> : le 7 de {{family40?.label}}</span>
-    </div>
-
-    <div class="absolute-bottom-left">
-      <div *ngFor="let player of rightPlayers; let id = index" class="py-2"
-           [ngClass]="{'has-to-play': playerNameWaitedToPlay === player.name, 'border-bottom-white': id !== rightPlayers.length - 1}"
-           [ngStyle]="{'color': player.color}">
-        <div>{{player.name}}</div>
-
-        <div>tour: {{player.roundScore}} / total: {{player.globalScore}}</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="d-none d-md-block col-2 col-md-4">
-    <app-chat [currentPlayerName]="currentPlayer?.name" [currentPlayerColor]="currentPlayer?.color"></app-chat>
-  </div>
-
-  <div class="offset-3 offset-md-2 col-6 col-md-4 text-center">
-    <div [ngClass]="{'has-to-play': playerNameWaitedToPlay === currentPlayer?.name}">
-      <div [ngStyle]="{'color': currentPlayer?.color}">Moi: {{currentPlayer?.roundScore}} pts tour /
-        {{currentPlayer?.globalScore}} pts total
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="row mb-3"
-     *ngIf="playerNameWaitedToPlay === currentPlayer?.name && isTimeToPlay && !isTimeToGiveCard && !isTimeToGetScores && !showRoundLooserName">
-  <div class="col-8 text-center">
-    <span style="font-size: x-large;">à toi de jouer wesh !</span>
-  </div>
-</div>
-
-<!--Le deck du joueur-->
-<div class="row" *ngIf="!isTimeToGetScores && !showRoundLooserName">
-  <div class="col-12 text-center" *ngIf="isTimeToGiveCard && !isTimeToGetScores">
+  <div class="col-12" *ngIf="!cardsGived">
     <button type="button" class="btn btn-primary" [disabled]="getCardToGive().length < nbCardToGive"
-            (click)="giveCards()">
+            [ngClass]="{'not-clickable': getCardToGive().length < nbCardToGive}"
+            (click)="getCardToGive().length === this.nbCardToGive && giveCards()">
       Donner ces cartes
     </button>
   </div>
 
-  <div class="col-12 text-center mb-5" *ngIf="!isTimeToGiveCard && !isTimeToPlay">
+  <div class="col-12" *ngIf="cardsGived">
     <span style="font-size: x-large;">En attente des autres joueurs...</span>
   </div>
 
   <div class="col-12">
     <div class="row align-content-center" style="margin-right: 0; margin-left: 33px;">
       <div *ngFor="let card of currentPlayer?.deck; let zIndex = index;" class="px-0 deck-card"
-           [hidden]="card.played"
-           [ngClass]="{'selected': card.toGive || card.newOne}"
-           [ngStyle]="{'margin' : (isTimeToGiveCard ? '40px ' : '0 ') + (-currentPlayer?.deck.length * 1.5) + 'px ' + '0 ' + (-currentPlayer?.deck.length * 1.5) + 'px'}">
-        <app-card [number]="card.number" [familyId]="card.family.id" [isPlayable]="card.isPlayable"
-                  [zIndexCard]="zIndex * 2" (click)="card.isPlayable && clickCard(card)">
+           [ngClass]="{'selected': card.toGive}"
+           [ngStyle]="{'margin' : '40px ' + (-currentPlayer?.deck.length * 1.5) + 'px ' + '0 ' + (-currentPlayer?.deck.length * 1.5) + 'px'}">
+        <app-card [number]="card.number" [familyId]="card.family.id" [isPlayable]="true" [zIndexCard]="zIndex * 2"
+                  (click)="selectCardToGive(card)">
         </app-card>
       </div>
     </div>
   </div>
 </div>
 
+<!--Jouer un tour-->
+<div class="row mb-3">
+  <div class="col-12 col-md-8 mb-3" *ngIf="partyState === 'playing'">
+    <div class="row">
+      <!--colonne joueurs de gauche-->
+      <div class="col-3 text-center overflow-auto position-relative">
+        <div class="absolute-bottom-right">
+          <div *ngFor="let player of leftPlayers; let id = index" class="py-2"
+               [ngClass]="{'has-to-play': playerNameWaitedToPlay === player.name, 'border-bottom-white': id !== leftPlayers.length - 1}"
+               [ngStyle]="{'color': player.color}">
+            <div>{{player.name}}</div>
+
+            <div>tour: {{player.roundScore}} / total: {{player.globalScore}}</div>
+          </div>
+        </div>
+      </div>
+
+      <!--plateau de jeu-->
+      <div class="col-6 border-white game-board">
+        <div class="row playing-board-size">
+          <div class="col-12 text-center mb-3">
+            <h2 *ngIf="!showRoundLooserName">
+              à {{isCurrentPlayerTurn ? 'toi' : playerNameWaitedToPlay}} de jouer
+            </h2>
+
+            <h2 *ngIf="showRoundLooserName">
+              Ce pli est pour {{roundLooserName === currentPlayer?.name ? 'toi' : roundLooserName}}
+            </h2>
+          </div>
+
+          <div *ngIf="cardFold?.length > 0" class="cardsFold col-12">
+            <div *ngFor="let playerAndCard of cardFold; let rowIndex=index" class="cardFolded"
+                 [ngStyle]="{'transform' : 'rotate(' + (-340/connectedPlayers?.length)*rowIndex + 'deg) translate(0rem,3rem)'}"
+                 [ngClass]="{'mine' : currentPlayer?.name === playerAndCard.player.name, 'forty-seven-card': is40Seven(playerAndCard.card)}">
+              <app-card [number]="playerAndCard.card.number" [familyId]="playerAndCard.card.family.id"></app-card>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--colonne joueurs droite-->
+      <div class="col-3 text-center overflow-auto position-relative">
+        <div *ngIf="!!family40" class="absolute-top">
+          <span><img src="../../../assets/d8.gif" style="height: 21px;"></span>
+          <span style="font-size: large;"> : le 7 de {{family40?.label}}</span>
+        </div>
+
+        <div class="absolute-bottom-left">
+          <div *ngFor="let player of rightPlayers; let id = index" class="py-2"
+               [ngClass]="{'has-to-play': playerNameWaitedToPlay === player.name, 'border-bottom-white': id !== rightPlayers.length - 1}"
+               [ngStyle]="{'color': player.color}">
+            <div>{{player.name}}</div>
+
+            <div>tour: {{player.roundScore}} / total: {{player.globalScore}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--ligne du joueur-->
+    <div class="row">
+      <div class="offset-3 col-6 text-center">
+        <div [ngClass]="{'has-to-play': isCurrentPlayerTurn}">
+          <div [ngStyle]="{'color': currentPlayer?.color}">Moi: {{currentPlayer?.roundScore}} pts tour /
+            {{currentPlayer?.globalScore}} pts total
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Les scores de fin de tour-->
+  <div class="col-12 col-md-8 text-center" *ngIf="partyState === 'endTourScores'">
+    <h2>Scores du tour :</h2>
+
+    <div *ngFor="let player of connectedPlayers">
+      {{player.name + ' : ' + player.roundScore + ' points => ' + player.globalScore}}
+    </div>
+
+    <button type="button" class="btn btn-primary my-3" (click)="readyForNextTour()" *ngIf="!isReady">
+      Passer au tour suivant
+    </button>
+
+    <div>On attend encore :
+      <span *ngFor="let player of waitedPlayersForNextTour">{{player.name + ', '}}</span>
+    </div>
+  </div>
+
+  <!--Le chat en mode pc/tablette-->
+  <div class="d-none d-md-block col-md-4">
+    <app-chat [currentPlayerName]="currentPlayer?.name" [currentPlayerColor]="currentPlayer?.color"></app-chat>
+  </div>
+
+  <!--Le deck du joueur-->
+  <div class="col-12" *ngIf="partyState === 'playing'">
+    <div class="row" style="margin-right: 0; margin-left: 33px;">
+      <div *ngFor="let card of currentPlayer?.deck; let zIndex = index;" class="px-0 deck-card"
+           [hidden]="card.played"
+           [ngClass]="{'selected': card.newOne}"
+           [ngStyle]="{'margin' : '0 ' + (-currentPlayer?.deck.length * 1.5) + 'px ' + '0 ' + (-currentPlayer?.deck.length * 1.5) + 'px'}">
+        <app-card [number]="card.number" [familyId]="card.family.id" [isPlayable]="card.isPlayable"
+                  [zIndexCard]="zIndex * 2"
+                  (click)="card.isPlayable && clickCard(card)">
+        </app-card>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Le chat en mode smartphone-->
 <div class="row mt-3 d-flex d-md-none">
   <div class="col-11">
     <app-chat [currentPlayerName]="currentPlayer?.name" [currentPlayerColor]="currentPlayer?.color"></app-chat>
   </div>
 
-  <div class="col-1">
+  <div class="col-1 clickable">
     <mat-icon aria-hidden="false" aria-label="scroll To Top" (click)="scrollToTop()">arrow_upward</mat-icon>
   </div>
 </div>
