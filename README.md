@@ -191,6 +191,12 @@ pour deployer sur heroku : git push heroku HEAD:master
 
 10h - 12h30
 
+###### 24/04
+
+9h30 - 12h
+
+15h - 16h15
+
 #### HC
 
 ###### 27/03

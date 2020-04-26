@@ -42,12 +42,10 @@ const receivePlayerCard = (playerName, card, io) => {
     cardsService.countRoundScore();
     io.emit('roundLooser', {looser: playersService.getPlayerByName(looser.name), playedCardsOfRound});
 
-    if (nbCardsPlayedInTour === 6) { // TODO: mettre 3 au lieu de 60 pour tester plus vite
+    if (nbCardsPlayedInTour === 60) { // TODO: mettre 3 au lieu de 60 pour tester plus vite
       // la dernière carte du tour vient d'être jouée
       playersService.emptyCollectedLoosingCards();
       cardsService.countEndTourScore();
-      console.log('countEndTourScore',
-        playersService.getPlayers().map(player => player.name + ':' + player.roundScore + '/' + player.globalScore));
       if (nbTour === playersService.getNbPlayers()) {
         // game over
         io.emit('gameOver', playersService.getPlayers());

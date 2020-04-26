@@ -1,19 +1,38 @@
-<div class="row">
-  <div class="offset-3 col-6">
-    <h2>Rejoindre la partie</h2>
+<div class="row pb-5">
+  <div class="col-12 offset-sm-2 col-sm-8 offset-md-3 col-md-6">
+    <img src="../../../assets/papayoo-logo.png" class="img-fluid">
+    <div class="online online-sm online-md">Online !!</div>
   </div>
+</div>
 
-  <div class="offset-3 col-6">
+<div class="row mt-5">
+  <div class="col-12 offset-sm-3 col-sm-6">
     <form (submit)="onSubmitName()" [formGroup]="createPlayerForm">
       <div class="form-group">
-        <label for="pseudo">Pseudo</label>
+        <div class="row">
+          <div class="offset-2 col-8 offset-sm-2 col-sm-8 offset-md-3 col-md-6 text-center">
+            <input type="text" formControlName="name" class="form-control input-pseudo" id="pseudo"
+                   placeholder="pseudo...">
 
-        <input type="text" formControlName="name" class="form-control" id="pseudo">
+            <small *ngIf="errorMessage" id="pseudoError" class="error-message">{{errorMessage}}</small>
+          </div>
 
-        <small *ngIf="errorMessage" id="pseudoError" class="error-message">{{errorMessage}}</small>
+          <div class="col-12 text-center mt-3">
+            <button type="submit" class="btn btn-papayoo">Rejoindre la partie</button>
+          </div>
+        </div>
       </div>
-
-      <button type="submit" class="btn btn-primary">Rejoindre</button>
     </form>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="row justify-content-center">
+    <div class="pt-1">Made with</div>
+    <div class="heart-container">
+      <mat-icon class="mx-1 made-with-love-base">favorite_border</mat-icon>
+      <mat-icon class="mx-1 made-with-love">favorite_border</mat-icon>
+    </div>
+    <div class="pt-1">by Deums & Lacol' for Cépouan</div>
   </div>
 </div>

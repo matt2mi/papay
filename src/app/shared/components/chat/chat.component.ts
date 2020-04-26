@@ -1,39 +1,30 @@
-import {AfterViewInit, Component, ElementRef, Input, ViewChild} from '@angular/core';
-import {ChatService} from '../../services/chat.service';
+import {Component, Input, OnInit} from '@angular/core';
+import {ChatService, Message} from '../../services/chat.service';
 
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss']
 })
-export class ChatComponent implements AfterViewInit {
+export class ChatComponent implements OnInit {
 
   @Input() currentPlayerName;
-  messages: string[] = [];
+  @Input() currentPlayerColor;
+  messages: Message[] = [];
   message = '';
-  @ViewChild('chat') private myScrollContainer: ElementRef;
 
   constructor(public chatService: ChatService) {
   }
 
-  ngAfterViewInit() {
-    this.chatService.initSocket();
-    this.chatService.getNewMessages$.subscribe(messages => {
-      this.messages = messages;
-      this.scrollChatToBottom();
-    });
-    this.chatService.getMessages().subscribe(({messages}) => {
-      this.messages = messages;
-      this.scrollChatToBottom();
-    });
+  ngOnInit() {
+    this.chatService.getMessages().subscribe((messages: Message[]) => this.messages = messages);
+    this.chatService.getNewMessage().subscribe((message: Message) => this.messages.push(message));
   }
 
   sendMessage() {
-    this.chatService.addNewMessage(this.currentPlayerName + ': ' + this.message);
+    const message = this.currentPlayerName + ': ' + this.message;
+    const color = this.currentPlayerColor;
+    this.chatService.addNewMessage(message, color).subscribe(() => this.messages.push({message, color}));
     this.message = '';
-  }
-
-  scrollChatToBottom() {
-    return this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
   }
 }

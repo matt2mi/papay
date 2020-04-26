@@ -1,5 +1,15 @@
 const Player = require('../models/player');
 
+const colors = [
+  '#d00000',
+  '#d000b5',
+  '#0018d0',
+  '#019bb5',
+  '#019e1c',
+  '#a7ab00',
+  '#ca9703',
+  '#525252'
+];
 let players = [];
 let playersSockets = [];
 let waitedPlayers = []; // les joueurs attendus pour passer au tour suivant
@@ -8,10 +18,11 @@ const createPlayer = (socket, name, io) => {
   if (isExistingPlayerName(name)) {
     throw new Error('Pseudo dejà utilisé.');
   } else {
-    const newPlayer = new Player(name, null, socket.id);
+    const newPlayer = new Player(name, null, socket.id, colors[players.length]);
     players.push(newPlayer);
     playersSockets.push(socket);
     io.emit('newPlayer', players);
+    return newPlayer;
   }
 };
 

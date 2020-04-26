@@ -42,6 +42,10 @@ export class PlayingComponent implements OnInit {
 
   ngOnInit() {
     // this.testFrontOnly();
+    this.initComponent();
+  }
+
+  initComponent() {
     this.currentPlayer = this.playersService.getCurrentPlayer();
     this.initDeck();
     this.playersService.getConnectedPlayers().subscribe((players: Player[]) => {
@@ -68,7 +72,6 @@ export class PlayingComponent implements OnInit {
       }
     });
     this.playersService.roundLooser$.subscribe((result: { looser: Player, playedCardsOfRound: { card: Card, player: Player }[] }) => {
-      console.log('result', result);
       this.setAllCardsClickablesOrNot(false);
       this.handleRoundLooser(result.looser, result.playedCardsOfRound);
     });
@@ -97,28 +100,28 @@ export class PlayingComponent implements OnInit {
 
   testFrontOnly() {
     const deck = [
-      new Card(3, FAMILIES[0], true, false, true),
+      new Card(3, FAMILIES[0], true, false, false),
       new Card(6, FAMILIES[0], true, false),
-      new Card(6, FAMILIES[1], true, false, true),
+      new Card(6, FAMILIES[1], true, false, false),
       new Card(7, FAMILIES[1], true, false),
       new Card(10, FAMILIES[1], true, false),
       new Card(1, FAMILIES[2], true, false),
       new Card(3, FAMILIES[2], true, false),
       new Card(7, FAMILIES[2], true, false),
-      new Card(8, FAMILIES[2], true, false, true),
+      new Card(8, FAMILIES[2], true, false, false),
       new Card(2, FAMILIES[3], true, false),
       new Card(3, FAMILIES[3], true, false),
       new Card(8, FAMILIES[3], true, false),
-      new Card(9, FAMILIES[3], true, false, true),
+      new Card(9, FAMILIES[3], true, false, false),
       new Card(2, FAMILIES[4], true, false),
-      new Card(4, FAMILIES[4], true, false, true),
+      new Card(4, FAMILIES[4], true, false, false),
       new Card(6, FAMILIES[4], true, false),
       new Card(7, FAMILIES[4], true, false),
       new Card(8, FAMILIES[4], true, false),
       new Card(13, FAMILIES[4], true, false),
       new Card(20, FAMILIES[4], true, false),
     ];
-    this.currentPlayer = new Player('matt', deck);
+    this.currentPlayer = new Player('matt', deck, 'red');
     this.connectedPlayers = [
       new Player('mimi'),
       new Player('matt'),
@@ -131,7 +134,7 @@ export class PlayingComponent implements OnInit {
     ];
     this.setLeftAndRightPlayers();
     this.setNbCardToGive();
-    this.isTimeToGiveCard = true;
+    this.isTimeToGiveCard = false;
     this.setAllCardsClickablesOrNot(true);
     this.family40 = FAMILIES[3];
 
@@ -140,7 +143,7 @@ export class PlayingComponent implements OnInit {
     }
 
     this.playerNameWaitedToPlay = 'matt';
-    this.isTimeToPlay = false;
+    this.isTimeToPlay = true;
   }
 
   setLeftAndRightPlayers() {
@@ -346,5 +349,9 @@ export class PlayingComponent implements OnInit {
 
   is40Seven(card: Card): boolean {
     return this.family40 && card.family.id === this.family40.id && card.number === 7;
+  }
+
+  scrollToTop() {
+    window.scrollTo(0, 0);
   }
 }

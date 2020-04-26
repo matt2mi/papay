@@ -1,3 +1,21 @@
 .error-message {
   color: #c2185b;
 }
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.notif {
+  background-color: white;
+  color: #c2185a;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: small;
+  margin-bottom: 5px;
+}
+
+.clickable {
+  cursor: pointer;
+}

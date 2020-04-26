@@ -55,6 +55,7 @@
     "karma-jasmine": "~3.0.1",
     "karma-jasmine-html-reporter": "^1.4.2",
     "karma-mocha-reporter": "^2.2.5",
+    "material-design-icons": "^3.0.1",
     "mocha": "^7.1.1",
     "nodemon": "^2.0.2",
     "protractor": "~5.4.3",

@@ -75,11 +75,11 @@ app.get('/goNextTour/:name', (req, res) => {
 
 app.get('/players', (req, res) => res.send(playersService.getPlayers()));
 
-app.get('/chatMessages', (req, res) => res.send({messages: chatService.getMessages()}));
+app.get('/chatMessages', (req, res) => res.send(chatService.getMessages()));
 
 app.post('/newChatMessage', (req, res) => {
-  chatService.addMessage(req.body.message, io);
-  res.send({ok: true});
+  chatService.addMessage(req.body.message, req.body.color, io);
+  res.send(true);
 });
 
 const port = process.env.PORT || 3000;
@@ -102,17 +102,25 @@ io.on('connection', (socket) => {
   socket.on('createPlayer', name => {
     // TODO: cleaner ?
     if(partyStarted) {
-      socket.emit('creatingPlayer', {name: '', error: {value: true, message: 'partie déjà démarrée'}});
+      socket.emit('creatingPlayer', {
+        name: '',
+        color: '',
+        error: {value: true, message: 'Désolé ' + name + ', partie déjà démarrée :/'}
+      });
     } else {
       try {
-        playersService.createPlayer(socket, name, io);
-        console.log('New user connected', name);
-        socket.emit('creatingPlayer', {name, error: {value: false, message: ''}});
+        const newPlayer = playersService.createPlayer(socket, name, io);
+        console.log('New user connected ' + newPlayer.name + ' color ' + newPlayer.color);
+        socket.emit('creatingPlayer', {
+          name: newPlayer.name,
+          color: newPlayer.color,
+          error: {value: false, message: ''}
+        });
         if(playersService.getNbPlayers() === 8) {
           playingService.startParty(io);
         }
       } catch (error) {
-        socket.emit('creatingPlayer', {name, error: {value: true, message: error.message}});
+        socket.emit('creatingPlayer', {name, color: '', error: {value: true, message: error.message}});
       }
     }
   });
@@ -134,17 +142,14 @@ io.on('connection', (socket) => {
 // TODO : info de qui on attend pr donner ses cartes
 // TODO : deuxieme tour : plateau pas caché quand on donne ses cartes
 
-
 // Evols :
 // TODO : ajouter du son:
+// pour un nouveau message ds le chat
 // pour jouer la musique de Carlos Papayou (activée par défaut)
 // pour la distribution des cartes
 // pour jouer une carte
 // pour récupérer le pli (rire d'andy chez celui qui prend le 7 à 40 pts)
 // pour wizzer quelqu'un trop lent
-// TODO - CHAT : repenser l'affichage du chat (une icone ouvre un menu transparent en mode smartphone / à un endroit visible en mode pc)
-// TODO - CHAT : afficher un popup pour un nouveau message dans le chat
-// TODO - CHAT : dans le chat et l'interface de jeu : mettre une couleur unique par joueur
 // TODO : ajouter des gifs ? pour le 7 à 40 pts
 // TODO : pas assez clair le "à toi de jouer"
 // TODO : image d'un vrai tapis de jeu vert en fond du plateau de jeu

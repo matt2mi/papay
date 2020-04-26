@@ -1,8 +1,8 @@
-let messages = [];
+let messages = []; // [{message: '', color: ''}...]
 
-const addMessage = (msg, io) => {
-  messages.push(msg);
-  io.emit('newMessage', messages);
+const addMessage = (message, color, io) => {
+  messages.push({message, color});
+  io.emit('newMessage', {message, color});
 };
 
 const getMessages = () => {

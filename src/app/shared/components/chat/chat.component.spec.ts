@@ -17,7 +17,7 @@ describe('ChatComponent', () => {
         provide: ChatService, useValue: {
           initSocket: () => {
           },
-          getNewMessages$: of(),
+          getNewMessage: () => of(),
           getMessages: () => of(),
         }
       }]

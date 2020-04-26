@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit {
     this.playersService.createPlayer$.subscribe(result => {
       this.errorMessage = '';
       if (!result.error.value) {
-        this.playersService.setCurrentPlayerName(result.name);
+        this.playersService.setCurrentPlayerNameAndColor(result.name, result.color);
         this.router.navigate(['waiting']);
       } else {
         this.errorMessage = result.error.message;
