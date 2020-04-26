@@ -141,8 +141,6 @@ io.on('connection', (socket) => {
 // TODO : possibilité de supprimer quelqu'un dans la liste avant de lancer la partie ?
 // TODO : clean chat on disconnect
 // TODO : info de qui on attend pr donner ses cartes
-// TODO : avoir le chat quand on donne ses cartes
-// TODO : deuxieme tour : plateau pas caché quand on donne ses cartes
 
 // Evols :
 // TODO : ajouter du son:

@@ -30,6 +30,11 @@
       </div>
     </div>
   </div>
+
+  <div class="col-12 mt-3 d-none d-md-flex">
+    <app-chat class="w-75" [currentPlayerName]="currentPlayer?.name"
+              [currentPlayerColor]="currentPlayer?.color"></app-chat>
+  </div>
 </div>
 
 <!--Jouer un tour-->
@@ -121,7 +126,7 @@
   </div>
 
   <!--Le chat en mode pc/tablette-->
-  <div class="d-none d-md-block col-md-4">
+  <div class="d-none d-md-block col-md-4" *ngIf="partyState === 'playing' || partyState === 'endTourScores'">
     <app-chat [currentPlayerName]="currentPlayer?.name" [currentPlayerColor]="currentPlayer?.color"></app-chat>
   </div>
 
