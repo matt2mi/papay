@@ -14,6 +14,7 @@ export class PlayersService {
   private newPlayers$: Observable<Player[]>;
   private creatingPlayer$: Observable<{ name: string, color: string, error: { value: boolean, message: string } }>;
   private partyStarted$: Observable<void>;
+  private waitedGivingCardsPlayers$: Observable<Player[]>;
   private yourTurn$: Observable<{ card: Card, player: Player }[]>;
   private nextPlayerTurn$: Observable<{ playerNameWaitedToPlay: string, cardsPlayedWithPlayer: { card: Card, player: Player }[] }>;
   private roundLooser$: Observable<{ looser: Player, playedCardsOfRound: { card: Card, player: Player }[] }>;
@@ -53,6 +54,14 @@ export class PlayersService {
       this.socket.on('partyStarted', () => {
         console.log('socket.on(partyStarted)');
         observer.next();
+      }));
+  }
+
+  waitedGivingCardsPlayers(): Observable<Player[]> {
+    return this.waitedGivingCardsPlayers$ = new Observable((observer) =>
+      this.socket.on('waitedGivingCardsPlayers', (players: Player[]) => {
+        console.log('socket.on(waitedGivingCardsPlayers)', players);
+        observer.next(players);
       }));
   }
 

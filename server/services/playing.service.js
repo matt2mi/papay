@@ -111,7 +111,18 @@ const setFirstPlayerToPlay = () => {
   return firstPlayerToPlay;
 };
 
-const unWaitPlayer = (name, io) => {
+const unWaitGivingCardsPlayer = (name, io) => {
+  const waitedPlayers = playersService.getWaitedPlayers();
+  const id = waitedPlayers.findIndex(player => player.name === name);
+  playersService.removeWaitedPlayer(id);
+  if (waitedPlayers.length > 0) {
+    io.emit('waitedGivingCardsPlayers', waitedPlayers);
+  } else {
+    playersService.setWaitedPlayers();
+  }
+};
+
+const unWaitPlayerForNewTour = (name, io) => {
   const waitedPlayers = playersService.getWaitedPlayers();
   const id = waitedPlayers.findIndex(player => player.name === name);
   playersService.removeWaitedPlayer(id);
@@ -138,6 +149,7 @@ module.exports = {
   receivePlayerCard,
   findLooser,
   setFirstPlayerToPlay,
-  unWaitPlayer,
+  unWaitGivingCardsPlayer,
+  unWaitPlayerForNewTour,
   reset
 };

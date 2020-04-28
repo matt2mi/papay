@@ -37,6 +37,7 @@ export class PlayingComponent implements OnInit {
   cardToGiveErrorMessage;
   previousPlayer: Player;
   nextPlayer: Player;
+  waitedGivingCardsPlayers: Player[] = [];
 
   // playing (isCurrentPlayerTurn, showRoundLooserName, !!family40)
   isCurrentPlayerTurn = false;
@@ -78,6 +79,8 @@ export class PlayingComponent implements OnInit {
       this.setPartyState('givingCards');
     });
 
+    this.playersService.waitedGivingCardsPlayers()
+      .subscribe((players: Player[]) => this.waitedGivingCardsPlayers = players);
     this.cardsService.getDeckWithGivenCards().subscribe((result: { deck: Card[], family40: Family }) => {
       this.currentPlayer.deck = result.deck;
       this.family40 = result.family40;

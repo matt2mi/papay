@@ -41,6 +41,7 @@ app.post('/giveCards', (req, res) => {
   // endpoint pour donner ses cartes à son voisin avant le tour
   const player = playersService.getPlayerByName(req.body.name);
   if (player) {
+    playingService.unWaitGivingCardsPlayer(player.name, io);
     playersService.handleGivenCardsOneByOne({cards: req.body.cards, player: player});
     if (playersService.hasEveryPlayerGivenCards()) {
       // si tout le monde a donné ses cartes
@@ -68,7 +69,7 @@ app.post('/playCard', (req, res) => {
 });
 
 app.get('/goNextTour/:name', (req, res) => {
-  playingService.unWaitPlayer(req.params.name, io);
+  playingService.unWaitPlayerForNewTour(req.params.name, io);
   res.send(true);
 });
 
@@ -140,7 +141,6 @@ io.on('connection', (socket) => {
 // Bugs :
 // TODO : possibilité de supprimer quelqu'un dans la liste avant de lancer la partie ?
 // TODO : clean chat on disconnect
-// TODO : info de qui on attend pr donner ses cartes
 
 // Evols :
 // TODO : ajouter du son:

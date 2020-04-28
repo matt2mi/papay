@@ -15,8 +15,8 @@
     </button>
   </div>
 
-  <div class="col-12" *ngIf="cardsGived">
-    <span style="font-size: x-large;">En attente des autres joueurs...</span>
+  <div class="col-12 mb-3" *ngIf="cardsGived">
+    <span style="font-size: x-large;">En attente de: <span *ngFor="let player of waitedGivingCardsPlayers">{{player.name + ', '}}</span></span>
   </div>
 
   <div class="col-12">
@@ -120,7 +120,8 @@
       Passer au tour suivant
     </button>
 
-    <div>On attend encore :
+    <div *ngIf="isReady">
+      On attend encore :
       <span *ngFor="let player of waitedPlayersForNextTour">{{player.name + ', '}}</span>
     </div>
   </div>
@@ -131,7 +132,7 @@
   </div>
 
   <!--Le deck du joueur-->
-  <div class="col-12" *ngIf="partyState === 'playing'">
+  <div class="col-12 mt-3" *ngIf="partyState === 'playing'">
     <div class="row" style="margin-right: 0; margin-left: 33px;">
       <div *ngFor="let card of currentPlayer?.deck; let zIndex = index;" class="px-0 deck-card"
            [hidden]="card.played"
