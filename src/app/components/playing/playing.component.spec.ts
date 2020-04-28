@@ -23,6 +23,7 @@ describe('PlayingComponent', () => {
             getCurrentPlayer: () => new Player(),
             getCurrentPlayerDeck: () => of(),
             getConnectedPlayers: () => of(),
+            yourTurn: () => of(),
             nextPlayerTurn: () => of(),
             roundLooser: () => of(),
             endOfTour: () => of(),
