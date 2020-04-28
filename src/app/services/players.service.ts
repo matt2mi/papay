@@ -13,6 +13,8 @@ export class PlayersService {
   private currentPlayer: Player;
   private newPlayers$: Observable<Player[]>;
   private creatingPlayer$: Observable<{ name: string, color: string, error: { value: boolean, message: string } }>;
+  private youAreKicked$: Observable<string>;
+  private playerKicked$: Observable<{ kickedName: string, kickerName: string, players: Player[] }>;
   private partyStarted$: Observable<void>;
   private yourTurn$: Observable<{ card: Card, player: Player }[]>;
   private nextPlayerTurn$: Observable<{ playerNameWaitedToPlay: string, cardsPlayedWithPlayer: { card: Card, player: Player }[] }>;
@@ -44,6 +46,24 @@ export class PlayersService {
       this.socket.on('creatingPlayer',
         (result: { name: string, color: string, error: { value: boolean, message: string } }) => {
           console.log('socket.on(creatingPlayer)', result);
+          observer.next(result);
+        }));
+  }
+
+  youAreKicked(): Observable<string> {
+    return this.youAreKicked$ = new Observable((observer) =>
+      this.socket.on('youAreKicked',
+        (kickerName: string) => {
+          console.log('socket.on(youAreKicked)', kickerName);
+          observer.next(kickerName);
+        }));
+  }
+
+  playerKicked(): Observable<{ kickedName: string, kickerName: string, players: Player[] }> {
+    return this.playerKicked$ = new Observable((observer) =>
+      this.socket.on('playerKicked',
+        (result: { kickedName: string, kickerName: string, players: Player[] }) => {
+          console.log('socket.on(playerKicked)', result);
           observer.next(result);
         }));
   }
@@ -145,5 +165,12 @@ export class PlayersService {
 
   readyForNextTour(): Observable<boolean> {
     return this.http.get<boolean>('goNextTour/' + this.currentPlayer.name);
+  }
+
+  deletePlayer(name: string): Observable<{ message: string, error: Error }> {
+    return this.http.post<{ message: string, error: Error }>(
+      'deletePlayer',
+      {kickedName: name, kickerName: this.currentPlayer.name}
+    );
   }
 }

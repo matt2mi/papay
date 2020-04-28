@@ -1,13 +1,13 @@
 <!--Donner les cartes-->
-<div class="row text-center" *ngIf="partyState === 'givingCards'">
-  <div class="col-12">
+<div class="row" *ngIf="partyState === 'givingCards'">
+  <div class="col-12 text-center">
     <h2>
       Tu reçois {{nbCardToGive}} cartes de {{previousPlayer?.name}} et tu en donnes {{nbCardToGive}} à
       {{nextPlayer?.name}}
     </h2>
   </div>
 
-  <div class="col-12" *ngIf="!cardsGived">
+  <div class="col-12 text-center" *ngIf="!cardsGived">
     <button type="button" class="btn btn-primary" [disabled]="getCardToGive().length < nbCardToGive"
             [ngClass]="{'not-clickable': getCardToGive().length < nbCardToGive}"
             (click)="getCardToGive().length === this.nbCardToGive && giveCards()">
@@ -15,7 +15,7 @@
     </button>
   </div>
 
-  <div class="col-12" *ngIf="cardsGived">
+  <div class="col-12 text-center" *ngIf="cardsGived">
     <span style="font-size: x-large;">En attente des autres joueurs...</span>
   </div>
 

@@ -35,14 +35,30 @@ const getPlayerBySocketId = socketId => {
   return players.find(player => player.socketId === socketId);
 };
 
-const removePlayer = socket => {
-  const playerToRemoveId = players.findIndex(player => player.socketId === socket.id);
-  if(playerToRemoveId >= 0) {
+const removePlayerBySocketId = socketId => {
+  const playerToRemoveId = players.findIndex(player => player.socketId === socketId);
+  if (playerToRemoveId >= 0) {
     players.splice(playerToRemoveId, 1);
   }
 
-  const socketToRemoveId = playersSockets.findIndex(soc => soc.id === socket.id);
-  if(socketToRemoveId >= 0) playersSockets.splice(socketToRemoveId, 1);
+  const socketToRemoveId = playersSockets.findIndex(soc => soc.id === socketId);
+  if (socketToRemoveId >= 0) playersSockets.splice(socketToRemoveId, 1);
+};
+
+const removePlayerByName = (kickedName, kickerName) => {
+  if (!isExistingPlayerName(kickedName)) {
+    throw new Error('Pseudo inexistant.');
+  } else {
+    console.log('emit(\'youAreKicked\')');
+    getPlayerSocketByName(kickedName).emit('youAreKicked', kickerName);
+
+    removePlayerBySocketId(getPlayerByName(kickedName).socketId);
+
+    players.forEach(player => {
+      console.log('emit(\'playerKicked\')');
+      getPlayerSocketByName(player.name).emit('playerKicked', {kickedName, kickerName, players});
+    });
+  }
 };
 
 const getPlayers = () => players;
@@ -85,7 +101,7 @@ const addCardToNextPlayer = (playerIdToGiveCards, givenCards) => {
   players[playerIdToGiveCards].deck = players[playerIdToGiveCards].deck.concat(givenCards.map(card => ({
     ...card,
     newOne: true,
-    toGive: false,
+    toGive: false
   })));
 };
 
@@ -154,7 +170,8 @@ module.exports = {
   createPlayer,
   getPlayerSocketByName,
   getPlayerBySocketId,
-  removePlayer,
+  removePlayerBySocketId,
+  removePlayerByName,
   getPlayers,
   getNbPlayers,
   getPlayerByName,

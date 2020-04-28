@@ -74,6 +74,22 @@ app.get('/goNextTour/:name', (req, res) => {
 
 app.get('/players', (req, res) => res.send(playersService.getPlayers()));
 
+app.post('/deletePlayer', (req, res) => {
+  if (!partyStarted) {
+    try {
+      playersService.removePlayerByName(req.body.kickedName, req.body.kickerName);
+      const message = req.body.kickedName + ' a été kické.';
+      console.log(message);
+      res.send({message});
+    } catch (error) {
+      console.error(error);
+      res.status(404).send({error});
+    }
+  } else {
+    res.status(403).send({error: 'Partie déjà commencée'});
+  }
+});
+
 app.get('/chatMessages', (req, res) => res.send(chatService.getMessages()));
 
 app.post('/newChatMessage', (req, res) => {
@@ -131,16 +147,15 @@ io.on('connection', (socket) => {
       io.emit('playerDisconnected', playerDisconnected.name);
       resetServer();
     } else {
-      playersService.removePlayer(socket);
+      playersService.removePlayerBySocketId(socket.id);
       io.emit('newPlayer', playersService.getPlayers());
     }
   });
 });
 
 // Bugs :
-// TODO : possibilité de supprimer quelqu'un dans la liste avant de lancer la partie ?
-// TODO : clean chat on disconnect
 // TODO : info de qui on attend pr donner ses cartes
+// TODO : c'est à toi plus clair (clignottage ?) / design noms joueurs autour plateau
 
 // Evols :
 // TODO : ajouter du son:
@@ -150,12 +165,9 @@ io.on('connection', (socket) => {
 // pour jouer une carte
 // pour récupérer le pli (rire d'andy chez celui qui prend le 7 à 40 pts)
 // pour wizzer quelqu'un trop lent
+// TODO : icone son et/ou music on/off musique
 // TODO : ajouter des gifs ? pour le 7 à 40 pts
-// TODO : pas assez clair le "à toi de jouer"
-// TODO : image d'un vrai tapis de jeu vert en fond du plateau de jeu
-// TODO : faire tourner les cartes dans l'autre sens dans le pli en cours (sens de jeu des joueurs)
 // TODO : afficher mieux l'écran (sans les border blanches moches)
-// TODO : icone son et/ou music on/off musique "Carlos - papayou"
 // TODO : afficher dans le front le joueur qui est maître du pli
 // TODO : au login, proposer au joueur d'ajouter une image (url ou fichier / base64) (stockée localStorage ?)
 // TODO : afficher l'image à côté de son nom / mettre des images aléatoires moches pour ceux qui n'ont pas d'images

@@ -18,9 +18,11 @@ describe('WaitingPlayersComponent', () => {
           provide: PlayersService, useValue: {
             getCurrentPlayer: () => {
             },
-            newPlayers$: of(),
+            newPlayers: () => of(),
+            youAreKicked: () => of(),
+            playerKicked: () => of(),
             getConnectedPlayers: () => of(),
-            partyStarted$: of(),
+            partyStarted: () => of(),
           }
         }
       ]
