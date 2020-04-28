@@ -1,10 +1,17 @@
 <div class="row">
   <div class="col-12 offset-md-2 col-md-8">
-    <h2>Liste des joueurs connectés</h2>
+    <h2 (click)="showDelete = !showDelete">Liste des joueurs connectés</h2>
   </div>
 
   <div class="col-8 offset-md-2 col-md-2 mb-3">
-    <div *ngFor="let player of connectedPlayers">{{'- ' + player.name}}</div>
+    <div class="row" *ngFor="let player of connectedPlayers">
+      <div class="col-10">
+        {{'- ' + player.name}}
+      </div>
+      <div class="col-2" *ngIf="showDelete && player.name !== currentPlayer.name">
+        <mat-icon class="mx-1 clickable" (click)="deletePlayer(player.name)">delete_forever</mat-icon>
+      </div>
+    </div>
   </div>
 
   <div class="col-4 offset-md-2 col-md-3">
@@ -17,7 +24,8 @@
   <div class="col-12 offset-md-2 col-md-8 mb-3">
     <button type="button" class="btn btn-primary" (click)="startParty()"
             [disabled]="this.connectedPlayers.length < 3 || this.connectedPlayers.length > 8">
-      {{connectedPlayers.length < 3 ? '3 joueurs mini' : connectedPlayers.length > 8 ? '8 joueurs maxi' : 'Démarrer la partie'}}
+      {{connectedPlayers.length < 3 ? '3 joueurs mini' : connectedPlayers.length > 8 ? '8 joueurs maxi' :
+      'Démarrer la partie'}}
     </button>
     <div *ngIf="errorMessage" class="error-message">{{errorMessage}}</div>
   </div>

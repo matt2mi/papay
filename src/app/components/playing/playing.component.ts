@@ -1,17 +1,20 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import Player from '../../models/player';
 import Card from '../../models/card';
 import {PlayersService} from '../../services/players.service';
 import {Router} from '@angular/router';
 import {CardsService} from 'src/app/services/cards.service';
 import {FAMILIES, Family} from '../../models/family';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/internal/operators';
 
 @Component({
   selector: 'app-playing',
   templateUrl: './playing.component.html',
   styleUrls: ['./playing.component.scss']
 })
-export class PlayingComponent implements OnInit {
+export class PlayingComponent implements OnInit, OnDestroy {
+  private ngUnsubscribe = new Subject();
 
   currentPlayer: Player;
 
@@ -34,7 +37,6 @@ export class PlayingComponent implements OnInit {
   // givingCards (cardsGived)
   cardsGived = false;
   nbCardToGive = 5;
-  cardToGiveErrorMessage;
   previousPlayer: Player;
   nextPlayer: Player;
   waitedGivingCardsPlayers: Player[] = [];
@@ -72,35 +74,40 @@ export class PlayingComponent implements OnInit {
   initComponent() {
     this.currentPlayer = this.playersService.getCurrentPlayer();
     this.initDeck();
-    this.playersService.getConnectedPlayers().subscribe((players: Player[]) => {
+
+    this.playersService.getConnectedPlayers().pipe(takeUntil(this.ngUnsubscribe)).subscribe((players: Player[]) => {
       this.connectedPlayers = players;
       this.setLeftAndRightPlayers();
       this.setNbCardToGive();
       this.setPartyState('givingCards');
     });
 
-    this.playersService.waitedGivingCardsPlayers()
+    this.playersService.waitedGivingCardsPlayers().pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((players: Player[]) => this.waitedGivingCardsPlayers = players);
-    this.cardsService.getDeckWithGivenCards().subscribe((result: { deck: Card[], family40: Family }) => {
-      this.currentPlayer.deck = result.deck;
-      this.family40 = result.family40;
-      this.getBackCards();
-      this.setAllCardsClickablesOrNot(false);
-      this.setPartyState('playing');
-    });
-    this.playersService.yourTurn()
+    this.cardsService.getDeckWithGivenCards().pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((result: { deck: Card[], family40: Family }) => {
+        this.currentPlayer.deck = result.deck;
+        this.family40 = result.family40;
+        this.getBackCards();
+        this.setAllCardsClickablesOrNot(false);
+        this.setPartyState('playing');
+      });
+    this.playersService.yourTurn().pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((cardsPlayedWithPlayer: { card: Card, player: Player }[]) =>
         this.yourTurn(cardsPlayedWithPlayer));
-    this.playersService.nextPlayerTurn()
+    this.playersService.nextPlayerTurn().pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((result: { playerNameWaitedToPlay: string, cardsPlayedWithPlayer: { card: Card, player: Player }[] }) =>
         this.nextPlayerTurn(result));
-    this.playersService.roundLooser().subscribe((result: { looser: Player, playedCardsOfRound: { card: Card, player: Player }[] }) =>
-      this.handleRoundLooser(result.looser, result.playedCardsOfRound));
-    this.playersService.endOfTour().subscribe(players => this.endTour(players));
-    this.playersService.waitedPlayersForNextTour().subscribe(players => this.waitedPlayersForNextTour = players);
-    this.playersService.newTour().subscribe(() => this.newTour());
-    this.playersService.gameOver().subscribe(() => this.gameOver());
-    this.playersService.playerDisconnected().subscribe((name: string) => this.playerDisconnection(name));
+    this.playersService.roundLooser().pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((result: { looser: Player, playedCardsOfRound: { card: Card, player: Player }[] }) =>
+        this.handleRoundLooser(result.looser, result.playedCardsOfRound));
+    this.playersService.endOfTour().pipe(takeUntil(this.ngUnsubscribe)).subscribe(players => this.endTour(players));
+    this.playersService.waitedPlayersForNextTour().pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(players => this.waitedPlayersForNextTour = players);
+    this.playersService.newTour().pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => this.newTour());
+    this.playersService.gameOver().pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => this.gameOver());
+    this.playersService.playerDisconnected().pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((name: string) => this.playerDisconnection(name));
   }
 
   initDeck() {
@@ -374,5 +381,10 @@ export class PlayingComponent implements OnInit {
 
   scrollToTop() {
     window.scrollTo(0, 0);
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 }

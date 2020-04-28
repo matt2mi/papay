@@ -6,6 +6,8 @@ class Player {
   roundScore = 0;
   globalScore = 0;
   hasGivenCards = false;
+  color = '';
+
   static clonePlayer = player => {
     const newPlayer = new Player();
 
@@ -20,7 +22,6 @@ class Player {
 
     return newPlayer;
   };
-  color = '';
 
   constructor(name, deck, socketId, color) {
     this.name = name;

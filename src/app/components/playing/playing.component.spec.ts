@@ -24,6 +24,7 @@ describe('PlayingComponent', () => {
             getCurrentPlayerDeck: () => of(),
             getConnectedPlayers: () => of(),
             waitedGivingCardsPlayers: () => of(),
+            yourTurn: () => of(),
             nextPlayerTurn: () => of(),
             roundLooser: () => of(),
             endOfTour: () => of(),

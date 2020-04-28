@@ -19,7 +19,9 @@ describe('LoginComponent', () => {
           provide: PlayersService, useValue: {
             initSocket: () => {
             },
-            createPlayer$: of(),
+            createPlayer: () => {
+            },
+            creatingPlayer: () => of(),
           }
         },
         {
