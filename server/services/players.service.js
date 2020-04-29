@@ -1,3 +1,4 @@
+const logsService = require('./logs.service');
 const Player = require('../models/player');
 
 const colors = [
@@ -132,11 +133,14 @@ const emptyCollectedLoosingCards = () => {
 const getNextPlayer = previousPlayerName => {
   const currentPlayerId = players.findIndex(player => player.name === previousPlayerName);
   if (currentPlayerId < 0) {
+    logsService.logs('getNextPlayer - nextPlayer introuvable');
     throw new Error('nextPlayer introuvable');
   } else if (currentPlayerId === players.length - 1) {
+    logsService.logs('getNextPlayer - cas du dernier de la liste', players[0]);
     // cas du dernier de la liste
     return players[0];
   } else {
+    logsService.logs('getNextPlayer - joueur suivabt', players[currentPlayerId + 1]);
     return players[currentPlayerId + 1];
   }
 };

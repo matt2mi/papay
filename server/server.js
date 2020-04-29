@@ -2,6 +2,7 @@ const playersService = require('./services/players.service');
 const cardsService = require('./services/cards.service');
 const chatService = require('./services/chat.service');
 const playingService = require('./services/playing.service');
+const logsService = require('./services/logs.service');
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -19,9 +20,14 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.get('/', (req, res) => res.sendFile(path.join(__dirname + '/index.html')));
 
 app.get('/startParty', (req, res) => {
+  logsService.logs('get /startParty', partyStarted);
   if (!partyStarted) {
+    try {
+      playingService.startParty(io);
+    } catch(e) {
+      console.error(e);
+    }
     partyStarted = true;
-    playingService.startParty(io);
     res.status(200).send({error: false, message: 'ok'});
   } else {
     res.status(403).send({error: true, message: 'bug: partie déjà started'});
@@ -31,8 +37,10 @@ app.get('/startParty', (req, res) => {
 app.get('/getDeck/:name', (req, res) => {
   const player = playersService.getPlayerByName(req.params.name);
   if(player) {
+    logsService.logs('get /getDeck/' + req.params.name, player.name);
     res.send({deck: player.deck});
   } else {
+    logsService.logs('get /getDeck/' + req.params.name, 'pseudo de joueur introuvable.');
     res.status(403).send({message: 'pseudo de joueur introuvable.'});
   }
 });
@@ -41,7 +49,12 @@ app.post('/giveCards', (req, res) => {
   // endpoint pour donner ses cartes à son voisin avant le tour
   const player = playersService.getPlayerByName(req.body.name);
   if (player) {
-    playersService.handleGivenCardsOneByOne({cards: req.body.cards, player: player});
+    logsService.logs('post /giveCards ' + player.name, req.body.cards);
+    try {
+      playersService.handleGivenCardsOneByOne({cards: req.body.cards, player: player});
+    } catch(e) {
+      console.error(e);
+    }
     if (playersService.hasEveryPlayerGivenCards()) {
       // si tout le monde a donné ses cartes
       try {
@@ -51,6 +64,7 @@ app.post('/giveCards', (req, res) => {
 
         // on démarre la partie en avertissant le premier joueur que c'est son tour
         const nextPlayer = playingService.setFirstPlayerToPlay();
+        logsService.logs('post /giveCards - on démarre la partie', nextPlayer.name);
         playingService.emitNextPlayerTurn(io, nextPlayer.name);
       } catch (e) {
         console.error(e);
@@ -58,23 +72,34 @@ app.post('/giveCards', (req, res) => {
     }
     res.status(200).send();
   } else {
+    logsService.logs('post /giveCards ' + req.body.name, 'pseudo de joueur introuvable.');
     res.status(403).send({message: 'pseudo de joueur introuvable.'});
   }
 });
 
 app.post('/playCard', (req, res) => {
-  playingService.receivePlayerCard(req.body.playerName, req.body.card, io);
-  res.send({ok: true}); // ballec :p
+  logsService.logs('post /playCard ' + req.body.playerName, req.body.cards);
+  try {
+    playingService.receivePlayerCard(req.body.playerName, req.body.card, io);
+  } catch(e) {
+    console.error(e);
+  }
+  res.send({ok: true});
 });
 
 app.get('/goNextTour/:name', (req, res) => {
+  logsService.logs('get /goNextTour/' + req.params.name);
   playingService.unWaitPlayer(req.params.name, io);
   res.send(true);
 });
 
-app.get('/players', (req, res) => res.send(playersService.getPlayers()));
+app.get('/players', (req, res) => {
+  logsService.logs('get /players', playersService.getPlayers().map(player => player.name));
+  res.send(playersService.getPlayers());
+});
 
 app.post('/deletePlayer', (req, res) => {
+  logsService.logs('post /deletePlayer ' + req.body.kickedName + ' ' + req.body.kickerName);
   if (!partyStarted) {
     try {
       playersService.removePlayerByName(req.body.kickedName, req.body.kickerName);
@@ -86,13 +111,19 @@ app.post('/deletePlayer', (req, res) => {
       res.status(404).send({error});
     }
   } else {
-    res.status(403).send({error: 'Partie déjà commencée'});
+    const error = 'Partie déjà commencée';
+    console.error(error);
+    res.status(403).send({error});
   }
 });
 
-app.get('/chatMessages', (req, res) => res.send(chatService.getMessages()));
+app.get('/chatMessages', (req, res) => {
+  logsService.logs('get /chatMessages', chatService.getMessages());
+  res.send(chatService.getMessages());
+});
 
 app.post('/newChatMessage', (req, res) => {
+  logsService.logs('post /newChatMessage', req.body);
   chatService.addMessage(req.body.message, req.body.color, io);
   res.send(true);
 });
@@ -117,6 +148,7 @@ io.on('connection', (socket) => {
   socket.on('createPlayer', name => {
     // TODO: cleaner ?
     if(partyStarted) {
+      logsService.logs('socket.emit(creatingPlayer) - Désolé ' + name + ', partie déjà démarrée :/');
       socket.emit('creatingPlayer', {
         name: '',
         color: '',
@@ -125,16 +157,18 @@ io.on('connection', (socket) => {
     } else {
       try {
         const newPlayer = playersService.createPlayer(socket, name, io);
-        console.log('New user connected ' + newPlayer.name + ' color ' + newPlayer.color);
+        logsService.logs('socket.emit(creatingPlayer) - New user connected: ' + newPlayer.name + ', color: ' + newPlayer.color);
         socket.emit('creatingPlayer', {
           name: newPlayer.name,
           color: newPlayer.color,
           error: {value: false, message: ''}
         });
         if(playersService.getNbPlayers() === 8) {
+          logsService.logs('nb max player => playingService.startParty');
           playingService.startParty(io);
         }
       } catch (error) {
+        logsService.logs('socket.emit(creatingPlayer) - ', error.message);
         socket.emit('creatingPlayer', {name, color: '', error: {value: true, message: error.message}});
       }
     }
@@ -143,10 +177,11 @@ io.on('connection', (socket) => {
   socket.on('disconnect', function () {
     if (partyStarted) {
       const playerDisconnected = playersService.getPlayerBySocketId(socket.id);
-      console.log('disconnected', playerDisconnected.name);
+      logsService.logs('io.emit(\'playerDisconnected\')', playerDisconnected.name);
       io.emit('playerDisconnected', playerDisconnected.name);
       resetServer();
     } else {
+      logsService.logs('io.emit(\'newPlayer\'', playersService.getPlayers().map(pl => pl.name));
       playersService.removePlayerBySocketId(socket.id);
       io.emit('newPlayer', playersService.getPlayers());
     }
@@ -213,3 +248,5 @@ Suite des actions Websocket
 
 13 - attente restart (tous les joueurs doivent cliquer sur restart et notifier tous de qui a fait restart)
  */
+
+console.log(process.env.NODE_ENV);
