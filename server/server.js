@@ -41,6 +41,7 @@ app.post('/giveCards', (req, res) => {
   // endpoint pour donner ses cartes à son voisin avant le tour
   const player = playersService.getPlayerByName(req.body.name);
   if (player) {
+    playingService.unWaitGivingCardsPlayer(player.name, io);
     playersService.handleGivenCardsOneByOne({cards: req.body.cards, player: player});
     if (playersService.hasEveryPlayerGivenCards()) {
       // si tout le monde a donné ses cartes
@@ -68,7 +69,7 @@ app.post('/playCard', (req, res) => {
 });
 
 app.get('/goNextTour/:name', (req, res) => {
-  playingService.unWaitPlayer(req.params.name, io);
+  playingService.unWaitPlayerForNewTour(req.params.name, io);
   res.send(true);
 });
 
@@ -154,7 +155,6 @@ io.on('connection', (socket) => {
 });
 
 // Bugs :
-// TODO : info de qui on attend pr donner ses cartes
 // TODO : c'est à toi plus clair (clignottage ?) / design noms joueurs autour plateau
 
 // Evols :

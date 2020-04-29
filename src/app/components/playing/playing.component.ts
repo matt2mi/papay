@@ -39,6 +39,7 @@ export class PlayingComponent implements OnInit, OnDestroy {
   nbCardToGive = 5;
   previousPlayer: Player;
   nextPlayer: Player;
+  waitedGivingCardsPlayers: Player[] = [];
 
   // playing (isCurrentPlayerTurn, showRoundLooserName, !!family40)
   isCurrentPlayerTurn = false;
@@ -80,6 +81,9 @@ export class PlayingComponent implements OnInit, OnDestroy {
       this.setNbCardToGive();
       this.setPartyState('givingCards');
     });
+
+    this.playersService.waitedGivingCardsPlayers().pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((players: Player[]) => this.waitedGivingCardsPlayers = players);
     this.cardsService.getDeckWithGivenCards().pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((result: { deck: Card[], family40: Family }) => {
         this.currentPlayer.deck = result.deck;
