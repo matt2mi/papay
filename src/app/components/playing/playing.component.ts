@@ -254,6 +254,7 @@ export class PlayingComponent implements OnInit, OnDestroy {
     this.isCurrentPlayerTurn = true;
     this.playerNameWaitedToPlay = this.currentPlayer.name;
     this.showRoundLooserName = false;
+    console.log('yourTurn(cardsPlayedWithPlayer) - canPlayCards()', cardsPlayedWithPlayer);
     this.canPlayCards();
   }
 
@@ -292,6 +293,7 @@ export class PlayingComponent implements OnInit, OnDestroy {
         error => {
           console.log('card', card);
           console.error('n\' a pas été jouée', error);
+          console.log('clickCard(card) - error => canPlayCards(), cardFold:', this.cardFold);
           this.canPlayCards();
         }
       );

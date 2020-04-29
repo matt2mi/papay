@@ -1,5 +1,6 @@
 const playersService = require('./players.service');
 const cardsService = require('./cards.service');
+const logsService = require('./logs.service');
 const Player = require('../models/player');
 
 // un tour = tous les plis entre deux distribution de cartes
@@ -14,6 +15,7 @@ let nbTour = 1; // le nombre de tour joué depuis le début => game over quand n
 const startParty = io => {
   playersService.setWaitedPlayers();
   cardsService.setDealedDecksToPlayers();
+  logsService.logs('playingService.startParty', playersService.getPlayers().map(pl => pl.name));
   io.emit('partyStarted', true);
 };
 
@@ -21,14 +23,19 @@ const emitNextPlayerTurn = (io, playerNameWaitedToPlay) => {
   playersService.getPlayers().forEach(player => {
     const playerSocket = playersService.getPlayerSocketByName(player.name);
     if (player.name === playerNameWaitedToPlay) {
+      logsService.logs('playerSocket.emit(yourTurn)',
+        playedCardsOfRound.map(c => '' + c.card.number + '-' + c.card.family.label));
       playerSocket.emit('yourTurn', playedCardsOfRound);
     } else {
+      logsService.logs('playerSocket.emit(nextPlayerTurn) - ' + playerNameWaitedToPlay,
+        playedCardsOfRound.map(c => '' + c.card.number + '-' + c.card.family.label));
       playerSocket.emit('nextPlayerTurn', {playerNameWaitedToPlay, cardsPlayedWithPlayer: playedCardsOfRound});
     }
   });
 };
 
 const receivePlayerCard = (playerName, card, io) => {
+  logsService.logs('receivePlayerCard');
   nbCardsPlayedInTour++;
   const player = playersService.getPlayerByName(playerName);
   playedCardsOfRound.push({card, player});
@@ -41,9 +48,12 @@ const receivePlayerCard = (playerName, card, io) => {
     // lui donner les cartes du pli
     giveCardOfRoundToLooser(looser);
     cardsService.countRoundScore();
-    io.emit('roundLooser', {looser: playersService.getPlayerByName(looser.name), playedCardsOfRound});
+    const looserInfo = {looser: playersService.getPlayerByName(looser.name), playedCardsOfRound};
+    logsService.logs('io.emit(roundLooser)', looserInfo);
+    io.emit('roundLooser', looserInfo);
 
     setTimeout(() => {
+      logsService.logs('fin des 3 secondes d\'affichage du perdant du pli');
       // on laisse l'affichage du perdant du pli pendant 3 secondes
       playedCardsOfRound = [];
       if (nbCardsPlayedInTour === 60) { // TODO: mettre 3 au lieu de 60 pour tester plus vite
@@ -52,27 +62,27 @@ const receivePlayerCard = (playerName, card, io) => {
         cardsService.countEndTourScore();
         if (nbTour === playersService.getNbPlayers()) {
           // game over
+          logsService.logs('io.emit(\'gameOver\')');
           io.emit('gameOver');
         } else {
           nbTour++;
           // tour suivant
+          logsService.logs('io.emit(\'endOfTour\') - tour n°' + nbTour, playersService.getPlayers().map(pl => pl.name));
           io.emit('endOfTour', playersService.getPlayers());
           playersService.reinitPlayersForNextRound();
           nbCardsPlayedInTour = 0;
         }
       } else {
+        logsService.logs('emitNextPlayerTurn', looser.name);
         emitNextPlayerTurn(io, looser.name);
       }
     }, 3000);
   } else {
     // pli incomplet => on notifie le joueur suivant
     const nextPlayer = playersService.getNextPlayer(playerName);
+    logsService.logs('pli incomplet', nextPlayer.name);
     setStartingPlayerOfRound(nextPlayer);
-    try {
-      emitNextPlayerTurn(io, nextPlayer.name);
-    } catch (e) {
-      throw new Error(e);
-    }
+    emitNextPlayerTurn(io, nextPlayer.name);
   }
 };
 
@@ -86,7 +96,7 @@ const findLooser = playedCardsOfRound => {
       return (prev.card.number > current.card.number) ? prev : current;
     });
   if (looserAndCard) return looserAndCard.player;
-  return null; // TODO throw new error('erreur findLooser') ?
+  return null;
 };
 
 const giveCardOfRoundToLooser = (looserOfRound) => {
@@ -97,6 +107,7 @@ const giveCardOfRoundToLooser = (looserOfRound) => {
 };
 
 const setStartingPlayerOfRound = player => {
+  logsService.logs('setStartingPlayerOfRound', player.name);
   startingPlayerOfRound = player;
 };
 
@@ -104,9 +115,11 @@ const setFirstPlayerToPlay = () => {
   if (firstPlayerToPlay) {
     // il existe déjà (un tour a déjà été joué) => donc on set le joueur suivant
     firstPlayerToPlay = Player.clonePlayer(playersService.getNextPlayer(firstPlayerToPlay.name));
+    logsService.logs('setFirstPlayerToPlay - next', firstPlayerToPlay.name);
   } else {
     // il n'existe pas, c'est le premier tour de jeu, donc le premier de la liste commence
     firstPlayerToPlay = Player.clonePlayer(playersService.getPlayers()[0]);
+    logsService.logs('setFirstPlayerToPlay - first of list', firstPlayerToPlay.name);
   }
   return firstPlayerToPlay;
 };
@@ -136,6 +149,7 @@ const unWaitPlayerForNewTour = (name, io) => {
 };
 
 const reset = () => {
+  logsService.logs('playingService.reset');
   firstPlayerToPlay = null;
   playedCardsOfRound = [];
   startingPlayerOfRound = null;
