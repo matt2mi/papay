@@ -181,8 +181,8 @@ io.on('connection', (socket) => {
       io.emit('playerDisconnected', playerDisconnected.name);
       resetServer();
     } else {
-      logsService.logs('io.emit(\'newPlayer\'', playersService.getPlayers().map(pl => pl.name));
       playersService.removePlayerBySocketId(socket.id);
+      logsService.logs('socket.on(\'disconnect\') - io.emit(\'newPlayer\'', playersService.getPlayers().map(pl => pl.name));
       io.emit('newPlayer', playersService.getPlayers());
     }
   });
