@@ -24,74 +24,94 @@ app.get('/startParty', (req, res) => {
   if (!partyStarted) {
     try {
       playingService.startParty(io);
-    } catch(e) {
+    } catch (e) {
       console.error(e);
     }
     partyStarted = true;
     res.status(200).send({error: false, message: 'ok'});
   } else {
-    res.status(403).send({error: true, message: 'bug: partie déjà started'});
+    res.status(403).send({error: true, message: 'bug: partie déjà commencée'});
   }
 });
 
+const noPartyStarted = res => {
+  res.status(403).send({error: true, message: 'bug: pas de partie en cours'});
+};
+
 app.get('/getDeck/:name', (req, res) => {
-  const player = playersService.getPlayerByName(req.params.name);
-  if(player) {
-    logsService.logs('get /getDeck/' + req.params.name, player.name);
-    res.send({deck: player.deck});
+  if (partyStarted) {
+    const player = playersService.getPlayerByName(req.params.name);
+    if (player) {
+      logsService.logs('get /getDeck/' + req.params.name, player.name);
+      res.send({deck: player.deck});
+    } else {
+      logsService.logs('get /getDeck/' + req.params.name, 'pseudo de joueur introuvable.');
+      res.status(403).send({message: 'pseudo de joueur introuvable.'});
+    }
   } else {
-    logsService.logs('get /getDeck/' + req.params.name, 'pseudo de joueur introuvable.');
-    res.status(403).send({message: 'pseudo de joueur introuvable.'});
+    noPartyStarted(res);
   }
 });
 
 app.post('/giveCards', (req, res) => {
-  // endpoint pour donner ses cartes à son voisin avant le tour
-  const player = playersService.getPlayerByName(req.body.name);
-  if (player) {
-    playingService.unWaitGivingCardsPlayer(player.name, io);
-    logsService.logs('post /giveCards ' + player.name, req.body.cards);
-    try {
-      playersService.handleGivenCardsOneByOne({cards: req.body.cards, player: player});
-    } catch(e) {
-      console.error(e);
-    }
-    if (playersService.hasEveryPlayerGivenCards()) {
-      // si tout le monde a donné ses cartes
+  if (partyStarted) {
+    // endpoint pour donner ses cartes à son voisin avant le tour
+    const player = playersService.getPlayerByName(req.body.name);
+    if (player) {
+      playingService.unWaitGivingCardsPlayer(player.name, io);
+      logsService.logs('post /giveCards ' + player.name, req.body.cards);
       try {
-        cardsService.set40Family();
-        // on renvoit les nouveaux decks à chacun des joueurs
-        playersService.sendDecks(cardsService.get40Family());
-
-        // on démarre la partie en avertissant le premier joueur que c'est son tour
-        const nextPlayer = playingService.setFirstPlayerToPlay();
-        logsService.logs('post /giveCards - on démarre la partie', nextPlayer.name);
-        playingService.emitNextPlayerTurn(io, nextPlayer.name);
+        playersService.handleGivenCardsOneByOne({cards: req.body.cards, player: player});
       } catch (e) {
         console.error(e);
       }
+      if (playersService.hasEveryPlayerGivenCards()) {
+        // si tout le monde a donné ses cartes
+        try {
+          cardsService.set40Family();
+          // on renvoit les nouveaux decks à chacun des joueurs
+          playersService.sendDecks(cardsService.get40Family());
+
+          // on démarre la partie en avertissant le premier joueur que c'est son tour
+          const nextPlayer = playingService.setFirstPlayerToPlay();
+          logsService.logs('post /giveCards - on démarre la partie', nextPlayer.name);
+          playingService.emitNextPlayerTurn(io, nextPlayer.name);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      res.status(200).send();
+    } else {
+      logsService.logs('post /giveCards ' + req.body.name, 'pseudo de joueur introuvable.');
+      res.status(403).send({message: 'pseudo de joueur introuvable.'});
     }
-    res.status(200).send();
   } else {
-    logsService.logs('post /giveCards ' + req.body.name, 'pseudo de joueur introuvable.');
-    res.status(403).send({message: 'pseudo de joueur introuvable.'});
+    noPartyStarted(res);
   }
 });
 
 app.post('/playCard', (req, res) => {
-  logsService.logs('post /playCard ' + req.body.playerName, req.body.cards);
-  try {
-    playingService.receivePlayerCard(req.body.playerName, req.body.card, io);
-  } catch(e) {
-    console.error(e);
+  if (partyStarted) {
+    logsService.logs('post /playCard ' + req.body.playerName, req.body.cards);
+    try {
+      playingService.receivePlayerCard(req.body.playerName, req.body.card, io);
+    } catch (e) {
+      console.error(e);
+    }
+    res.send({ok: true});
+  } else {
+    noPartyStarted(res);
   }
-  res.send({ok: true});
 });
 
 app.get('/goNextTour/:name', (req, res) => {
-  logsService.logs('get /goNextTour/' + req.params.name);
-  playingService.unWaitPlayerForNewTour(req.params.name, io);
-  res.send(true);
+  if (partyStarted) {
+    logsService.logs('get /goNextTour/' + req.params.name);
+    playingService.unWaitPlayerForNewTour(req.params.name, io);
+    res.send(true);
+  } else {
+    noPartyStarted(res);
+  }
 });
 
 app.get('/players', (req, res) => {
@@ -148,7 +168,7 @@ const resetServer = () => {
 io.on('connection', (socket) => {
   socket.on('createPlayer', name => {
     // TODO: cleaner ?
-    if(partyStarted) {
+    if (partyStarted) {
       logsService.logs('socket.emit(creatingPlayer) - Désolé ' + name + ', partie déjà démarrée :/');
       socket.emit('creatingPlayer', {
         name: '',
@@ -164,7 +184,7 @@ io.on('connection', (socket) => {
           color: newPlayer.color,
           error: {value: false, message: ''}
         });
-        if(playersService.getNbPlayers() === 8) {
+        if (playersService.getNbPlayers() === 8) {
           logsService.logs('nb max player => playingService.startParty');
           playingService.startParty(io);
         }
