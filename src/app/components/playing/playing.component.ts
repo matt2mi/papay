@@ -300,10 +300,10 @@ export class PlayingComponent implements OnInit, OnDestroy {
   }
 
   giveCards() {
+    this.cardsGived = true;
     this.cardsService.giveCard(this.getCardToGive(), this.playersService.getCurrentPlayer().name)
       .subscribe(
         () => {
-          this.cardsGived = true;
           this.setAllCardsClickablesOrNot(false);
         },
         error => {

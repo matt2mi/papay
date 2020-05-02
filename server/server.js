@@ -198,9 +198,13 @@ io.on('connection', (socket) => {
   socket.on('disconnect', function () {
     if (partyStarted) {
       const playerDisconnected = playersService.getPlayerBySocketId(socket.id);
-      logsService.logs('io.emit(\'playerDisconnected\')', playerDisconnected.name);
-      io.emit('playerDisconnected', playerDisconnected.name);
-      resetServer();
+      if (playerDisconnected) {
+        logsService.logs('io.emit(\'playerDisconnected\')', playerDisconnected.name);
+        io.emit('playerDisconnected', playerDisconnected.name);
+        resetServer();
+      } else {
+        console.error('socket.on(\'disconnect\') - playerDisconnected introuvable');
+      }
     } else {
       playersService.removePlayerBySocketId(socket.id);
       logsService.logs('socket.on(\'disconnect\') - io.emit(\'newPlayer\'', playersService.getPlayers().map(pl => pl.name));
@@ -210,7 +214,9 @@ io.on('connection', (socket) => {
 });
 
 // Bugs :
-// TODO : c'est à toi plus clair (clignottage ?) / design noms joueurs autour plateau
+// TODO : c'est à toi plus clair (clignottage / son) / design noms joueurs autour plateau
+// TODO : bug du à mauvaise utilisation socketio ? (utiliser websocket ? plu simple ?) (des fois des emit en double/triple !!)
+// TODO : bug de pas besoin de cliquer sur suivant (checker vraiment les joueurs, pas juste le nb => dû au bug d'au dessus)
 
 // Evols :
 // TODO : ajouter du son:
