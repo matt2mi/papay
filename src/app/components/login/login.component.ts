@@ -41,10 +41,19 @@ export class LoginComponent implements OnInit, OnDestroy {
   onSubmitName() {
     if (this.createPlayerForm.get('name').value !== '') {
       this.errorMessage = '';
-      const playerName = this.createPlayerForm.get('name').value;
-      this.playersService.createPlayer(playerName);
+      this.playersService.createPlayer(this.cleanPseudo(this.createPlayerForm.get('name').value));
     } else {
-      this.errorMessage = 'ton pseudo !';
+      this.errorMessage = 'choisis ton pseudo !';
+    }
+  }
+
+  cleanPseudo(str: string) {
+    if (str[0] === ' ') {
+      return this.cleanPseudo(str.substr(1, str.length - 1));
+    } else if (str[str.length - 1] === ' ') {
+      return this.cleanPseudo(str.substr(0, str.length - 1));
+    } else {
+      return str;
     }
   }
 

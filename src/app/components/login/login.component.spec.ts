@@ -44,4 +44,10 @@ describe('LoginComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should clean spaces in pseudo', () => {
+    const result = component.cleanPseudo('  pseudo 2    ');
+
+    expect(result).toEqual('pseudo 2');
+  });
 });
