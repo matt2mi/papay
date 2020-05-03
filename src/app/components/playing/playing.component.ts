@@ -45,6 +45,7 @@ export class PlayingComponent implements OnInit, OnDestroy {
   isCurrentPlayerTurn = false;
   showRoundLooserName = false;
   family40: Family;
+  family40Label = '';
   playerNameWaitedToPlay = '';
   connectedPlayers: Player[];
   cardFold: { player: Player, card: Card }[] = [];
@@ -88,7 +89,7 @@ export class PlayingComponent implements OnInit, OnDestroy {
     this.cardsService.getDeckWithGivenCards().pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((result: { deck: Card[], family40: Family }) => {
         this.currentPlayer.deck = result.deck;
-        this.family40 = result.family40;
+        this.setFamily40(result.family40);
         this.getBackCards();
         this.setAllCardsClickablesOrNot(false);
         this.setPartyState('playing');
@@ -153,8 +154,8 @@ export class PlayingComponent implements OnInit, OnDestroy {
       new Player('matt'),
       new Player('hugo'),
       new Player('gu'),
-      // new Player('clé'),
-      // new Player('marion'),
+      new Player('clé'),
+      new Player('marion'),
       new Player('mélanie'),
       new Player('coco'),
     ];
@@ -165,7 +166,7 @@ export class PlayingComponent implements OnInit, OnDestroy {
     this.setNbCardToGive();
     this.setPartyState('playing');
     this.setAllCardsClickablesOrNot(true);
-    this.family40 = FAMILIES[3];
+    this.setFamily40(FAMILIES[2]);
 
     this.isCurrentPlayerTurn = true;
     this.playerNameWaitedToPlay = 'mimi';
@@ -357,11 +358,15 @@ export class PlayingComponent implements OnInit, OnDestroy {
   }
 
   updateLooserRoundScore(roundLooser: Player) {
-    if (roundLooser.name === this.currentPlayer.name) {
+    if (this.currentPlayer.name === roundLooser.name) {
       this.currentPlayer.roundScore = roundLooser.roundScore;
-    } else {
-      const looser = this.connectedPlayers.find(player => player.name === roundLooser.name);
-      looser.roundScore = roundLooser.roundScore;
+    } else if (this.topPlayer && this.topPlayer.name === roundLooser.name) {
+      this.topPlayer.roundScore = roundLooser.roundScore;
+    } else if (this.leftPlayers.some(player => player.name === roundLooser.name)) {
+      this.leftPlayers.find(player => player.name === roundLooser.name).roundScore = roundLooser.roundScore;
+    } else if (this.rightPlayers.some(player => player.name === roundLooser.name)) {
+      // si le dernier joueur est dans la colonne de droite
+      this.leftPlayers.find(player => player.name === roundLooser.name).roundScore = roundLooser.roundScore;
     }
   }
 
@@ -418,6 +423,44 @@ export class PlayingComponent implements OnInit, OnDestroy {
 
   scrollToTop() {
     window.scrollTo(0, 0);
+  }
+
+  getGameBoardHeight() {
+    switch (this.connectedPlayers.length) {
+      case 3:
+        return {height: '190px'};
+      case 4:
+        return {height: '314px'};
+      case 5:
+        return {height: '274px'};
+      case 6:
+        return {height: '314px'};
+      case 7:
+        return {height: '274px'};
+      case 8:
+        return {height: '314px'};
+    }
+  }
+
+  setFamily40(family40: Family) {
+    this.family40 = family40;
+    switch (family40.id) {
+      case 0:
+        this.family40Label = 'spades';
+        break;
+      case 1:
+        this.family40Label = 'hearts';
+        break;
+      case 2:
+        this.family40Label = 'diamonds';
+        break;
+      case 3:
+        this.family40Label = 'chamrocks';
+        break;
+      case 4:
+        this.family40Label = 'papayoos';
+        break;
+    }
   }
 
   ngOnDestroy() {
