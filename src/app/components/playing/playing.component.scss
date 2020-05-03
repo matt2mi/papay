@@ -31,9 +31,35 @@
   border-radius: 12px;
 }
 
+//https://www.w3schools.com/css/css3_animations.asp
+@keyframes blinking-title {
+  0%   {color: transparent;}
+  100%  {color: white;}
+}
+.turn-to-play {
+  color: transparent;
+
+  animation-name: blinking-title;
+  animation-duration: 0.7s;
+  animation-delay: 1.05s;
+  animation-iteration-count: infinite;
+}
+
+//https://www.w3schools.com/css/css3_animations.asp
+@keyframes blinking-background {
+  0%   {background-color: transparent;}
+  100%  {background-color: white;}
+}
+.you-have-to-play {
+  background-color: transparent;
+
+  animation-name: blinking-background;
+  animation-duration: 0.7s;
+  animation-iteration-count: infinite;
+}
+
 .has-to-play {
   background-color: white;
-  color: dimgray;
 }
 
 .cardsFold {
@@ -50,14 +76,6 @@
 
 .mine {
   border: 1px solid yellow;
-}
-
-.border-white {
-  border: 1px solid white;
-}
-
-.border-bottom-white {
-  border-bottom: 1px solid white;
 }
 
 .absolute-top {
@@ -87,4 +105,19 @@
 
 .game-board {
   background: radial-gradient(green 0, black 150%);
+}
+
+.top-player-card {
+  position: absolute;
+}
+
+.current-player-card {
+  position: absolute;
+  bottom: .5rem;
+}
+
+.vertically-centered {
+  display: grid;
+  align-items: center;
+  flex-wrap: wrap;
 }

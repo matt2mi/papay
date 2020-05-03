@@ -144,7 +144,6 @@ describe('PlayingComponent', () => {
       new Player('fiona')
     ];
     const expectedLeftPlayers = [
-      new Player('cle'),
       new Player('marion'),
       new Player('fiona'),
       new Player('mimi')
@@ -161,5 +160,23 @@ describe('PlayingComponent', () => {
 
     expect(component.leftPlayers).toEqual(expectedLeftPlayers);
     expect(component.rightPlayers).toEqual(expectedRightPlayers);
+  });
+
+  it('should set top Players when even nb players', () => {
+    component.currentPlayer = new Player('matt');
+    component.connectedPlayers = [
+      new Player('mimi'),
+      new Player('matt'),
+      new Player('toyo'),
+      new Player('coco'),
+      new Player('gu'),
+      new Player('cle'),
+      new Player('marion'),
+      new Player('fiona')
+    ];
+    const expectedTopPlayer = new Player('cle');
+    component.setLeftAndRightPlayers();
+
+    expect(component.topPlayer).toEqual(expectedTopPlayer);
   });
 });

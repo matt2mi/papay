@@ -48,6 +48,7 @@ export class PlayingComponent implements OnInit, OnDestroy {
   playerNameWaitedToPlay = '';
   connectedPlayers: Player[];
   cardFold: { player: Player, card: Card }[] = [];
+  topPlayer: Player;
   leftPlayers: Player[] = [];
   rightPlayers: Player[] = [];
   roundLooserName = '';
@@ -146,28 +147,28 @@ export class PlayingComponent implements OnInit, OnDestroy {
       new Card(13, FAMILIES[4], true, false),
       new Card(20, FAMILIES[4], true, false),
     ];
-    this.currentPlayer = new Player('matt', deck, 'red');
+    this.currentPlayer = new Player('matt', deck, 'red', new Card(8, FAMILIES[4]));
     this.connectedPlayers = [
       new Player('mimi'),
       new Player('matt'),
       new Player('hugo'),
-      new Player('maximedelachavonnery'),
-      new Player('gu'),
-      new Player('cle'),
-      new Player('marion'),
-      new Player('melanie'),
+      // new Player('gu'),
+      // new Player('clé'),
+      // new Player('marion'),
+      // new Player('mélanie'),
+      new Player('coco'),
     ];
+
+    this.connectedPlayers.forEach((player, i) => player.currentCard = new Card((i + 1) * 2, FAMILIES[4]));
+
     this.setLeftAndRightPlayers();
     this.setNbCardToGive();
-    this.setPartyState('givingCards');
+    this.setPartyState('playing');
     this.setAllCardsClickablesOrNot(true);
     this.family40 = FAMILIES[3];
 
-    for (let i = 0; i < this.connectedPlayers.length; i++) {
-      this.cardFold.push({player: this.connectedPlayers[i], card: new Card(i + 2, FAMILIES[4])});
-    }
-
-    this.playerNameWaitedToPlay = 'matt';
+    this.isCurrentPlayerTurn = true;
+    this.playerNameWaitedToPlay = 'mimi';
   }
 
   setLeftAndRightPlayers() {
@@ -204,6 +205,10 @@ export class PlayingComponent implements OnInit, OnDestroy {
       }
     }
     this.leftPlayers.reverse();
+    if (this.connectedPlayers.length % 2 === 0) {
+      // si le nombre de joueurs est pair => on est met un au centre en haut (le premier de la liste de gauche)
+      this.topPlayer = this.leftPlayers.splice(0, 1)[0];
+    }
 
     for (let i = currentPlayerId + 1; i <= currentPlayerId + rightNb; i++) {
       if (this.connectedPlayers[i]) {
@@ -251,6 +256,7 @@ export class PlayingComponent implements OnInit, OnDestroy {
 
   yourTurn(cardsPlayedWithPlayer: { card: Card; player: Player }[]) {
     this.cardFold = cardsPlayedWithPlayer;
+    this.updatePlayersCard(cardsPlayedWithPlayer);
     this.isCurrentPlayerTurn = true;
     this.playerNameWaitedToPlay = this.currentPlayer.name;
     this.showRoundLooserName = false;
@@ -262,7 +268,36 @@ export class PlayingComponent implements OnInit, OnDestroy {
     this.isCurrentPlayerTurn = false;
     this.showRoundLooserName = false;
     this.playerNameWaitedToPlay = playerNameWaitedToPlay;
+    console.log('nextPlayerTurn(cardsPlayedWithPlayer)', cardsPlayedWithPlayer);
     this.cardFold = cardsPlayedWithPlayer;
+    this.updatePlayersCard(cardsPlayedWithPlayer);
+  }
+
+  updatePlayersCard(cardsPlayedWithPlayer: { card: Card; player: Player }[]) {
+    if (cardsPlayedWithPlayer.length !== 0) {
+      // si des joueurs ont déjà joué des cartes dans le pli
+      const lastPlayer = cardsPlayedWithPlayer[cardsPlayedWithPlayer.length - 1];
+      if (this.topPlayer && this.topPlayer.name === lastPlayer.player.name) {
+        // si le dernier joueur est le joueur d'en haut
+        this.topPlayer.currentCard = lastPlayer.card;
+      } else if (this.leftPlayers.some(player => player.name === lastPlayer.player.name)) {
+        // si le dernier joueur est dans la colonne de gauche
+        const playerToUpdate = this.leftPlayers.find(player => player.name === lastPlayer.player.name);
+        playerToUpdate.currentCard = lastPlayer.card;
+      } else if (this.rightPlayers.some(player => player.name === lastPlayer.player.name)) {
+        // si le dernier joueur est dans la colonne de droite
+        const playerToUpdate = this.rightPlayers.find(player => player.name === lastPlayer.player.name);
+        playerToUpdate.currentCard = lastPlayer.card;
+      }
+    } else {
+      // aucune carte dans le pli / nouveau tour => vide les cartes de tous les joueurs
+      if (this.topPlayer) {
+        this.topPlayer.currentCard = null;
+      }
+      this.leftPlayers.forEach(player => player.currentCard = null);
+      this.currentPlayer.currentCard = null;
+      this.rightPlayers.forEach(player => player.currentCard = null);
+    }
   }
 
   getBackCards() {
@@ -282,17 +317,16 @@ export class PlayingComponent implements OnInit, OnDestroy {
   }
 
   clickCard(card: Card) {
+    card.played = true;
+    this.currentPlayer.currentCard = card;
     this.setAllCardsClickablesOrNot(false);
     this.cardsService.playCard(card, this.currentPlayer.name)
       .subscribe(
-        () => {
-          // const currentCard = this.currentPlayer.deck.find(c => c.family.id === card.family.id && c.number === card.number);
-          // currentCard.played = true;
-          card.played = true;
-        },
+        () => console.log(card.number + ' ' + card.family.label + ' jouée'),
         error => {
-          console.log('card', card);
-          console.error('n\' a pas été jouée', error);
+          this.currentPlayer.currentCard = null;
+          console.log(card.number + ' ' + card.family.label + ' n\'a pas été jouée');
+          console.error(error);
           console.log('clickCard(card) - error => canPlayCards(), cardFold:', this.cardFold);
           this.canPlayCards();
         }
@@ -316,6 +350,7 @@ export class PlayingComponent implements OnInit, OnDestroy {
   handleRoundLooser(roundLooser: Player, playedCardsOfRound: { card: Card, player: Player }[]) {
     this.setAllCardsClickablesOrNot(false);
     this.cardFold = playedCardsOfRound;
+    this.updatePlayersCard(playedCardsOfRound);
     this.updateLooserRoundScore(roundLooser);
     this.showRoundLooserName = true;
     this.roundLooserName = roundLooser.name;
@@ -378,7 +413,7 @@ export class PlayingComponent implements OnInit, OnDestroy {
   }
 
   is40Seven(card: Card): boolean {
-    return this.family40 && card.family.id === this.family40.id && card.number === 7;
+    return card && this.family40 && card.family.id === this.family40.id && card.number === 7;
   }
 
   scrollToTop() {
@@ -390,3 +425,5 @@ export class PlayingComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 }
+
+// TODO : cartes taille standard => design avec heuteurs fixes + remettre le fond vert + rendre moins moches les noms affichés
