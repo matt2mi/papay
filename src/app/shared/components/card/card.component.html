@@ -13,7 +13,7 @@
 <div *ngIf="smallVersion">
   <div *ngIf="!isPlayable" class="not-playable" [ngStyle]="{'z-index': zIndexCardNotPlayable}"></div>
   <div class="card-sm" [ngClass]="familyClass" [ngStyle]="{'z-index': zIndexCard}">
-    <div class="number top-right-sm" [ngClass]="papayoosNumbers">{{number}}</div>
+    <div class="number top-right-sm" [ngClass]="papayoosNumbers + (isFortySeven ? ' color-red' : '')">{{number}}</div>
     <div class="logo-sm" [ngClass]="papayooClass"></div>
   </div>
 </div>

@@ -8,6 +8,7 @@ import {Component, Input, OnInit} from '@angular/core';
 export class CardComponent implements OnInit {
 
   @Input() smallVersion = false;
+  @Input() isFortySeven: boolean;
   @Input() number = 0;
   @Input() familyId: number;
   @Input() isPlayable = true;
@@ -45,5 +46,9 @@ export class CardComponent implements OnInit {
 
     this.papayooClass = this.familyClass + '-logo' + (this.smallVersion ? '-sm' : '');
     this.papayooLogoClass = this.familyClass + '-logo-papayoo';
+
+    if (this.isFortySeven) {
+      this.familyClass += ' border-red';
+    }
   }
 }

@@ -76,7 +76,7 @@
     <div class="row game-board ml-md-0" [ngStyle]="{'height': connectedPlayers.length === 3 ? '150px' : '234px'}">
       <!--colonne joueurs de gauche-->
       <div class="col-5 overflow-auto" [ngClass]="{'vertically-centered': connectedPlayers.length === 4}">
-        <div class="row py-2" *ngFor="let player of leftPlayers; let id = index">
+        <div class="row py-2" *ngFor="let player of leftPlayers">
           <div class="col-8 text-center vertically-centered"
                [ngClass]="{'has-to-play': playerNameWaitedToPlay === player.name}">
             <div>
@@ -86,8 +86,9 @@
             </div>
           </div>
 
-          <div class="col-4 playboard" [ngClass]="{'forty-seven-card': is40Seven(player?.currentCard)}">
+          <div class="col-4 playboard">
             <app-card *ngIf="!!player?.currentCard"
+                      [isFortySeven]="is40Seven(player?.currentCard)"
                       [number]="player?.currentCard?.number"
                       [familyId]="player?.currentCard?.family.id"
                       [smallVersion]="true"></app-card>
@@ -98,13 +99,15 @@
       <!--cartes joueur dessus et courant-->
       <div class="col-2 py-2 playboard" style="padding-left: 4%;">
         <div class="top-player-card" *ngIf="!!topPlayer?.currentCard">
-          <app-card [number]="topPlayer?.currentCard?.number"
+          <app-card [isFortySeven]="is40Seven(topPlayer?.currentCard)"
+                    [number]="topPlayer?.currentCard?.number"
                     [familyId]="topPlayer?.currentCard?.family.id"
                     [smallVersion]="true"></app-card>
         </div>
 
         <div class="current-player-card" *ngIf="!!currentPlayer?.currentCard">
-          <app-card [number]="currentPlayer?.currentCard?.number"
+          <app-card [isFortySeven]="is40Seven(currentPlayer?.currentCard)"
+                    [number]="currentPlayer?.currentCard?.number"
                     [familyId]="currentPlayer?.currentCard?.family.id"
                     [smallVersion]="true"></app-card>
         </div>
@@ -112,9 +115,10 @@
 
       <!--colonne joueurs droite-->
       <div class="col-5 overflow-auto" [ngClass]="{'vertically-centered': connectedPlayers.length === 4}">
-        <div class="row py-2" *ngFor="let player of rightPlayers; let id = index">
-          <div class="col-4 playboard" [ngClass]="{'forty-seven-card': is40Seven(player?.currentCard)}">
+        <div class="row py-2" *ngFor="let player of rightPlayers">
+          <div class="col-4 playboard">
             <app-card *ngIf="!!player?.currentCard"
+                      [isFortySeven]="is40Seven(player?.currentCard)"
                       [number]="player?.currentCard?.number"
                       [familyId]="player?.currentCard?.family.id"
                       [smallVersion]="true"></app-card>

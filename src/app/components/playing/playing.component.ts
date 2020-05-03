@@ -137,7 +137,7 @@ export class PlayingComponent implements OnInit, OnDestroy {
       new Card(8, FAMILIES[2], true, false, false),
       new Card(2, FAMILIES[3], true, false),
       new Card(3, FAMILIES[3], true, false),
-      new Card(8, FAMILIES[3], true, false),
+      new Card(7, FAMILIES[3], true, false),
       new Card(9, FAMILIES[3], true, false, false),
       new Card(2, FAMILIES[4], true, false),
       new Card(4, FAMILIES[4], true, false, false),
@@ -147,15 +147,15 @@ export class PlayingComponent implements OnInit, OnDestroy {
       new Card(13, FAMILIES[4], true, false),
       new Card(20, FAMILIES[4], true, false),
     ];
-    this.currentPlayer = new Player('matt', deck, 'red', new Card(8, FAMILIES[4]));
+    this.currentPlayer = new Player('matt', deck, 'red', new Card(9, FAMILIES[4]));
     this.connectedPlayers = [
       new Player('mimi'),
       new Player('matt'),
       new Player('hugo'),
-      // new Player('gu'),
+      new Player('gu'),
       // new Player('clé'),
       // new Player('marion'),
-      // new Player('mélanie'),
+      new Player('mélanie'),
       new Player('coco'),
     ];
 
