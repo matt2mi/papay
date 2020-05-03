@@ -5,15 +5,15 @@
 
   <div class="offset-3 col-9 mb-3">
     <div *ngFor="let player of connectedPlayers; let id = index">
-      <h2>n°{{id}}: {{player?.name + ' avec ' + player?.globalScore}}</h2>
+      <h2>n°{{id + 1}}: {{player?.name + ' avec ' + player?.globalScore}}</h2>
     </div>
   </div>
 
-  <div class="offset-4 col-8">
-    <button type="button" class="btn btn-outline-light" (click)="restart()">
-      Recommencer
-    </button>
-  </div>
+  <!--<div class="offset-4 col-8">-->
+  <!--<button type="button" class="btn btn-outline-light" (click)="restart()">-->
+  <!--Recommencer-->
+  <!--</button>-->
+  <!--</div>-->
 </div>
 
 <div class="row">

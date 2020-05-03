@@ -23,10 +23,10 @@ export class ScoresComponent implements OnDestroy {
     });
   }
 
-  restart() {
-    console.log('restart');
-    // TODO appel http / attendre tout le monde / renvoyer un socket pour dire restart
-  }
+  // restart() {
+  //   console.log('restart');
+  //   // TODO appel http / attendre tout le monde / renvoyer un socket pour dire restart
+  // }
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();
