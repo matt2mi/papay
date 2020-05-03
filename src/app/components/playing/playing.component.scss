@@ -41,25 +41,26 @@
 
   animation-name: blinking-title;
   animation-duration: 0.7s;
-  animation-delay: 1.05s;
   animation-iteration-count: infinite;
 }
 
 //https://www.w3schools.com/css/css3_animations.asp
 @keyframes blinking-background {
-  0%   {background-color: transparent;}
-  100%  {background-color: white;}
+  0%   {background-color: transparent; color: white;}
+  100%  {background-color: white; color: dimgray;}
 }
 .you-have-to-play {
   background-color: transparent;
+  color: white;
 
-  animation-name: blinking-background;
+  animation-name: blinking-title;
   animation-duration: 0.7s;
   animation-iteration-count: infinite;
 }
 
 .has-to-play {
   background-color: white;
+  color: dimgray;
 }
 
 .cardsFold {
