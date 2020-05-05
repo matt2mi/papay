@@ -359,14 +359,19 @@ export class PlayingComponent implements OnInit, OnDestroy {
 
   updateLooserRoundScore(roundLooser: Player) {
     if (this.currentPlayer.name === roundLooser.name) {
+      // si le looser est le joueur courrant
       this.currentPlayer.roundScore = roundLooser.roundScore;
     } else if (this.topPlayer && this.topPlayer.name === roundLooser.name) {
+      // si le looser est au dessus
       this.topPlayer.roundScore = roundLooser.roundScore;
     } else if (this.leftPlayers.some(player => player.name === roundLooser.name)) {
-      this.leftPlayers.find(player => player.name === roundLooser.name).roundScore = roundLooser.roundScore;
+      // si le looser est dans la colonne de gauche
+      const looser = this.leftPlayers.find(player => player.name === roundLooser.name);
+      looser.roundScore = roundLooser.roundScore;
     } else if (this.rightPlayers.some(player => player.name === roundLooser.name)) {
-      // si le dernier joueur est dans la colonne de droite
-      this.leftPlayers.find(player => player.name === roundLooser.name).roundScore = roundLooser.roundScore;
+      // si le looser est dans la colonne de droite
+      const looser = this.rightPlayers.find(player => player.name === roundLooser.name);
+      looser.roundScore = roundLooser.roundScore;
     }
   }
 
@@ -468,5 +473,3 @@ export class PlayingComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 }
-
-// TODO : cartes taille standard => design avec heuteurs fixes + remettre le fond vert + rendre moins moches les noms affichés
