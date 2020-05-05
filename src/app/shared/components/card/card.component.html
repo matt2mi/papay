@@ -1,10 +1,19 @@
-<div *ngIf="!isPlayable" class="not-playable" [ngStyle]="{'z-index': zIndexCardNotPlayable}"></div>
-<div class="card" [ngClass]="familyClass" [ngStyle]="{'z-index': zIndexCard}">
-  <div class="number top-left" [ngClass]="papayoosNumbers">{{number}}</div>
-  <div class="number top-right" [ngClass]="papayoosNumbers">{{number}}</div>
-  <div class="logo-papayoo" [ngClass]="papayooLogoClass"></div>
-  <div class="logo" [ngClass]="papayooClass"></div>
-  <div class="logo-papayoo-bottom" [ngClass]="papayooLogoClass"></div>
-  <div class="number bottom-right" [ngClass]="papayoosNumbers">{{number}}</div>
-  <div class="number bottom-left" [ngClass]="papayoosNumbers">{{number}}</div>
+<div *ngIf="!smallVersion">
+  <div *ngIf="!isPlayable" class="not-playable" [ngStyle]="{'z-index': zIndexCardNotPlayable}"></div>
+  <div class="card" [ngClass]="familyClass" [ngStyle]="{'z-index': zIndexCard}">
+    <div class="number top-left" [ngClass]="papayoosNumbers">{{number}}</div>
+    <div class="number top-right" [ngClass]="papayoosNumbers">{{number}}</div>
+    <div class="logo-papayoo" [ngClass]="papayooLogoClass"></div>
+    <div class="logo" [ngClass]="papayooClass"></div>
+    <div class="logo-papayoo-bottom" [ngClass]="papayooLogoClass"></div>
+    <div class="number bottom-right" [ngClass]="papayoosNumbers">{{number}}</div>
+    <div class="number bottom-left" [ngClass]="papayoosNumbers">{{number}}</div>
+  </div>
+</div>
+<div *ngIf="smallVersion">
+  <div *ngIf="!isPlayable" class="not-playable" [ngStyle]="{'z-index': zIndexCardNotPlayable}"></div>
+  <div class="card-sm" [ngClass]="familyClass" [ngStyle]="{'z-index': zIndexCard}">
+    <div class="number top-right-sm" [ngClass]="papayoosNumbers + (isFortySeven ? ' color-red' : '')">{{number}}</div>
+    <div class="logo-sm" [ngClass]="papayooClass"></div>
+  </div>
 </div>

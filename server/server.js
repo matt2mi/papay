@@ -214,7 +214,7 @@ io.on('connection', (socket) => {
 });
 
 // Bugs :
-// TODO : c'est à toi plus clair (clignottage / son) / design noms joueurs autour plateau
+// TODO : déconnexion au bout d'un certain temps (demander confirmation ? chercher dans la doc socketio ?)
 // TODO : bug du à mauvaise utilisation socketio ? (utiliser websocket ? plu simple ?) (des fois des emit en double/triple !!)
 // TODO : bug de pas besoin de cliquer sur suivant (checker vraiment les joueurs, pas juste le nb => dû au bug d'au dessus)
 
@@ -228,8 +228,6 @@ io.on('connection', (socket) => {
 // pour wizzer quelqu'un trop lent
 // TODO : icone son et/ou music on/off musique
 // TODO : ajouter des gifs ? pour le 7 à 40 pts
-// TODO : afficher mieux l'écran (sans les border blanches moches)
-// TODO : afficher dans le front le joueur qui est maître du pli
 // TODO : au login, proposer au joueur d'ajouter une image (url ou fichier / base64) (stockée localStorage ?)
 // TODO : afficher l'image à côté de son nom / mettre des images aléatoires moches pour ceux qui n'ont pas d'images
 

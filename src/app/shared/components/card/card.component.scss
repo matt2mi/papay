@@ -10,11 +10,20 @@
 .card {
   z-index: 1;
   color: black;
+  position: relative;
   height: 125px;
   width: 100px;
-  position: relative;
-
   border: 5px solid white;
+  border-radius: 12px;
+}
+
+.card-sm {
+  z-index: 1;
+  color: black;
+  position: relative;
+  height: 62px;
+  width: 50px;
+  border: 3px solid white;
   border-radius: 12px;
 }
 
@@ -31,11 +40,40 @@
   bottom: -5px;
 }
 
+.card-sm:before {
+  background: none;
+  border: 1px solid black;
+  border-radius: 12px;
+  content: "";
+  display: block;
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+}
+
+.border-red {
+  border: 2px solid red;
+}
+
+.color-red {
+  color: red;
+}
+
 .logo {
   width: 68px;
   height: 75px;
   position: absolute;
   top: 22px;
+  left: 0;
+}
+
+.logo-sm {
+  width: 27px;
+  height: 30px;
+  position: absolute;
+  top: 25px;
   left: 0;
 }
 
@@ -71,6 +109,12 @@
 .top-right {
   position: absolute;
   top: 4px;
+  right: 2px;
+}
+
+.top-right-sm {
+  position: absolute;
+  top: 6px;
   right: 2px;
 }
 
@@ -126,6 +170,10 @@
   background-image: url("../../../../assets/spades/spades-logo.png");
 }
 
+.spades-logo-sm {
+  background-image: url("../../../../assets/spades/spades-logo-xsmall.png");
+}
+
 .spades-logo-papayoo {
   background-image: url("../../../../assets/spades/spades-papayoo.png");
 }
@@ -139,6 +187,10 @@
 .hearts-logo {
   width: 67px;
   background-image: url("../../../../assets/hearts/hearts-logo.png");
+}
+
+.hearts-logo-sm {
+  background-image: url("../../../../assets/hearts/heart-logo-xsmall.png");
 }
 
 .hearts-logo-papayoo {
@@ -155,6 +207,10 @@
   top: 19px;
   background-image: url("../../../../assets/chamrocks/chamrocks-logo.png");
 }
+
+.chamrocks-logo-sm {
+   background-image: url("../../../../assets/chamrocks/chamrocks-logo-xsmall.png");
+ }
 
 .chamrocks-logo-papayoo {
   background-image: url("../../../../assets/chamrocks/chamrocks-papayoo.png");
@@ -197,6 +253,11 @@
   background-image: url("../../../../assets/diamonds/diamonds-logo.png");
 }
 
+.diamonds-logo-sm {
+  width: 22px;
+  background-image: url("../../../../assets/diamonds/diamonds-logo-xsmall.png");
+}
+
 .diamonds-logo-papayoo {
   background-image: url("../../../../assets/diamonds/diamonds-papayoo.png");
 }
@@ -215,4 +276,11 @@
   height: 63px;
   left: 15px;
   background-image: url("../../../../assets/papayoos/papayoos-logo.png");
+}
+
+.papayoos-logo-sm {
+  width: 30px;
+  height: 29px;
+  left: 0;
+  background-image: url("../../../../assets/papayoos/papayoos-logo-xsmall.png");
 }

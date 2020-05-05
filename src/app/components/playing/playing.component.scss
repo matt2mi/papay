@@ -31,34 +31,45 @@
   border-radius: 12px;
 }
 
+//https://www.w3schools.com/css/css3_animations.asp
+@keyframes blinking-border {
+  0%   {border: 1px solid transparent;}
+  100%  {border: 1px solid white;}
+}
+.border-blink {
+  border: 1px solid white;
+
+  animation-name: blinking-border;
+  animation-duration: 0.7s;
+  animation-iteration-count: infinite;
+}
+
+//https://www.w3schools.com/css/css3_animations.asp
+@keyframes blinking-title {
+  0%   {color: transparent;}
+  100%  {color: white;}
+}
+.turn-to-play {
+  color: transparent;
+
+  animation-name: blinking-title;
+  animation-duration: 0.7s;
+  animation-iteration-count: infinite;
+}
+
 .has-to-play {
+  background-color: transparent;
+  color: white;
+
+  animation-name: blinking-title;
+  animation-duration: 0.7s;
+  animation-iteration-count: infinite;
+}
+
+/*.has-to-play {
   background-color: white;
   color: dimgray;
-}
-
-.cardsFold {
-  height: 12rem;
-  margin-top: 2rem;
-  position: relative;
-  padding-left: 28%;
-}
-
-.cardFolded {
-  height: 8rem;
-  position: absolute;
-}
-
-.mine {
-  border: 1px solid yellow;
-}
-
-.border-white {
-  border: 1px solid white;
-}
-
-.border-bottom-white {
-  border-bottom: 1px solid white;
-}
+}*/
 
 .absolute-top {
   position: absolute;
@@ -81,10 +92,27 @@
   min-height: 290px;
 }
 
-.forty-seven-card {
-  border: 2px solid red;
-}
-
 .game-board {
   background: radial-gradient(green 0, black 150%);
+}
+
+.top-player-card {
+  position: absolute;
+}
+
+.current-player-card {
+  position: absolute;
+  bottom: .5rem;
+}
+
+.vertically-centered {
+  display: grid;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.logo-forty {
+  position: absolute;
+  bottom: 80px;
+  opacity: 0.5;
 }

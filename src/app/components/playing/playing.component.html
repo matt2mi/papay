@@ -39,70 +39,114 @@
 
 <!--Jouer un tour-->
 <div class="row mb-3">
-  <div class="col-12 col-md-8 mb-3" *ngIf="partyState === 'playing'">
-    <div class="row">
-      <!--colonne joueurs de gauche-->
-      <div class="col-3 text-center overflow-auto position-relative">
-        <div class="absolute-bottom-right">
-          <div *ngFor="let player of leftPlayers; let id = index" class="py-2"
-               [ngClass]="{'has-to-play': playerNameWaitedToPlay === player.name, 'border-bottom-white': id !== leftPlayers.length - 1}"
-               [ngStyle]="{'color': player.color}">
-            <div>{{player.name}}</div>
-
-            <div>tour: {{player.roundScore}} / total: {{player.globalScore}}</div>
+  <div class="col-12 col-md-8 offset-lg-1 col-lg-6 mb-3" *ngIf="partyState === 'playing'">
+    <!--le plateau de jeu-->
+    <div class="row game-board ml-md-0" style="{{getGameBoardHeight()}}" [ngClass]="{'border-blink' :isCurrentPlayerTurn}">
+      <!--ligne du joueur du dessus-->
+      <div class="offset-3 col-6 text-center" *ngIf="!!topPlayer">
+        <div [ngClass]="{'has-to-play': playerNameWaitedToPlay === topPlayer.name}">
+          <div>
+            {{topPlayer.name}}
+          </div>
+          <div>
+            tour: {{topPlayer?.roundScore}} / total: {{topPlayer?.globalScore}}
           </div>
         </div>
       </div>
 
-      <!--plateau de jeu-->
-      <div class="col-6 border-white game-board">
-        <div class="row playing-board-size">
-          <div class="col-12 text-center mb-3">
-            <h2 *ngIf="!showRoundLooserName">
-              à {{isCurrentPlayerTurn ? 'toi' : playerNameWaitedToPlay}} de jouer
-            </h2>
-
-            <h2 *ngIf="showRoundLooserName">
-              Ce pli est pour {{roundLooserName === currentPlayer?.name ? 'toi' : roundLooserName}}
-            </h2>
+      <!--colonne joueurs de gauche-->
+      <div class="col-5 overflow-auto" [ngClass]="{'vertically-centered': connectedPlayers.length === 4}">
+        <div class="row py-2" *ngFor="let player of leftPlayers">
+          <div class="col-8 text-center vertically-centered"
+               [ngClass]="{'has-to-play': playerNameWaitedToPlay === player.name}">
+            <div>
+              {{player.name}}
+              <br/>
+              tour: {{player.roundScore}} / total: {{player.globalScore}}
+            </div>
           </div>
 
-          <div *ngIf="cardFold?.length > 0" class="cardsFold col-12">
-            <div *ngFor="let playerAndCard of cardFold; let rowIndex=index" class="cardFolded"
-                 [ngStyle]="{'transform' : 'rotate(' + (-340/connectedPlayers?.length)*rowIndex + 'deg) translate(0rem,3rem)'}"
-                 [ngClass]="{'mine' : currentPlayer?.name === playerAndCard.player.name, 'forty-seven-card': is40Seven(playerAndCard.card)}">
-              <app-card [number]="playerAndCard.card.number" [familyId]="playerAndCard.card.family.id"></app-card>
+          <div class="col-4 playboard">
+            <app-card *ngIf="!!player?.currentCard"
+                      [isFortySeven]="is40Seven(player?.currentCard)"
+                      [number]="player?.currentCard?.number"
+                      [familyId]="player?.currentCard?.family.id"
+                      [smallVersion]="true"></app-card>
+          </div>
+        </div>
+      </div>
+
+      <!--cartes joueur dessus et courant-->
+      <div class="col-2 py-2 playboard" style="padding-left: 4%;"
+           [ngStyle]="{'height': connectedPlayers.length > 3 ? '234px' : '150px'}">
+        <div class="top-player-card" *ngIf="!!topPlayer?.currentCard">
+          <app-card [isFortySeven]="is40Seven(topPlayer?.currentCard)"
+                    [number]="topPlayer?.currentCard?.number"
+                    [familyId]="topPlayer?.currentCard?.family.id"
+                    [smallVersion]="true"></app-card>
+        </div>
+
+        <div class="logo-forty" *ngIf="!!family40">
+          <img [src]="'../../../assets/' + family40Label + '/' + family40Label + '-logo.png'" />
+        </div>
+
+        <div class="current-player-card" *ngIf="!!currentPlayer?.currentCard">
+          <app-card [isFortySeven]="is40Seven(currentPlayer?.currentCard)"
+                    [number]="currentPlayer?.currentCard?.number"
+                    [familyId]="currentPlayer?.currentCard?.family.id"
+                    [smallVersion]="true"></app-card>
+        </div>
+      </div>
+
+      <!--colonne joueurs droite-->
+      <div class="col-5 overflow-auto" [ngClass]="{'vertically-centered': connectedPlayers.length === 4}">
+        <div class="row py-2" *ngFor="let player of rightPlayers">
+          <div class="col-4 playboard">
+            <app-card *ngIf="!!player?.currentCard"
+                      [isFortySeven]="is40Seven(player?.currentCard)"
+                      [number]="player?.currentCard?.number"
+                      [familyId]="player?.currentCard?.family.id"
+                      [smallVersion]="true"></app-card>
+          </div>
+
+          <div class="col-8 text-center vertically-centered"
+               [ngClass]="{'has-to-play': playerNameWaitedToPlay === player.name}">
+            <div>
+              {{player.name}}
+              <br/>
+              tour: {{player.roundScore}} / total: {{player.globalScore}}
             </div>
           </div>
         </div>
       </div>
 
-      <!--colonne joueurs droite-->
-      <div class="col-3 text-center overflow-auto position-relative">
-        <div *ngIf="!!family40" class="absolute-top">
-          <span><img src="../../../assets/d8.gif" style="height: 21px;"></span>
-          <span style="font-size: large;"> : le 7 de {{family40?.label}}</span>
-        </div>
-
-        <div class="absolute-bottom-left">
-          <div *ngFor="let player of rightPlayers; let id = index" class="py-2"
-               [ngClass]="{'has-to-play': playerNameWaitedToPlay === player.name, 'border-bottom-white': id !== rightPlayers.length - 1}"
-               [ngStyle]="{'color': player.color}">
-            <div>{{player.name}}</div>
-
-            <div>tour: {{player.roundScore}} / total: {{player.globalScore}}</div>
+      <!--ligne du joueur-->
+      <div class="offset-3 col-6 text-center">
+        <div [ngClass]="{'has-to-play': isCurrentPlayerTurn}">
+          <div>
+            Moi
+          </div>
+          <div>
+            tour: {{currentPlayer?.roundScore}} / total: {{currentPlayer?.globalScore}}
           </div>
         </div>
       </div>
     </div>
 
-    <!--ligne du joueur-->
+    <!--titres-->
     <div class="row">
-      <div class="offset-3 col-6 text-center">
-        <div [ngClass]="{'has-to-play': isCurrentPlayerTurn}">
-          <div [ngStyle]="{'color': currentPlayer?.color}">Moi: {{currentPlayer?.roundScore}} pts tour /
-            {{currentPlayer?.globalScore}} pts total
-          </div>
+      <div class="col-12 text-center">
+        <h2 *ngIf="showRoundLooserName">
+          Ce pli est pour {{roundLooserName === currentPlayer?.name ? 'toi' : roundLooserName}}
+        </h2>
+
+        <h2 *ngIf="isCurrentPlayerTurn && !showRoundLooserName" class="turn-to-play">
+          à  toi de jouer
+        </h2>
+
+        <div class="mt-3" *ngIf="!!family40">
+          <span><img src="../../../assets/d8.gif" style="height: 21px;"></span>
+          <span style="font-size: large;"> : le 7 de {{family40?.label}}</span>
         </div>
       </div>
     </div>
@@ -132,7 +176,7 @@
   </div>
 
   <!--Le deck du joueur-->
-  <div class="col-12 mt-3" *ngIf="partyState === 'playing'">
+  <div class="col-12 offset-lg-1 col-lg-10 mt-3" *ngIf="partyState === 'playing'">
     <div class="row" style="margin-right: 0; margin-left: 33px;">
       <div *ngFor="let card of currentPlayer?.deck; let zIndex = index;" class="px-0 deck-card"
            [hidden]="card.played"

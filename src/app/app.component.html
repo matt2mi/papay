@@ -1,6 +1,11 @@
 <mat-toolbar color="primary" class="mb-3">
   <mat-toolbar-row>
-    <span>{{title}}</span>
+    <div class="mr-3">{{title}}</div>
+    <div>
+      <a class="btn" href="https://www.gigamic.com/files/catalog/products/rules/papayo0_rule-fr.pdf" target="_blank">
+        Règles
+      </a>
+    </div>
     <span class="spacer"></span>
     <div *ngIf="displayChatNotifIcon" class="clickable d-flex d-md-none" (click)="scrollToChat()">
       <mat-icon aria-hidden="false" aria-label="Example home icon" class="mr-1">chat</mat-icon>
