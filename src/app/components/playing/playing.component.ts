@@ -391,14 +391,18 @@ export class PlayingComponent implements OnInit, OnDestroy {
   }
 
   readyForNextTour() {
+    this.isReady = true;
     this.playersService.readyForNextTour().subscribe(() => {
-      this.isReady = true;
       this.isCurrentPlayerTurn = false;
       this.showRoundLooserName = false;
       this.cardFold = [];
       this.family40 = null;
       this.connectedPlayers.forEach(player => player.roundScore = 0);
       this.currentPlayer.roundScore = 0;
+    }, error => {
+      this.isReady = false;
+      console.error('pas readyForNextTour...');
+      console.error(error);
     });
   }
 
