@@ -214,9 +214,8 @@ io.on('connection', (socket) => {
 });
 
 // Bugs :
-// TODO : déconnexion au bout d'un certain temps (demander confirmation ? chercher dans la doc socketio ?)
+// TODO : déconnexion au bout d'un certain temps ?? (demander confirmation ? chercher dans la doc socketio ?)
 // TODO : bug du à mauvaise utilisation socketio ? (utiliser websocket ? plu simple ?) (des fois des emit en double/triple !!)
-// TODO : bug de pas besoin de cliquer sur suivant (checker vraiment les joueurs, pas juste le nb => dû au bug d'au dessus)
 
 // Evols :
 // TODO : ajouter du son:

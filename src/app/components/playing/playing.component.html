@@ -15,8 +15,10 @@
     </button>
   </div>
 
-  <div class="col-12 text-center mb-3" *ngIf="cardsGived">
-    <span style="font-size: x-large;">En attente de: <span *ngFor="let player of waitedGivingCardsPlayers">{{player.name + ', '}}</span></span>
+  <div class="col-12 text-center mb-3">
+    <span style="font-size: x-large;">
+      En attente de: <span *ngFor="let player of waitedGivingCardsPlayers">{{player.name + ', '}}</span>
+    </span>
   </div>
 
   <div class="col-12">
