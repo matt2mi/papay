@@ -44,12 +44,12 @@
     <div class="row game-board ml-md-0" style="{{getGameBoardHeight()}}" [ngClass]="{'border-blink' :isCurrentPlayerTurn}">
       <!--ligne du joueur du dessus-->
       <div class="offset-3 col-6 text-center" *ngIf="!!topPlayer">
-        <div [ngClass]="{'has-to-play': playerNameWaitedToPlay === topPlayer.name}">
+        <div [ngClass]="{'has-to-play': playerNameWaitedToPlay === topPlayer.name, 'round-master': topPlayer.name === foldMaster?.name}">
           <div>
             {{topPlayer.name}}
           </div>
           <div>
-            tour: {{topPlayer?.roundScore}} / total: {{topPlayer?.globalScore}}
+            tour: {{topPlayer.roundScore}} / total: {{topPlayer.globalScore}}
           </div>
         </div>
       </div>
@@ -59,7 +59,7 @@
         <div class="row py-2" *ngFor="let player of leftPlayers">
           <div class="col-8 text-center vertically-centered"
                [ngClass]="{'has-to-play': playerNameWaitedToPlay === player.name}">
-            <div>
+            <div [ngClass]="{'round-master': player.name === foldMaster?.name}">
               {{player.name}}
               <br/>
               tour: {{player.roundScore}} / total: {{player.globalScore}}
@@ -111,7 +111,7 @@
 
           <div class="col-8 text-center vertically-centered"
                [ngClass]="{'has-to-play': playerNameWaitedToPlay === player.name}">
-            <div>
+            <div [ngClass]="{'round-master': player.name === foldMaster?.name}">
               {{player.name}}
               <br/>
               tour: {{player.roundScore}} / total: {{player.globalScore}}
@@ -122,7 +122,7 @@
 
       <!--ligne du joueur-->
       <div class="offset-3 col-6 text-center">
-        <div [ngClass]="{'has-to-play': isCurrentPlayerTurn}">
+        <div [ngClass]="{'has-to-play': isCurrentPlayerTurn, 'round-master': currentPlayer?.name === foldMaster?.name}">
           <div>
             Moi
           </div>

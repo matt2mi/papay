@@ -49,6 +49,7 @@ export class PlayingComponent implements OnInit, OnDestroy {
   playerNameWaitedToPlay = '';
   connectedPlayers: Player[];
   cardFold: { player: Player, card: Card }[] = [];
+  foldMaster: Player = new Player();
   topPlayer: Player;
   leftPlayers: Player[] = [];
   rightPlayers: Player[] = [];
@@ -148,19 +149,25 @@ export class PlayingComponent implements OnInit, OnDestroy {
       new Card(13, FAMILIES[4], true, false),
       new Card(20, FAMILIES[4], true, false),
     ];
-    this.currentPlayer = new Player('matt', deck, 'red', new Card(9, FAMILIES[4]));
     this.connectedPlayers = [
       new Player('mimi'),
       new Player('matt'),
       new Player('hugo'),
-      new Player('gu'),
-      new Player('clé'),
-      new Player('marion'),
+      // new Player('gu'),
+      // new Player('clé'),
+      // new Player('marion'),
       new Player('mélanie'),
-      new Player('coco'),
+      // new Player('coco'),
     ];
 
-    this.connectedPlayers.forEach((player, i) => player.currentCard = new Card((i + 1) * 2, FAMILIES[4]));
+    this.connectedPlayers.forEach((player, i) => {
+      const card = new Card((i + 1) * 2, FAMILIES[4]);
+      this.cardFold.push({player, card});
+      player.currentCard = card;
+      this.updateFoldMaster(player);
+    });
+
+    this.currentPlayer = this.connectedPlayers.find(player => player.name === 'matt');
 
     this.setLeftAndRightPlayers();
     this.setNbCardToGive();
@@ -257,7 +264,11 @@ export class PlayingComponent implements OnInit, OnDestroy {
 
   yourTurn(cardsPlayedWithPlayer: { card: Card; player: Player }[]) {
     this.cardFold = cardsPlayedWithPlayer;
-    this.updatePlayersCard(cardsPlayedWithPlayer);
+    if (cardsPlayedWithPlayer.length > 0) {
+      this.updatePlayersCard(cardsPlayedWithPlayer);
+    } else {
+      this.cleanFold();
+    }
     this.isCurrentPlayerTurn = true;
     this.playerNameWaitedToPlay = this.currentPlayer.name;
     this.showRoundLooserName = false;
@@ -271,33 +282,57 @@ export class PlayingComponent implements OnInit, OnDestroy {
     this.playerNameWaitedToPlay = playerNameWaitedToPlay;
     console.log('nextPlayerTurn(cardsPlayedWithPlayer)', cardsPlayedWithPlayer);
     this.cardFold = cardsPlayedWithPlayer;
-    this.updatePlayersCard(cardsPlayedWithPlayer);
+    if (cardsPlayedWithPlayer.length > 0) {
+      this.updatePlayersCard(cardsPlayedWithPlayer);
+    } else {
+      this.cleanFold();
+    }
   }
 
   updatePlayersCard(cardsPlayedWithPlayer: { card: Card; player: Player }[]) {
-    if (cardsPlayedWithPlayer.length !== 0) {
-      // si des joueurs ont déjà joué des cartes dans le pli
-      const lastPlayer = cardsPlayedWithPlayer[cardsPlayedWithPlayer.length - 1];
-      if (this.topPlayer && this.topPlayer.name === lastPlayer.player.name) {
-        // si le dernier joueur est le joueur d'en haut
-        this.topPlayer.currentCard = lastPlayer.card;
-      } else if (this.leftPlayers.some(player => player.name === lastPlayer.player.name)) {
-        // si le dernier joueur est dans la colonne de gauche
-        const playerToUpdate = this.leftPlayers.find(player => player.name === lastPlayer.player.name);
-        playerToUpdate.currentCard = lastPlayer.card;
-      } else if (this.rightPlayers.some(player => player.name === lastPlayer.player.name)) {
-        // si le dernier joueur est dans la colonne de droite
-        const playerToUpdate = this.rightPlayers.find(player => player.name === lastPlayer.player.name);
-        playerToUpdate.currentCard = lastPlayer.card;
-      }
+    const lastPlayerAndCard = cardsPlayedWithPlayer[cardsPlayedWithPlayer.length - 1];
+    if (this.topPlayer && this.topPlayer.name === lastPlayerAndCard.player.name) {
+      // si le dernier joueur est le joueur d'en haut
+      this.topPlayer.currentCard = lastPlayerAndCard.card;
+      this.updateFoldMaster(this.topPlayer);
+    } else if (this.currentPlayer.name === lastPlayerAndCard.player.name) {
+      // si le dernier joueur est le joueur courrant
+      this.currentPlayer.currentCard = lastPlayerAndCard.card;
+      this.updateFoldMaster(this.currentPlayer);
+    } else if (this.leftPlayers.some(player => player.name === lastPlayerAndCard.player.name)) {
+      // si le dernier joueur est dans la colonne de gauche
+      const playerToUpdate = this.leftPlayers.find(player => player.name === lastPlayerAndCard.player.name);
+      playerToUpdate.currentCard = lastPlayerAndCard.card;
+      this.updateFoldMaster(playerToUpdate);
+    } else if (this.rightPlayers.some(player => player.name === lastPlayerAndCard.player.name)) {
+      // si le dernier joueur est dans la colonne de droite
+      const playerToUpdate = this.rightPlayers.find(player => player.name === lastPlayerAndCard.player.name);
+      playerToUpdate.currentCard = lastPlayerAndCard.card;
+      this.updateFoldMaster(playerToUpdate);
+    }
+  }
+
+  cleanFold() {
+    // aucune carte dans le pli / nouveau tour => vide les cartes de tous les joueurs
+    if (this.topPlayer) {
+      this.topPlayer.currentCard = null;
+    }
+    this.leftPlayers.forEach(player => player.currentCard = null);
+    this.currentPlayer.currentCard = null;
+    this.rightPlayers.forEach(player => player.currentCard = null);
+    this.foldMaster = null;
+  }
+
+  updateFoldMaster(player: Player) {
+    if (this.cardFold.length === 1) {
+      this.foldMaster = player;
+      console.log('updateFoldMaster - cardFold.length === 1', this.foldMaster);
     } else {
-      // aucune carte dans le pli / nouveau tour => vide les cartes de tous les joueurs
-      if (this.topPlayer) {
-        this.topPlayer.currentCard = null;
-      }
-      this.leftPlayers.forEach(player => player.currentCard = null);
-      this.currentPlayer.currentCard = null;
-      this.rightPlayers.forEach(player => player.currentCard = null);
+      this.foldMaster =
+        this.foldMaster.currentCard.family.id === player.currentCard.family.id &&
+        this.foldMaster.currentCard.number < player.currentCard.number ?
+          player : this.foldMaster;
+      console.log('updateFoldMaster -cardFold.length > 1', this.foldMaster);
     }
   }
 
