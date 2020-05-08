@@ -7,7 +7,7 @@
     </h2>
   </div>
 
-  <div class="col-12 text-center" *ngIf="!cardsGived">
+  <div class="col-12 text-center mb-3" *ngIf="!cardsGived">
     <button type="button" class="btn btn-primary" [disabled]="getCardToGive().length < nbCardToGive"
             [ngClass]="{'not-clickable': getCardToGive().length < nbCardToGive}"
             (click)="getCardToGive().length === this.nbCardToGive && giveCards()">
@@ -17,7 +17,10 @@
 
   <div class="col-12 text-center mb-3">
     <span style="font-size: x-large;">
-      En attente de: <span *ngFor="let player of waitedGivingCardsPlayers">{{player.name + ', '}}</span>
+      En attente de:
+      <span *ngFor="let player of waitedGivingCardsPlayers">
+        {{player.name === currentPlayer.name ? 'toi, ' : player.name + ', '}}
+      </span>
     </span>
   </div>
 
@@ -89,7 +92,7 @@
         </div>
 
         <div class="logo-forty" *ngIf="!!family40">
-          <img [src]="'../../../assets/' + family40Label + '/' + family40Label + '-logo.png'" />
+          <img class="img-fluid" [src]="'../../../assets/' + family40Label + '/' + family40Label + '-center.png'"/>
         </div>
 
         <div class="current-player-card" *ngIf="!!currentPlayer?.currentCard">

@@ -168,15 +168,19 @@ export class PlayingComponent implements OnInit, OnDestroy {
     });
 
     this.currentPlayer = this.connectedPlayers.find(player => player.name === 'matt');
+    this.currentPlayer.deck = deck;
 
     this.setLeftAndRightPlayers();
     this.setNbCardToGive();
-    this.setPartyState('playing');
+    this.waitedGivingCardsPlayers = this.connectedPlayers;
+    this.setPartyState('givingCards');
+    /*
     this.setAllCardsClickablesOrNot(true);
-    this.setFamily40(FAMILIES[2]);
+    this.setFamily40(FAMILIES[0]);
 
     this.isCurrentPlayerTurn = true;
     this.playerNameWaitedToPlay = 'mimi';
+    */
   }
 
   setLeftAndRightPlayers() {
