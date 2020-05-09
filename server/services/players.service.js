@@ -140,7 +140,9 @@ const getNextPlayer = previousPlayerName => {
     // cas du dernier de la liste
     return players[0];
   } else {
-    logsService.logs('getNextPlayer - joueur suivabt', players[currentPlayerId + 1]);
+    players[currentPlayerId + 1] ?
+      logsService.logs('getNextPlayer - joueur suivant', players[currentPlayerId + 1].name)
+      : logsService.logs('getNextPlayer - joueur suivant', null);
     return players[currentPlayerId + 1];
   }
 };

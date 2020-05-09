@@ -23,7 +23,7 @@ const emitNextPlayerTurn = (io, playerNameWaitedToPlay) => {
   playersService.getPlayers().forEach(player => {
     const playerSocket = playersService.getPlayerSocketByName(player.name);
     if (player.name === playerNameWaitedToPlay) {
-      logsService.logs('playerSocket.emit(yourTurn)',
+      logsService.logs('playerSocket.emit(yourTurn) - ' + player.name,
         playedCardsOfRound.map(c => '' + c.card.number + '-' + c.card.family.label));
       playerSocket.emit('yourTurn', playedCardsOfRound);
     } else {

@@ -66,11 +66,6 @@
   animation-iteration-count: infinite;
 }
 
-/*.has-to-play {
-  background-color: white;
-  color: dimgray;
-}*/
-
 .absolute-top {
   position: absolute;
   top: 0;
@@ -115,4 +110,9 @@
   position: absolute;
   bottom: 80px;
   opacity: 0.5;
+}
+
+.round-master {
+  color: darkred !important;
+  text-shadow: -1px 0 2px yellow, 0 1px 2px yellow, 1px 0 2px yellow, 0 -1px 2px yellow;
 }
