@@ -80,6 +80,7 @@ export class PlayingComponent implements OnInit, OnDestroy {
 
     this.playersService.getConnectedPlayers().pipe(takeUntil(this.ngUnsubscribe)).subscribe((players: Player[]) => {
       this.connectedPlayers = players;
+      this.waitedGivingCardsPlayers = players;
       this.setLeftAndRightPlayers();
       this.setNbCardToGive();
       this.setPartyState('givingCards');
@@ -415,7 +416,8 @@ export class PlayingComponent implements OnInit, OnDestroy {
       looser.roundScore = roundLooser.roundScore;
     }
   }
-
+// en attente pas setté direct
+//   slide des cartes vers haut/bas/ghe/dte quand pli fini
   endTour(players: Player[]) {
     this.setPartyState('endTourScores');
     this.isReady = false;
