@@ -65,8 +65,8 @@ export class PlayingComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // this.testFrontOnly();
-    this.initComponent();
+    this.testFrontOnly();
+    // this.initComponent();
   }
 
   setPartyState(newState: '' | 'givingCards' | 'playing' | 'endTourScores') {
@@ -160,23 +160,29 @@ export class PlayingComponent implements OnInit, OnDestroy {
       // new Player('coco'),
     ];
 
-    this.connectedPlayers.forEach((player, i) => {
-      const card = new Card((i + 1) * 2, FAMILIES[4]);
-      this.cardFold.push({player, card});
-      player.currentCard = card;
-      this.updateFoldMaster(player);
-    });
+    this.connectedPlayers.forEach((player, i) => player.currentCard = new Card((i + 1) * 2, FAMILIES[4]));
+    this.currentPlayer.deck = deck;
 
-    this.currentPlayer = this.connectedPlayers.find(player => player.name === 'matt');
+      // this.connectedPlayers.forEach((player, i) => {
+      // const card = new Card((i + 1) * 2, FAMILIES[4]);
+      // this.cardFold.push({player, card});
+      // player.currentCard = card;
+      // this.updateFoldMaster(player);
+    // });
+
+    // this.currentPlayer = this.connectedPlayers.find(player => player.name === 'matt');
 
     this.setLeftAndRightPlayers();
     this.setNbCardToGive();
-    this.setPartyState('playing');
+    this.waitedGivingCardsPlayers = this.connectedPlayers;
+    this.setPartyState('givingCards');
+    /*
     this.setAllCardsClickablesOrNot(true);
-    this.setFamily40(FAMILIES[2]);
+    this.setFamily40(FAMILIES[0]);
 
     this.isCurrentPlayerTurn = true;
     this.playerNameWaitedToPlay = 'mimi';
+    */
   }
 
   setLeftAndRightPlayers() {
