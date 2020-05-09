@@ -65,8 +65,8 @@ export class PlayingComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.testFrontOnly();
-    // this.initComponent();
+    // this.testFrontOnly();
+    this.initComponent();
   }
 
   setPartyState(newState: '' | 'givingCards' | 'playing' | 'endTourScores') {
