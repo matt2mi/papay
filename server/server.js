@@ -219,6 +219,7 @@ io.on('connection', (socket) => {
 // TODO : bug de pas besoin de cliquer sur suivant (checker vraiment les joueurs, pas juste le nb => dû au bug d'au dessus)
 
 // Evols :
+// TODO : slide des cartes vers joueur perdant quand pli fini
 // TODO : ajouter du son:
 // pour un nouveau message ds le chat
 // pour jouer la musique de Carlos Papayou (activée par défaut)
