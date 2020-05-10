@@ -16,6 +16,7 @@ import {ChatComponent} from './shared/components/chat/chat.component';
 import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
 import {CardComponent} from './shared/components/card/card.component';
 import {MatIconModule} from '@angular/material/icon';
+import { NoonGameComponent } from './noon-game/noon-game.component';
 
 const wsUrl = window.location.origin.replace(/^http/, 'ws');
 const socketIOConfig: SocketIoConfig = { url: wsUrl, options: {} };
@@ -28,7 +29,8 @@ const socketIOConfig: SocketIoConfig = { url: wsUrl, options: {} };
     PlayingComponent,
     ScoresComponent,
     ChatComponent,
-    CardComponent
+    CardComponent,
+    NoonGameComponent
   ],
   imports: [
     BrowserModule,
