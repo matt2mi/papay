@@ -416,8 +416,7 @@ export class PlayingComponent implements OnInit, OnDestroy {
       looser.roundScore = roundLooser.roundScore;
     }
   }
-// en attente pas setté direct
-//   slide des cartes vers haut/bas/ghe/dte quand pli fini
+
   endTour(players: Player[]) {
     this.setPartyState('endTourScores');
     this.isReady = false;
@@ -430,7 +429,12 @@ export class PlayingComponent implements OnInit, OnDestroy {
       playerToUpdate.roundScore = player.roundScore;
       playerToUpdate.globalScore = player.globalScore;
     });
+    this.sortPlayers();
     this.waitedPlayersForNextTour = players;
+  }
+
+  sortPlayers() {
+    this.connectedPlayers.sort((playerA, playerB) => playerA.globalScore - playerB.globalScore);
   }
 
   readyForNextTour() {
