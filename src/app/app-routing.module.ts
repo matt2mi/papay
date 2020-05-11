@@ -14,7 +14,7 @@ const routes: Routes = [
   {path: 'playing', component: PlayingComponent},
   {path: 'scores', component: ScoresComponent},
   {path: 'game', component: NoonGameComponent},
-  {path: 'final', component: FinalGameComponent},
+  {path: 'bigQuizzFinal', component: FinalGameComponent},
   {path: '**', redirectTo: '/login', pathMatch: 'full'},
   // { path: '', redirectTo: '/login', pathMatch: 'full' },
   // { path: '**', component: PageNotFoundComponent }

@@ -20,10 +20,11 @@ export class FinalGameComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.addProgress();
+    setTimeout(() => this.addProgress(), 5000);
   }
 
   onSubmit() {
+    this.result = {message: '', error: false};
     this.service.checkAnswer(this.submitForm.get('answer').value)
       .subscribe(
         (result: { message: string, error: boolean }) => {

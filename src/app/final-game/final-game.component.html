@@ -1,17 +1,34 @@
 <div class="row px-md-3">
-  <div class="col-12 pb-5">
-    <h2>Big Finals</h2>
+  <div class="col-12 text-center">
+    <h1>Big Finals</h1>
   </div>
 
-  <div class="col-12 my-3" style="border:1px solid white;"></div>
+  <div class="col-12 text-center">
+    Bienvenu à la grande finale du quizz de confi !!!
+    <br>
+    <br>
+    Aujourd'hui tu vas devoir trouver une phrase via les exercices suivants, tu auras à trouver un caractère par exercice
+    (chaque exercice est séparé par une barre horizontale blanche, s'agit d'être précis ;) )
+    <br>
+    <br>
+    Une fois que tu auras pécho toutes les lettres, il faudra en remettre quelques unes dans le bon ordre pour entrer
+    ensuite ta phrase dans le champs prévu à cet effet (juste en dessous), tu pourras checker ta réponse en cliquant sur valider.
+    <br>
+    <br>
+    Si la réponse est bonne, tu le sauras, pour preuve, il me faudra une copie d'écran ou une simple photo de l'écran
+    avec la preuve affichée !! Tu enverras cette photo sur la conversation Cépouandémie sur whatsapp.
+    <br>
+    <br>
+    Voilà, fonce maintenant mon pti Slimane !!
+  </div>
 
-  <div class="col-12">
+  <div class="col-12 py-5 text-center">
     <h3>Réponse</h3>
 
     <form (ngSubmit)="onSubmit()" [formGroup]="submitForm">
       <div class="form-group">
         <div class="row">
-          <div class="offset-2 col-6 text-center">
+          <div class="offset-3 col-6 text-center">
             <input type="text" formControlName="answer" class="form-control" id="answer" placeholder="ta réponse...">
 
             <small *ngIf="result.message" [ngClass]="{'red': result.error}">{{result.message}}</small>
@@ -27,11 +44,21 @@
 
   <div class="col-12 my-3" style="border:1px solid white;"></div>
 
+  <!--exos-->
   <div class="col-12">
     <h3>Si celle-là vous ne la trouvez pas, vous pouvez arrêtez de jouer directement...</h3>
 
     <iframe width="560" height="315" src="https://www.youtube.com/embed/Vm8vBoXcIcw?start=59&end=74" frameborder="0"
             allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+
+  <div class="col-12 my-3" style="border:1px solid white;"></div>
+
+  <div class="col-12 mb-3">
+    <h3>Comme disait ce cher Plutarque: "La patience a beaucoup plus de pouvoir que la force" !</h3>
+
+    <mat-progress-bar *ngIf="progressValue < 100" mode="determinate" value="{{progressValue}}" color="{{'warn'}}"></mat-progress-bar>
+    <div *ngIf="progressValue >= 100">{{lettre}}</div>
   </div>
 
   <div class="col-12 my-3" style="border:1px solid white;"></div>
@@ -43,16 +70,7 @@
   <div class="col-12 my-3" style="border:1px solid white;"></div>
 
   <div class="col-12 mb-3">
-    <h3>Comme disait ce cher Plutarque: "La patience a beaucoup plus de pouvoir que la force" !</h3>
-
-    <mat-progress-bar *ngIf="progressValue < 100" mode="determinate" value="{{progressValue}}"></mat-progress-bar>
-    <div *ngIf="progressValue >= 100">{{lettre}}</div>
-  </div>
-
-  <div class="col-12 my-3" style="border:1px solid white;"></div>
-
-  <div class="col-12 mb-3">
-    <h3>Le son émit par l'animal que tu vas trouver en "mixant" ces deux-là.</h3>
+    <h3>La lettre correspondante au son émit par l'animal que tu vas trouver en "mixant" ces deux-là.</h3>
   </div>
   <div class="col-6 mb-3">
     <img src="../../assets/final-game/animal-1.JPEG" class="img-fluid"/>
@@ -83,15 +101,18 @@
   <div class="col-12 my-3" style="border:1px solid white;"></div>
 
   <div class="col-12 mb-3">
-    &
+    <h3>Allez, je te laisse avec ça...</h3>
+
+    <p>&</p>
   </div>
 
   <div class="col-12 my-3" style="border:1px solid white;"></div>
 
   <div class="col-12 mb-3">
-    <h3>Cette lettre vous servira deux fois, alors ça vaut le coup de bien fouiller partout dans cette image...</h3>
+    <h3>Une lettre est planquée dans cette image nous montrant une scène d'archive datant de la période "pré-covid".
+      Vous devrez utiliser cette lettre deux fois dans la réponse, alors ça vaut le coup de bien fouiller partout...</h3>
 
-    <img src="../../assets/final-game/camping-lettre.png" class="img-fluid"/>
+    <img src="../../assets/final-game/camping-avec-lettre.jpg" class="img-fluid"/>
   </div>
 
 </div>
