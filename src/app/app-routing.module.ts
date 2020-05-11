@@ -5,6 +5,7 @@ import {WaitingPlayersComponent} from './components/waiting-players/waiting-play
 import {PlayingComponent} from './components/playing/playing.component';
 import {ScoresComponent} from './components/scores/scores.component';
 import {NoonGameComponent} from './noon-game/noon-game.component';
+import {FinalGameComponent} from './final-game/final-game.component';
 
 
 const routes: Routes = [
@@ -13,6 +14,7 @@ const routes: Routes = [
   {path: 'playing', component: PlayingComponent},
   {path: 'scores', component: ScoresComponent},
   {path: 'game', component: NoonGameComponent},
+  {path: 'final', component: FinalGameComponent},
   {path: '**', redirectTo: '/login', pathMatch: 'full'},
   // { path: '', redirectTo: '/login', pathMatch: 'full' },
   // { path: '**', component: PageNotFoundComponent }

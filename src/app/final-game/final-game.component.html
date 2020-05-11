@@ -1,0 +1,97 @@
+<div class="row px-md-3">
+  <div class="col-12 pb-5">
+    <h2>Big Finals</h2>
+  </div>
+
+  <div class="col-12 my-3" style="border:1px solid white;"></div>
+
+  <div class="col-12">
+    <h3>Réponse</h3>
+
+    <form (ngSubmit)="onSubmit()" [formGroup]="submitForm">
+      <div class="form-group">
+        <div class="row">
+          <div class="offset-2 col-6 text-center">
+            <input type="text" formControlName="answer" class="form-control" id="answer" placeholder="ta réponse...">
+
+            <small *ngIf="result.message" [ngClass]="{'red': result.error}">{{result.message}}</small>
+          </div>
+
+          <div class="col-12 text-center mt-3">
+            <button type="submit" class="btn btn-primary">Valider</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="col-12 my-3" style="border:1px solid white;"></div>
+
+  <div class="col-12">
+    <h3>Si celle-là vous ne la trouvez pas, vous pouvez arrêtez de jouer directement...</h3>
+
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/Vm8vBoXcIcw?start=59&end=74" frameborder="0"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+
+  <div class="col-12 my-3" style="border:1px solid white;"></div>
+
+  <div class="col-8 mb-3">
+    <img src="../../assets/final-game/rebus.png" class="img-fluid"/>
+  </div>
+
+  <div class="col-12 my-3" style="border:1px solid white;"></div>
+
+  <div class="col-12 mb-3">
+    <h3>Comme disait ce cher Plutarque: "La patience a beaucoup plus de pouvoir que la force" !</h3>
+
+    <mat-progress-bar *ngIf="progressValue < 100" mode="determinate" value="{{progressValue}}"></mat-progress-bar>
+    <div *ngIf="progressValue >= 100">{{lettre}}</div>
+  </div>
+
+  <div class="col-12 my-3" style="border:1px solid white;"></div>
+
+  <div class="col-12 mb-3">
+    <h3>Le son émit par l'animal que tu vas trouver en "mixant" ces deux-là.</h3>
+  </div>
+  <div class="col-6 mb-3">
+    <img src="../../assets/final-game/animal-1.JPEG" class="img-fluid"/>
+  </div>
+  <div class="col-6 mb-3">
+    <img src="../../assets/final-game/animal-2.JPEG" class="img-fluid"/>
+  </div>
+
+  <div class="col-12 my-3" style="border:1px solid white;"></div>
+
+  <div class="col-12 mb-3">
+    <img src="../../assets/final-game/lettre.JPEG" class="img-fluid"/>
+  </div>
+
+  <div class="col-12 my-3" style="border:1px solid white;"></div>
+
+  <div class="col-12 mb-3">
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/Ri7GzCUTC5s?start=5" frameborder="0"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+
+  <div class="col-12 my-3" style="border:1px solid white;"></div>
+
+  <div class="col-12 mb-3">
+    <img src="../../assets/final-game/panneau.JPEG" class="img-fluid"/>
+  </div>
+
+  <div class="col-12 my-3" style="border:1px solid white;"></div>
+
+  <div class="col-12 mb-3">
+    &
+  </div>
+
+  <div class="col-12 my-3" style="border:1px solid white;"></div>
+
+  <div class="col-12 mb-3">
+    <h3>Cette lettre vous servira deux fois, alors ça vaut le coup de bien fouiller partout dans cette image...</h3>
+
+    <img src="../../assets/final-game/camping-lettre.png" class="img-fluid"/>
+  </div>
+
+</div>

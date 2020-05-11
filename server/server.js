@@ -149,6 +149,15 @@ app.post('/newChatMessage', (req, res) => {
   res.send(true);
 });
 
+app.post('/checkAnswer', (req, res) => {
+  logsService.logs('post /checkAnswer', req.body.answer);
+  if (req.body.answer === 'c\'est gagné') {
+    res.send({message: 'BRAVO t\'as gagné le quizz de confi !!!', error: false});
+  } else {
+    res.send({message: 'nope.', error: true});
+  }
+});
+
 const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {
   console.log(`Api on port ${port}`);

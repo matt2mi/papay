@@ -36,4 +36,8 @@ export class ChatService {
   addNewMessage(message: string, color: string): Observable<boolean> {
     return this.http.post<boolean>('newChatMessage', {message, color});
   }
+
+  checkAnswer(answer: string): Observable<{ message: string, error: boolean }> {
+    return this.http.post<{ message: string, error: boolean }>('checkAnswer', {answer});
+  }
 }

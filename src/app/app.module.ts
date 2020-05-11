@@ -16,7 +16,9 @@ import {ChatComponent} from './shared/components/chat/chat.component';
 import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
 import {CardComponent} from './shared/components/card/card.component';
 import {MatIconModule} from '@angular/material/icon';
-import { NoonGameComponent } from './noon-game/noon-game.component';
+import {NoonGameComponent} from './noon-game/noon-game.component';
+import {FinalGameComponent} from './final-game/final-game.component';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 const wsUrl = window.location.origin.replace(/^http/, 'ws');
 const socketIOConfig: SocketIoConfig = { url: wsUrl, options: {} };
@@ -30,7 +32,8 @@ const socketIOConfig: SocketIoConfig = { url: wsUrl, options: {} };
     ScoresComponent,
     ChatComponent,
     CardComponent,
-    NoonGameComponent
+    NoonGameComponent,
+    FinalGameComponent
   ],
   imports: [
     BrowserModule,
@@ -42,7 +45,8 @@ const socketIOConfig: SocketIoConfig = { url: wsUrl, options: {} };
     BrowserAnimationsModule,
     MatToolbarModule,
     MatFormFieldModule,
-    MatIconModule
+    MatIconModule,
+    MatProgressBarModule
   ],
   providers: [],
   bootstrap: [AppComponent]
