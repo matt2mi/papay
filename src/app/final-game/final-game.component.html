@@ -23,13 +23,13 @@
   </div>
 
   <div class="col-12 py-5 text-center">
-    <h3>Réponse</h3>
+    <h3>Réponse </h3>
 
     <form (ngSubmit)="onSubmit()" [formGroup]="submitForm">
       <div class="form-group">
         <div class="row">
           <div class="offset-3 col-6 text-center">
-            <input type="text" formControlName="answer" class="form-control" id="answer" placeholder="ta réponse...">
+            <input type="text" formControlName="answer" class="form-control" id="answer" placeholder="ta réponse (en minuscule)...">
 
             <small *ngIf="result.message" [ngClass]="{'red': result.error}">{{result.message}}</small>
           </div>
